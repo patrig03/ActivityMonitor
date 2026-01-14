@@ -1,15 +1,11 @@
 namespace BusinessLogic.DTO;
 
-public class WindowDto
+public class WindowDto(string wmClass, string title, TimeSpan visibleFor, TimeSpan activeFor, DateTime lastVisible, DateTime lastActive)
 {
-    public string WmClass { get; }
-    public string Title { get; }
-    public TimeSpan VisibleFor { get; set; }
-
-    public WindowDto(string wmClass, string title, TimeSpan visibleFor)
-    {
-        WmClass = wmClass;
-        Title = title;
-        VisibleFor = visibleFor;
-    }
+    public string WmClass { get; } = wmClass;
+    public string Title { get; } = title;
+    public TimeSpan VisibleFor { get; set; } = visibleFor;
+    public TimeSpan ActiveFor { get; set; } = activeFor;
+    public DateTime LastVisible { get; set; } = lastVisible;
+    public DateTime LastActive { get; set; } = lastActive;
 }

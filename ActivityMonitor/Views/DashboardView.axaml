@@ -37,14 +37,38 @@
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
         
-        <DataGridTemplateColumn Header="Visible for" Width="Auto">
+        <DataGridTemplateColumn Header="Visible For" Width="Auto">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate x:DataType="dto:WindowDto">
               <TextBlock Text="{Binding VisibleFor}" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
+        
+        <DataGridTemplateColumn Header="Last Visible" Width="Auto">
+          <DataGridTemplateColumn.CellTemplate>
+            <DataTemplate x:DataType="dto:WindowDto">
+              <TextBlock Text="{Binding LastVisible}" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </DataTemplate>
+          </DataGridTemplateColumn.CellTemplate>
+        </DataGridTemplateColumn>
 
+        <DataGridTemplateColumn Header="Active For" Width="Auto">
+          <DataGridTemplateColumn.CellTemplate>
+            <DataTemplate x:DataType="dto:WindowDto">
+              <TextBlock Text="{Binding ActiveFor}" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </DataTemplate>
+          </DataGridTemplateColumn.CellTemplate>
+        </DataGridTemplateColumn>
+        
+        <DataGridTemplateColumn Header="Last Active" Width="Auto">
+          <DataGridTemplateColumn.CellTemplate>
+            <DataTemplate x:DataType="dto:WindowDto">
+              <TextBlock Text="{Binding LastActive}" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </DataTemplate>
+          </DataGridTemplateColumn.CellTemplate>
+        </DataGridTemplateColumn>
+        
       </DataGrid.Columns>
     </DataGrid>
     

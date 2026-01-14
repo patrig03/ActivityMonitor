@@ -22,15 +22,10 @@ public static class DatabaseManager
             WHERE type='table' AND name=$table;
             """;
         cmd.Parameters.AddWithValue("$table", tableName);
-
         var result = cmd.ExecuteScalar();
-
-        // If table doesn't exist, create it
-        if (result is not null)
-        {
-            return;
-        }
+        if (result is not null) { return; }
         
+        // If table doesn't exist, create it
         var createCmd = conn.CreateCommand();
         createCmd.CommandText =
             $"""
@@ -39,6 +34,9 @@ public static class DatabaseManager
                  WmClass TEXT,
                  Title TEXT,
                  VisibleFor TIME,
+                 ActiveFor TIME,
+                 LastVisible TIMESTAMP,
+                 LastActive TIMESTAMP,
                  UNIQUE(WmClass, Title)
              );
              """;
@@ -52,15 +50,22 @@ public static class DatabaseManager
         conn.Open();
 
         using var cmd = conn.CreateCommand();
-        cmd.CommandText = @"
-        INSERT INTO Activity (WmClass, Title, VisibleFor)
-        VALUES ($class, $title, $visibleFor)
-        ON CONFLICT(WmClass, Title)
-        DO UPDATE SET VisibleFor = $visibleFor;
-    ";
+        cmd.CommandText = """
+            INSERT INTO Activity (WmClass, Title, VisibleFor, ActiveFor, LastActive, LastVisible)
+            VALUES ($class, $title, $visibleFor, $activeFor, $lastActive, $lastVisible)
+            ON CONFLICT(WmClass, Title)
+            DO UPDATE SET 
+               VisibleFor = $visibleFor,
+               ActiveFor = $activeFor,
+               LastVisible = $lastVisible,
+               LastActive = $lastActive;
+        """;
         cmd.Parameters.AddWithValue("$class", win.WmClass);
         cmd.Parameters.AddWithValue("$title", win.Title);
         cmd.Parameters.AddWithValue("$visibleFor", win.VisibleFor);
+        cmd.Parameters.AddWithValue("$activeFor", win.ActiveFor);
+        cmd.Parameters.AddWithValue("$lastVisible", win.LastVisible);
+        cmd.Parameters.AddWithValue("$lastActive", win.LastActive);
 
         cmd.ExecuteNonQuery();
     }
@@ -78,8 +83,14 @@ public static class DatabaseManager
         using var cmd = conn.CreateCommand();
         cmd.CommandText =
             """
-            SELECT WMClass, Title, VisibleFor
-            FROM Activity;
+            SELECT
+                WmClass,
+                Title,
+                VisibleFor,
+                ActiveFor,
+                LastVisible,
+                LastActive
+            FROM Activity
             """;
 
         using var reader = cmd.ExecuteReader();
@@ -87,9 +98,12 @@ public static class DatabaseManager
         while (reader.Read())
         {
             var dto = new WindowDto(
-                reader.GetString(0), // WMClass
-                reader.GetString(1),      // Title
-                reader.GetTimeSpan(2)
+                reader.GetString(0),
+                reader.GetString(1),     
+                reader.GetTimeSpan(2),
+                reader.GetTimeSpan(3),
+                reader.GetDateTime(4),
+                reader.GetDateTime(5)
             );
             
             list.Add(dto);
@@ -98,19 +112,27 @@ public static class DatabaseManager
         return list;
     }
     
-    public static WindowDto? GetWindowEntry(string tableName, string wmClass, string title)
+    public static WindowDto? GetWindowEntry(string wmClass, string title)
     {
         EnsureDatabase("Activity");
         using var conn = new SqliteConnection($"Data Source={DbPath}");
         conn.Open();
 
         var cmd = conn.CreateCommand();
-        cmd.CommandText = $@"
-        SELECT Id, WmClass, Title, VisibleFor
-        FROM {tableName}
-        WHERE WmClass = $wmClass AND Title = $title
-        LIMIT 1;
-    ";
+        cmd.CommandText = 
+          """
+          SELECT
+              WmClass,
+              Title,
+              VisibleFor,
+              ActiveFor,
+              LastVisible,
+              LastActive
+          FROM Activity
+          WHERE WmClass = $wmClass AND Title = $title
+          LIMIT 1;
+          """;
+        
         cmd.Parameters.AddWithValue("$wmClass", wmClass);
         cmd.Parameters.AddWithValue("$title", title);
 
@@ -118,9 +140,12 @@ public static class DatabaseManager
         if (reader.Read())
         {
             return new WindowDto(
-                reader.GetString(1),
-                reader.GetString(2),
-                reader.GetTimeSpan(3)
+                reader.GetString(0),
+                reader.GetString(1),     
+                reader.GetTimeSpan(2),
+                reader.GetTimeSpan(3),
+                reader.GetDateTime(4),
+                reader.GetDateTime(5)
             );
         }
 

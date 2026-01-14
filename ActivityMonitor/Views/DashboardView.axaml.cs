@@ -2,9 +2,9 @@ using Avalonia.Controls;
 
 namespace ActivityMonitor.Views;
 
-public partial class MainView : UserControl
+public partial class DashboardView : UserControl
 {
-    public MainView()
+    public DashboardView()
     {
         InitializeComponent();
     }

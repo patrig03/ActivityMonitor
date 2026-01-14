@@ -1,0 +1,108 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewModels="clr-namespace:ActivityMonitor.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="ActivityMonitor.Views.Navbar"
+             x:DataType="viewModels:DashboardViewModel">
+
+    <!-- ========= SIDE NAVIGATION ========= -->
+    <Border Background="#0E1014" Grid.RowSpan="2" Padding="0,24,0,24">
+        <StackPanel Margin="16,0,16,0" Spacing="8">
+            <!-- Header -->
+            <StackPanel Margin="0,0,0,16" Spacing="12">
+                <TextBlock Text="Activity Monitor"
+                           FontWeight="SemiBold"
+                           FontSize="20"
+                           Foreground="#EAF1FF"
+                           VerticalAlignment="Center"/>
+                
+                <Separator Background="#1E2530" Height="1"/>
+            </StackPanel>
+
+            <!-- Navigation Items -->
+            <StackPanel Spacing="4">
+                <Button Content="Dashboard"
+                        CornerRadius="8"
+                        Background="#1F6FEB"
+                        Foreground="White"
+                        Padding="12,10"
+                        HorizontalAlignment="Stretch"
+                        FontWeight="SemiBold">
+                    <Button.Styles>
+                        <Style Selector="Button">
+                            <Setter Property="CornerRadius" Value="8"/>
+                        </Style>
+                    </Button.Styles>
+                </Button>
+
+                <Button Content="Reports"
+                        CornerRadius="8"
+                        Background="Transparent"
+                        Foreground="#C7D1E0"
+                        Padding="12,10"
+                        HorizontalAlignment="Stretch"
+                        FontWeight="Medium"
+                        Click="Button_OnClick"
+                        Classes="nav-button">
+                    <Button.Styles>
+                        <Style Selector="Button.nav-button">
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Setter Property="Foreground" Value="#C7D1E0"/>
+                        </Style>
+                        <Style Selector="Button.nav-button:pointerover">
+                            <Setter Property="Background" Value="#1A2230"/>
+                            <Setter Property="Foreground" Value="#EAF1FF"/>
+                        </Style>
+                    </Button.Styles>
+                </Button>
+
+                <Button Content="Settings"
+                        CornerRadius="8"
+                        Background="Transparent"
+                        Foreground="#C7D1E0"
+                        Padding="12,10"
+                        HorizontalAlignment="Stretch"
+                        FontWeight="Medium"
+                        Classes="nav-button"/>
+
+                <Button Content="Focus Modes"
+                        CornerRadius="8"
+                        Background="Transparent"
+                        Foreground="#C7D1E0"
+                        Padding="12,10"
+                        HorizontalAlignment="Stretch"
+                        FontWeight="Medium"
+                        Classes="nav-button"/>
+            </StackPanel>
+
+            <!-- Status Panel -->
+            <Border Background="#121720"
+                    CornerRadius="10"
+                    Margin="0,24,0,0"
+                    Padding="16,12">
+                <StackPanel Spacing="4">
+                    <TextBlock Text="STATUS"
+                               Foreground="#7C879C"
+                               FontSize="11"
+                               FontWeight="Medium"
+                               LetterSpacing="0.5"/>
+                    
+                    <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                        <Ellipse Width="8" Height="8" Fill="#6DFF9C"/>
+                        <TextBlock Text="Monitoring Active"
+                                   Foreground="#EAF1FF"
+                                   FontWeight="SemiBold"
+                                   FontSize="14"/>
+                    </StackPanel>
+                    
+                    <TextBlock Text="Last updated: 2 min ago"
+                               Foreground="#7C879C"
+                               FontSize="11"
+                               Margin="0,4,0,0"/>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </Border>
+</UserControl>

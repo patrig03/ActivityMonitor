@@ -5,8 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:views="using:ActivityMonitor.Views"
         mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="1000"
-        MinWidth="400"
-        MinHeight="200"
+        MinWidth="1400"
+        MinHeight="750"
         x:Class="ActivityMonitor.Views.MainWindow"
         Icon="/Assets/avalonia-logo.ico"
         Title="ActivityMonitor">

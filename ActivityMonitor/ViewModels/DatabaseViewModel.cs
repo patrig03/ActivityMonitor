@@ -8,30 +8,58 @@ using BusinessLogic.DTO;
 
 namespace ActivityMonitor.ViewModels;
 
+public class WindowCategoryDto
+{
+    public string WmClass { get; set; } = "";
+    public string Title { get; set; } = "";
+    public TimeSpan VisibleFor { get; set; }
+    public DateTime LastVisible { get; set; }
+    public TimeSpan ActiveFor { get; set; }
+    public DateTime LastActive { get; set; }
+    
+    public string CategoryName { get; set; } = "";
+    public double Confidence { get; set; }
+}
+
+
+
 public class DatabaseViewModel
 {
-    public ObservableCollection<WindowDto> Windows { get; }
+    public ObservableCollection<WindowCategoryDto> WindowCategories { get; }
 
     private Timer? _timer;
 
     public DatabaseViewModel()
     {
-        var items = DatabaseManager.GetAll() ?? new List<WindowDto>();
-        Windows = new ObservableCollection<WindowDto>(items);
+        WindowCategories = new ObservableCollection<WindowCategoryDto>();
 
-        // Start periodic refresh every 10 seconds
         _timer = new Timer(_ =>
         {
             var updatedItems = DatabaseManager.GetAll() ?? new List<WindowDto>();
 
-            // Update collection on UI thread
             Dispatcher.UIThread.Post(() =>
             {
-                Windows.Clear();
+                WindowCategories.Clear();
+
                 foreach (var win in updatedItems)
-                    Windows.Add(win);
+                {
+                    var (category, confidence) = ActivityClassifier.Classify(win);
+                
+                    WindowCategories.Add(new WindowCategoryDto
+                    {
+                        WmClass = win.WmClass,
+                        Title = win.Title,
+                        VisibleFor = win.VisibleFor,
+                        LastVisible = win.LastVisible,
+                        ActiveFor = win.ActiveFor,
+                        LastActive = win.LastActive,
+                        CategoryName = category.ToString(),
+                        Confidence = confidence
+                    });
+                }
             });
 
         }, null, TimeSpan.Zero, TimeSpan.FromSeconds(10));
     }
+
 }

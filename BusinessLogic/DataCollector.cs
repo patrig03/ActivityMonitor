@@ -51,12 +51,12 @@ public class DataCollector
             var state = Get("_NET_WM_STATE");
             bool focused = state.Contains("_NET_WM_STATE_FOCUSED");
             
-            var win = DatabaseManager.GetWindowEntry(parts[7], string.Join(' ', parts.Skip(8)));
+            var win = DatabaseManager.GetWindowEntry(parts[7], string.Join(' ', parts.Skip(9)));
 
             if (win == null) {
                 win = new WindowDto(
                     parts[7],
-                    string.Join(' ', parts.Skip(8)),
+                    string.Join(' ', parts.Skip(9)),
                     _deltaTime,
                     _deltaTime,
                     DateTime.Now, 

@@ -194,7 +194,7 @@
             </StackPanel>
         </Border>
         
-        <DataGrid Grid.Row="2" ItemsSource="{Binding Windows}" AutoGenerateColumns="True"/>
+        <!-- <DataGrid Grid.Row="2" ItemsSource="{Binding WindowCategories}" AutoGenerateColumns="True"/> -->
     </Grid>
 
 </UserControl>

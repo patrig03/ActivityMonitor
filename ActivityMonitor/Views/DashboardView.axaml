@@ -1,9 +1,9 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:viewModels="clr-namespace:ActivityMonitor.ViewModels"
-             xmlns:dto="clr-namespace:BusinessLogic.DTO;assembly=BusinessLogic"
              xmlns:views="clr-namespace:ActivityMonitor.Views"
              x:Class="ActivityMonitor.Views.DashboardView"
+             xmlns:dto="clr-namespace:BusinessLogic.DTO;assembly=BusinessLogic"
              x:DataType="viewModels:DatabaseViewModel"
              x:CompileBindings="True">
 
@@ -11,67 +11,11 @@
   <UserControl.DataContext>
     <viewModels:DatabaseViewModel/>
   </UserControl.DataContext>
-
-  <Grid ColumnDefinitions="240,*" RowDefinitions="*" Background="#111111"> 
-    <views:Navbar Grid.Column="0"/>
-    
-    <DataGrid Grid.Column="1"
-          ItemsSource="{Binding Windows}"
-          AutoGenerateColumns="False">
-
-      <DataGrid.Columns>
-
-        <DataGridTemplateColumn Header="Class" Width="Auto">
-          <DataGridTemplateColumn.CellTemplate>
-            <DataTemplate x:DataType="dto:WindowDto">
-              <TextBlock Text="{Binding WmClass}" Foreground="White" VerticalAlignment="Center"/>
-            </DataTemplate>
-          </DataGridTemplateColumn.CellTemplate>
-        </DataGridTemplateColumn>
-
-        <DataGridTemplateColumn Header="Title" Width="Auto">
-          <DataGridTemplateColumn.CellTemplate>
-            <DataTemplate x:DataType="dto:WindowDto">
-              <TextBlock Text="{Binding Title}" Foreground="White" VerticalAlignment="Center"/>
-            </DataTemplate>
-          </DataGridTemplateColumn.CellTemplate>
-        </DataGridTemplateColumn>
-        
-        <DataGridTemplateColumn Header="Visible For" Width="Auto">
-          <DataGridTemplateColumn.CellTemplate>
-            <DataTemplate x:DataType="dto:WindowDto">
-              <TextBlock Text="{Binding VisibleFor}" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            </DataTemplate>
-          </DataGridTemplateColumn.CellTemplate>
-        </DataGridTemplateColumn>
-        
-        <DataGridTemplateColumn Header="Last Visible" Width="Auto">
-          <DataGridTemplateColumn.CellTemplate>
-            <DataTemplate x:DataType="dto:WindowDto">
-              <TextBlock Text="{Binding LastVisible}" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            </DataTemplate>
-          </DataGridTemplateColumn.CellTemplate>
-        </DataGridTemplateColumn>
-
-        <DataGridTemplateColumn Header="Active For" Width="Auto">
-          <DataGridTemplateColumn.CellTemplate>
-            <DataTemplate x:DataType="dto:WindowDto">
-              <TextBlock Text="{Binding ActiveFor}" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            </DataTemplate>
-          </DataGridTemplateColumn.CellTemplate>
-        </DataGridTemplateColumn>
-        
-        <DataGridTemplateColumn Header="Last Active" Width="Auto">
-          <DataGridTemplateColumn.CellTemplate>
-            <DataTemplate x:DataType="dto:WindowDto">
-              <TextBlock Text="{Binding LastActive}" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            </DataTemplate>
-          </DataGridTemplateColumn.CellTemplate>
-        </DataGridTemplateColumn>
-        
-      </DataGrid.Columns>
-    </DataGrid>
-    
+  
+  <Grid ColumnDefinitions="*" RowDefinitions="*" Background="#111111">
+    <!-- Database Table on the left -->
+    <views:DatabaseTable Grid.Column="0"/>
   </Grid>
+
 
 </UserControl>

@@ -1,0 +1,150 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewModels="clr-namespace:ActivityMonitor.ViewModels"
+             xmlns:dto="clr-namespace:BusinessLogic.DTO;assembly=BusinessLogic"
+             mc:Ignorable="d" 
+             d:DesignWidth="800" 
+             d:DesignHeight="450"
+             x:Class="ActivityMonitor.Views.DatabaseTable"
+             x:DataType="viewModels:DatabaseViewModel">
+
+    <UserControl.Styles>
+        <Style Selector="DataGrid">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="GridLinesVisibility" Value="All"/>
+            <Setter Property="RowBackground" Value="#222222"/>
+            <Setter Property="HorizontalGridLinesBrush" Value="#30FFFFFF"/>
+            <Setter Property="VerticalGridLinesBrush" Value="#30FFFFFF"/>
+        </Style>
+        
+        <Style Selector="DataGridColumnHeader">
+            <Setter Property="Background" Value="#333333"/>
+            <Setter Property="Foreground" Value="#ffffff"/>
+            <Setter Property="BorderThickness" Value="0,0,0,2"/>
+            <Setter Property="BorderBrush" Value="#30FFFFFF"/>
+            <Setter Property="Padding" Value="12,8"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        </Style>
+        
+        <Style Selector="DataGridColumnHeader.center">
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        </Style>
+        
+        <Style Selector="DataGridCell">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="12,6"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+        </Style>
+        
+        <Style Selector="DataGridCell.center">
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        </Style>
+        
+        <Style Selector="DataGridCell:pointerover">
+            <Setter Property="Background" Value="#1A3A6DA0"/>
+        </Style>
+        
+        <Style Selector="DataGridRow:selected">
+            <Setter Property="Background" Value="#2A3A6DA0"/>
+        </Style>
+    </UserControl.Styles>
+
+    <DataGrid ItemsSource="{Binding WindowCategories}"
+              AutoGenerateColumns="False"
+              IsReadOnly="True"
+              SelectionMode="Single"
+              CanUserResizeColumns="True"
+              CanUserSortColumns="True"
+              FontSize="13"
+              Foreground="#E0E0E0">
+
+
+        <DataGrid.Columns>
+            <!-- Class Column -->
+            <DataGridTextColumn Header="Class"
+                                Binding="{Binding WmClass}"
+                                Width="Auto"
+                                MinWidth="150"
+                                CanUserSort="True"/>
+                                
+            <!-- Title Column -->
+            <DataGridTextColumn Header="Title"
+                                Binding="{Binding Title}"
+                                Width="*"
+                                MinWidth="200"
+                                CanUserSort="True"/>
+                                
+            <!-- Visible For Column - Centered -->
+            <DataGridTextColumn Header="Visible For"
+                                Binding="{Binding VisibleFor}"
+                                Width="Auto"
+                                MinWidth="120"
+                                CanUserSort="True">
+
+                <DataGridTextColumn.CellStyleClasses>
+                    <x:String>center</x:String>
+                </DataGridTextColumn.CellStyleClasses>
+            </DataGridTextColumn>
+            
+            <!-- Last Visible Column - Centered with Time Format -->
+            <DataGridTextColumn Header="Last Visible"
+                                Binding="{Binding LastVisible, StringFormat='{}{0:HH:mm:ss}'}"
+                                Width="Auto"
+                                MinWidth="140"
+                                CanUserSort="True">
+
+                <DataGridTextColumn.CellStyleClasses>
+                    <x:String>center</x:String>
+                </DataGridTextColumn.CellStyleClasses>
+            </DataGridTextColumn>
+            
+            <!-- Active For Column - Centered -->
+            <DataGridTextColumn Header="Active For"
+                                Binding="{Binding ActiveFor}"
+                                Width="Auto"
+                                MinWidth="120"
+                                CanUserSort="True">
+
+                <DataGridTextColumn.CellStyleClasses>
+                    <x:String>center</x:String>
+                </DataGridTextColumn.CellStyleClasses>
+            </DataGridTextColumn>
+            
+            <!-- Last Active Column - Centered with Time Format -->
+            <DataGridTextColumn Header="Last Active"
+                                Binding="{Binding LastActive, StringFormat='{}{0:HH:mm:ss}'}"
+                                Width="Auto"
+                                MinWidth="140"
+                                CanUserSort="True">
+
+                <DataGridTextColumn.CellStyleClasses>
+                    <x:String>center</x:String>
+                </DataGridTextColumn.CellStyleClasses>
+            </DataGridTextColumn>
+            
+            <!-- Category Column -->
+            <DataGridTextColumn Header="Category"
+                                Binding="{Binding CategoryName}"
+                                Width="Auto"
+                                MinWidth="150"
+                                CanUserSort="True"/>
+
+            <!-- Confidence Column - Centered -->
+            <DataGridTextColumn Header="Confidence"
+                                Binding="{Binding Confidence, StringFormat={}{0:P1}}"
+                                Width="Auto"
+                                MinWidth="120">
+                <DataGridTextColumn.CellStyleClasses>
+                    <x:String>center</x:String>
+                </DataGridTextColumn.CellStyleClasses>
+            </DataGridTextColumn>
+
+        </DataGrid.Columns>
+    </DataGrid>
+</UserControl>

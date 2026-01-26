@@ -1,12 +1,21 @@
 using System.Diagnostics;
-using BusinessLogic.DTO;
+using Database.DTO;
+using Database.Manager;
 
-namespace BusinessLogic;
+namespace Backend;
 
 public class DataCollector
 {
-    private static TimeSpan _deltaTime = TimeSpan.FromSeconds(10);
-    public static void CheckActivity()
+    private readonly TimeSpan _deltaTime;
+    private IDatabaseManager _databaseManager;
+    
+    public DataCollector(TimeSpan deltaTime, IDatabaseManager databaseManager)
+    {
+        _deltaTime = deltaTime;
+        _databaseManager = databaseManager;
+    }
+    
+    public void CheckActivity()
     {        
         var wmctrl = Process.Start(new ProcessStartInfo
         {
@@ -51,30 +60,32 @@ public class DataCollector
             var state = Get("_NET_WM_STATE");
             bool focused = state.Contains("_NET_WM_STATE_FOCUSED");
             
-            var win = DatabaseManager.GetWindowEntry(parts[7], string.Join(' ', parts.Skip(9)));
-
-            if (win == null) {
-                win = new WindowDto(
-                    parts[7],
-                    string.Join(' ', parts.Skip(9)),
-                    _deltaTime,
-                    _deltaTime,
-                    DateTime.Now, 
-                    DateTime.Now
-                );
-            }
-            else
-            {
-                win.VisibleFor += _deltaTime;
-                win.LastVisible = DateTime.Now;
-                if (focused)
-                {
-                    win.ActiveFor += _deltaTime;
-                    win.LastActive = DateTime.Now;
-                }
-            }
-
-            DatabaseManager.InsertOrUpdate(win);
+            // var win = _databaseManager.GetWindowEntry(parts[7], string.Join(' ', parts.Skip(9)));
+            //
+            // if (win == null)
+            // {
+            //     win = new ApplicationDto
+            //     (
+            //         parts[7],
+            //         string.Join(' ', parts.Skip(9)),
+            //         _deltaTime,
+            //         _deltaTime,
+            //         DateTime.Now, 
+            //         DateTime.Now
+            //     );
+            // }
+            // else
+            // {
+            //     win.VisibleFor += _deltaTime;
+            //     win.LastVisible = DateTime.Now;
+            //     if (focused)
+            //     {
+            //         win.ActiveFor += _deltaTime;
+            //         win.LastActive = DateTime.Now;
+            //     }
+            // }
+            //
+            // _databaseManager.InsertOrUpdate(win);
         }
 
     }

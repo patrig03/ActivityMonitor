@@ -1,6 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
-using BusinessLogic;
+using Backend;
 
 namespace ActivityMonitor.ViewModels;
 

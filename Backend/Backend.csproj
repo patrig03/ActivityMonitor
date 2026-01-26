@@ -13,4 +13,8 @@
       <PackageReference Include="SQLite" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Database\Database.csproj" />
+    </ItemGroup>
+
 </Project>

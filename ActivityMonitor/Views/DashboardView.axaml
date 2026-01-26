@@ -3,7 +3,7 @@
              xmlns:viewModels="clr-namespace:ActivityMonitor.ViewModels"
              xmlns:views="clr-namespace:ActivityMonitor.Views"
              x:Class="ActivityMonitor.Views.DashboardView"
-             xmlns:dto="clr-namespace:BusinessLogic.DTO;assembly=BusinessLogic"
+             xmlns:dto="clr-namespace:Backend.DTO;assembly=Backend"
              x:DataType="viewModels:DatabaseViewModel"
              x:CompileBindings="True">
 

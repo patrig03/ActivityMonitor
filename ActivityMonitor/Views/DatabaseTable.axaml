@@ -3,7 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:viewModels="clr-namespace:ActivityMonitor.ViewModels"
-             xmlns:dto="clr-namespace:BusinessLogic.DTO;assembly=BusinessLogic"
+             xmlns:dto="clr-namespace:Backend.DTO;assembly=Backend"
              mc:Ignorable="d" 
              d:DesignWidth="800" 
              d:DesignHeight="450"

@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading;
 using Avalonia.Threading;
-using BusinessLogic;
-using BusinessLogic.DTO;
+using Backend;
+using Backend.DTO;
 
 namespace ActivityMonitor.ViewModels;
 

@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading;
 using Avalonia.Threading;
-using Backend;
-using Backend.DTO;
+using Database.DTO;
+using Database.Manager;
 
 namespace ActivityMonitor.ViewModels;
 
@@ -26,33 +26,32 @@ public class WindowCategoryDto
 public class DatabaseViewModel
 {
     public ObservableCollection<WindowCategoryDto> WindowCategories { get; }
+    private const string DbPath = "./data/database.db";
+    private DatabaseManager _manager { get; }
 
     private Timer? _timer;
 
     public DatabaseViewModel()
     {
+        _manager = new DatabaseManager(DbPath);
         WindowCategories = new ObservableCollection<WindowCategoryDto>();
 
         _timer = new Timer(_ =>
         {
-            var updatedItems = DatabaseManager.GetAll() ?? new List<WindowDto>();
+            var updatedItems = _manager.GetAllApplications();
 
             Dispatcher.UIThread.Post(() =>
             {
                 WindowCategories.Clear();
 
-                foreach (var win in updatedItems)
+                foreach (var app in updatedItems)
                 {
-                    var (category, confidence) = ActivityClassifier.Classify(win);
+                    var (category, confidence) = ActivityClassifier.Classify(app);
                 
                     WindowCategories.Add(new WindowCategoryDto
                     {
-                        WmClass = win.WmClass,
-                        Title = win.Title,
-                        VisibleFor = win.VisibleFor,
-                        LastVisible = win.LastVisible,
-                        ActiveFor = win.ActiveFor,
-                        LastActive = win.LastActive,
+                        WmClass = app.Class,
+                        Title = app.Name,
                         CategoryName = category.ToString(),
                         Confidence = confidence
                     });
@@ -61,5 +60,4 @@ public class DatabaseViewModel
 
         }, null, TimeSpan.Zero, TimeSpan.FromSeconds(10));
     }
-
 }

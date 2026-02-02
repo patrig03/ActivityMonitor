@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Backend.DTO;
+using Database.DTO;
 
 public enum Category
 {
@@ -41,7 +41,7 @@ public static class ActivityClassifier
 
     // ---------- Public API ----------
 
-    public static (Category category, double confidence) Classify(WindowDto row)
+    public static (Category category, double confidence) Classify(ApplicationDto row)
     {
         var features = ExtractFeatures(row);
         return Decide(features);
@@ -49,10 +49,10 @@ public static class ActivityClassifier
 
     // ---------- Feature extraction ----------
 
-    static Features ExtractFeatures(WindowDto row)
+    static Features ExtractFeatures(ApplicationDto row)
     {
-        var proc = row.WmClass.ToLowerInvariant();
-        var title = row.Title ?? "";
+        var proc = row.Class.ToLowerInvariant();
+        var title = row.Name ?? "";
 
         return new Features
         {
@@ -60,8 +60,6 @@ public static class ActivityClassifier
             HasMediaExt = MediaExt.IsMatch(title),
             HasDevExt = DevExt.IsMatch(title),
             Domain = ExtractDomain(title),
-            ActiveSeconds = row.ActiveFor.TotalSeconds,
-            IsFullscreenCandidate = row.ActiveFor.TotalMinutes > 20
         };
     }
 

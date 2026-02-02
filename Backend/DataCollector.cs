@@ -6,87 +6,122 @@ namespace Backend;
 
 public class DataCollector
 {
-    private readonly TimeSpan _deltaTime;
-    private IDatabaseManager _databaseManager;
+    private const string WmctrlCmd  = "wmctrl";
+    private const string XpropCmd   = "xprop";
     
-    public DataCollector(TimeSpan deltaTime, IDatabaseManager databaseManager)
+    public IEnumerable<ApplicationDto> CheckActivity()
     {
-        _deltaTime = deltaTime;
-        _databaseManager = databaseManager;
+        var windowsOutput = ExecuteCommand(WmctrlCmd, "-lGpx");
+        return ParseWindows(windowsOutput);
     }
-    
-    public void CheckActivity()
-    {        
-        var wmctrl = Process.Start(new ProcessStartInfo
+
+    private string ExecuteCommand(string file, string args)
+    {
+        using var process = new Process
         {
-            FileName = "wmctrl",
-            Arguments = "-lGpx",
-            RedirectStandardOutput = true
-        });
-
-        string list = wmctrl.StandardOutput.ReadToEnd();
-        wmctrl.WaitForExit();
-
-        var lines = list.Split('\n', StringSplitOptions.RemoveEmptyEntries);
-
-        foreach (var line in lines)
-        {
-            var parts = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-            if (parts.Length < 8) { continue; }
-
-            var xprop = Process.Start(new ProcessStartInfo
+            StartInfo =
             {
-                FileName = "xprop",
-                Arguments = $"-id {parts[0]}",
-                RedirectStandardOutput = true
-            });
-            
-            string xp = xprop.StandardOutput.ReadToEnd();
-            xprop.WaitForExit();
-            
-            string Get(string key) =>
-                xp.Split('\n')
-                    .FirstOrDefault(l => l.TrimStart().StartsWith(key))?
-                    .Split('=')?
-                    .Last()
-                    .Trim() ?? "unknown";
+                FileName           = file,
+                Arguments          = args,
+                RedirectStandardOutput = true,
+                UseShellExecute    = false,
+                CreateNoWindow     = true
+            }
+        };
+        process.Start();
+        string output = process.StandardOutput.ReadToEnd();
+        process.WaitForExit();
+        return output;
+    }
 
-            // win.Machine    = Get("WM_CLIENT_MACHINE");
-            // win.WindowType = Get("_NET_WM_WINDOW_TYPE");
-            // win.State      = Get("_NET_WM_STATE");
-            // win.NetName    = Get("_NET_WM_NAME");
-            
-            
-            var state = Get("_NET_WM_STATE");
-            bool focused = state.Contains("_NET_WM_STATE_FOCUSED");
-            
-            // var win = _databaseManager.GetWindowEntry(parts[7], string.Join(' ', parts.Skip(9)));
-            //
-            // if (win == null)
-            // {
-            //     win = new ApplicationDto
-            //     (
-            //         parts[7],
-            //         string.Join(' ', parts.Skip(9)),
-            //         _deltaTime,
-            //         _deltaTime,
-            //         DateTime.Now, 
-            //         DateTime.Now
-            //     );
-            // }
-            // else
-            // {
-            //     win.VisibleFor += _deltaTime;
-            //     win.LastVisible = DateTime.Now;
-            //     if (focused)
-            //     {
-            //         win.ActiveFor += _deltaTime;
-            //         win.LastActive = DateTime.Now;
-            //     }
-            // }
-            //
-            // _databaseManager.InsertOrUpdate(win);
+    private ApplicationDto[] ParseWindows(string wmctrlResult)
+    {
+        var lines = wmctrlResult.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+
+        return lines
+            .Select(ParseWindowLine)
+            .Where(w => w != null!)
+            .ToArray()!;
+    }
+
+    private ApplicationDto? ParseWindowLine(string line)
+    {
+        // wmctrl -lGpx output: <id> <desktop> <x> <y> <w> <h> <pid> <class> <title…>
+        var parts = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length < 8) return null;
+
+        string windowId   = parts[0];
+        string pidStr     = parts[2];
+        string wmClass    = parts[7];
+        string title      = string.Join(' ', parts.Skip(8));
+
+        if (!int.TryParse(pidStr, out int pid)) return null;
+
+        var xpropOutput = ExecuteCommand(XpropCmd, $"-id {windowId}");
+        string windowType = GetXPropValue(xpropOutput, "_NET_WM_WINDOW_TYPE");
+
+        return BuildDto(pid, title, wmClass, windowType);
+    }
+
+    private string? GetXPropValue(string output, string key)
+    {
+        // Each line: <key> = <value>
+        var line = output
+            .Split('\n')
+            .FirstOrDefault(l => l.TrimStart().StartsWith(key));
+        return line?.Split('=')?.Last()?.Trim();
+    }
+
+    private ApplicationDto BuildDto(int pid, string title, string wmClass, string? windowType)
+    {
+        var processName = GetProcessName(pid);
+
+        return new ApplicationDto
+        {
+            AppId        = pid,
+            Name         = title,
+            Class        = wmClass,
+            ProcessName  = processName,
+            Type         = NormalizeType(windowType),
+            CategoryId   = 1
+        };
+    }
+
+    private string? GetProcessName(int pid)
+    {
+        try
+        {
+            return File.ReadAllText($"/proc/{pid}/comm").Trim();
         }
+        catch
+        {
+            return null;
+        }
+    }
 
+    private string NormalizeType(string? raw)
+    {
+        if (raw == null) return "Unknown";
+
+        return raw switch
+        {
+            var s when s.Contains("DIALOG") => "Dialog",
+            var s when s.Contains("UTILITY") => "Utility",
+            var s when s.Contains("NORMAL")  => "Application",
+            _                               => "Unknown"
+        };
+    }
+
+    private int Categorize(string? process, string? wmClass)
+    {
+        var value = (process ?? wmClass ?? "").ToLowerInvariant();
+
+        return value switch
+        {
+            var v when v.Contains("rider") || v.Contains("code")   => 1, // IDE
+            var v when v.Contains("firefox") || v.Contains("chrome") => 2, // Browser
+            var v when v.Contains("term")                          => 3, // Terminal
+            _                                                     => 0  // Other
+        };
     }
 }

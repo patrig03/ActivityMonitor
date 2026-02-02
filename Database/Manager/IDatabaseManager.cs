@@ -26,8 +26,11 @@ public interface IDatabaseManager : IDisposable
     /* -------------------- APPLICATIONS -------------------- */
 
     int InsertApplication(ApplicationDto app);
+    IEnumerable<int> InsertApplications(IEnumerable<ApplicationDto> apps);
     ApplicationDto? GetApplication(int appId);
     IEnumerable<ApplicationDto> GetApplicationsByCategory(int categoryId);
+    IEnumerable<ApplicationDto> GetAllApplications();
+
 
     /* -------------------- SESSIONS -------------------- */
 

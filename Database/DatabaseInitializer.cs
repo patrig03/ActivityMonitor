@@ -41,8 +41,7 @@ public static class DatabaseInitializer
 
         CREATE TABLE IF NOT EXISTS categories (
             category_id INTEGER PRIMARY KEY,
-            name TEXT,
-            confidence DECIMAL
+            name TEXT
         );
 
         CREATE TABLE IF NOT EXISTS applications (
@@ -52,6 +51,7 @@ public static class DatabaseInitializer
             process_name TEXT,
             type TEXT,
             category_id INTEGER,
+            category_confidence DECIMAL,
             FOREIGN KEY (category_id) REFERENCES categories(category_id)
         );
 

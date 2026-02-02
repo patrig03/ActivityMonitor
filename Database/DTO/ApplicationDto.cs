@@ -8,4 +8,5 @@ public sealed class ApplicationDto
     public string? ProcessName { get; set; }
     public string Type { get; set; } = null!;
     public int CategoryId { get; set; }
+    public int CategoryConfidence { get; set; }
 }

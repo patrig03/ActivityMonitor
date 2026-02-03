@@ -1,5 +1,4 @@
 using Database;
-using Database.DTO;
 using Database.Manager;
 
 namespace Backend;
@@ -17,8 +16,11 @@ public static class Program
         using var mutex = new Mutex(true, MutexName, out var isNew);
         if (!isNew) { return; }
 
-        DatabaseInitializer.EnsureDatabase(DbPath);
-        DatabaseManager dbManager = new DatabaseManager(DbPath);
+        DatabaseValidator.EnsureDatabase(DbPath);
+        var dbManager = new DatabaseManager(DbPath);
+
+        // TODO: find good way to populate categories on database creation
+        // dbManager.InsertDefaultCategories();
         
         DataCollector collector = new ();
         

@@ -7,15 +7,10 @@ public partial class DatabaseManager
     
     public int InsertSession(SessionDto s)
     {
-        TableValidator.EnsureTableExists(_connection,
-            "sessions", 
-            "session_id",
-            "app_id",
-            "user_id",
-            "start_time",
-            "end_time",
-            "duration_sec"
-        );
+        if (DatabaseValidator.VerifyTable(_connection.CreateCommand(), "sessions") != 0)
+        {
+            throw new Exception("Database exception in sessions table");
+        }
         
         using var cmd = _connection.CreateCommand();
         cmd.CommandText =

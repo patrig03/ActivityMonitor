@@ -6,16 +6,10 @@ public partial class DatabaseManager
 {
     public int InsertApplication(ApplicationDto a)
     {
-        TableValidator.EnsureTableExists(
-            _connection,
-            "applications", 
-            "app_id",
-            "name",
-            "class",
-            "process_name",
-            "type",
-            "category_id"
-        );
+        if (DatabaseValidator.VerifyTable(_connection.CreateCommand(), "applications") != 0)
+        {
+            throw new Exception("Database exception in applications table");
+        }
         
         using var cmd = _connection.CreateCommand();
         cmd.CommandText =
@@ -39,17 +33,10 @@ public partial class DatabaseManager
     
     public IEnumerable<int> InsertApplications(IEnumerable<ApplicationDto> apps)
     {
-        // Ensure the table exists once – no need to repeat it for every row.
-        TableValidator.EnsureTableExists(
-            _connection,
-            "applications",
-            "app_id",
-            "name",
-            "class",
-            "process_name",
-            "type",
-            "category_id"
-        );
+        if (DatabaseValidator.VerifyTable(_connection.CreateCommand(), "applications") != 0)
+        {
+            throw new Exception("Database exception in applications table");
+        }
 
         // One transaction = much faster than a separate commit per row.
         using var tx   = _connection.BeginTransaction();
@@ -129,16 +116,10 @@ public partial class DatabaseManager
     
     public int UpdateOrInsertApplication(ApplicationDto app)
     {
-        TableValidator.EnsureTableExists(
-            _connection,
-            "applications",
-            "app_id",
-            "name",
-            "class",
-            "process_name",
-            "type",
-            "category_id"
-        );
+        if (DatabaseValidator.VerifyTable(_connection.CreateCommand(), "applications") != 0)
+        {
+            throw new Exception("Database exception in applications table");
+        }
         
         using var cmd = _connection.CreateCommand();
         

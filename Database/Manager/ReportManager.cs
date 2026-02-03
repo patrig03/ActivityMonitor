@@ -7,16 +7,10 @@ public partial class DatabaseManager
     
     public void InsertAggregatedReport(ReportAggregatedDto r)
     {
-        TableValidator.EnsureTableExists(_connection,
-            "reports_aggregated", 
-            "report_id",
-            "user_id",
-            "period_type",
-            "period_start",
-            "period_end",
-            "category_id",
-            "total_duration_sec"
-        );
+        if (DatabaseValidator.VerifyTable(_connection.CreateCommand(), "reports_aggregated") != 0)
+        {
+            throw new Exception("Database exception in reports_aggregated table");
+        }
         using var cmd = _connection.CreateCommand();
         cmd.CommandText =
         """

@@ -7,20 +7,10 @@ public partial class DatabaseManager
     
     public void InsertBrowserActivity(BrowserActivityDto a)
     {
-        TableValidator.EnsureTableExists(_connection,
-            "browser_activity", 
-            "activity_id",
-            "user_id",
-            "app_id",
-            "url",
-            "domain",
-            "title",
-            "tab_id",
-            "window_id",
-            "start_time",
-            "end_time",
-            "duration_sec"
-        );
+        if (DatabaseValidator.VerifyTable(_connection.CreateCommand(), "browser_activity") != 0)
+        {
+            throw new Exception("Database exception in browser_activity table");
+        }
         
         using var cmd = _connection.CreateCommand();
         cmd.CommandText =

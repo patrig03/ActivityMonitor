@@ -7,15 +7,10 @@ public partial class DatabaseManager
     
     public int InsertThreshold(ThresholdDto threshold)
     {
-        TableValidator.EnsureTableExists(_connection,
-            "thresholds",
-            "threshold_id",
-            "user_id",
-            "category_id",
-            "daily_limit_sec",
-            "weekly_limit_sec",
-            "break_mode_enabled"
-        );
+        if (DatabaseValidator.VerifyTable(_connection.CreateCommand(), "thresholds") != 0)
+        {
+            throw new Exception("Database exception in thresholds table");
+        }
 
         using var cmd = _connection.CreateCommand();
         cmd.CommandText =

@@ -6,14 +6,10 @@ public partial class DatabaseManager
 {
     public int InsertSettings(SettingsDto s)
     {
-        TableValidator.EnsureTableExists(_connection,
-            "settings", 
-            "settings_id",
-            "user_id",
-            "focus_mode_enabled",
-            "notification_type",
-            "theme"
-        );
+        if (DatabaseValidator.VerifyTable(_connection.CreateCommand(), "settings") != 0)
+        {
+            throw new Exception("Database exception in settings table");
+        }
         
         using var cmd = _connection.CreateCommand();
         cmd.CommandText =

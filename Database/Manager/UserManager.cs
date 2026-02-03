@@ -6,14 +6,10 @@ public partial class DatabaseManager
 {
     public int InsertUser(UserDto user)
     {
-        TableValidator.EnsureTableExists(_connection,
-            "users", 
-            "user_id", 
-            "display_name", 
-            "pin_hash", 
-            "sync_enabled", 
-            "created_at"
-        );
+        if (DatabaseValidator.VerifyTable(_connection.CreateCommand(), "users") != 0)
+        {
+            throw new Exception("Database exception in users table");
+        }
 
         using var cmd = _connection.CreateCommand();
         cmd.CommandText =

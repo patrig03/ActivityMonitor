@@ -7,16 +7,10 @@ public partial class DatabaseManager
     
     public int InsertIntervention(InterventionDto intervention)
     {
-        TableValidator.EnsureTableExists(_connection,
-            "interventions",
-            "intervention_id",
-            "user_id",
-            "category_id",
-            "session_id",
-            "triggered_at",
-            "type",
-            "intensity"
-        );
+        if (DatabaseValidator.VerifyTable(_connection.CreateCommand(), "interventions") != 0)
+        {
+            throw new Exception("Database exception in interventions table");
+        }
 
         using var cmd = _connection.CreateCommand();
         cmd.CommandText =

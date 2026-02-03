@@ -41,7 +41,8 @@ public static class DatabaseInitializer
 
         CREATE TABLE IF NOT EXISTS categories (
             category_id INTEGER PRIMARY KEY,
-            name TEXT
+            name TEXT,
+            description TEXT
         );
 
         CREATE TABLE IF NOT EXISTS applications (

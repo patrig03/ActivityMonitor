@@ -6,15 +6,15 @@ public partial class DatabaseManager
 {
     public int InsertApplication(ApplicationDto a)
     {
-        TableValidator.EnsureTableExists(_connection,
+        TableValidator.EnsureTableExists(
+            _connection,
             "applications", 
             "app_id",
             "name",
             "class",
             "process_name",
             "type",
-            "category_id",
-            "category_confidence"
+            "category_id"
         );
         
         using var cmd = _connection.CreateCommand();
@@ -115,6 +115,64 @@ public partial class DatabaseManager
         };
     }
 
+
+    public bool IsInDb(ApplicationDto applicationDto)
+    {
+        using var cmd = _connection.CreateCommand();
+        cmd.CommandText = "SELECT * FROM applications WHERE class = $class AND process_name = $proc";
+        cmd.Parameters.AddWithValue("$class", applicationDto.Class);
+        cmd.Parameters.AddWithValue("$proc", applicationDto.ProcessName);
+
+        using var r = cmd.ExecuteReader();
+        return r.Read();
+    }
+    
+    public int UpdateOrInsertApplication(ApplicationDto app)
+    {
+        TableValidator.EnsureTableExists(
+            _connection,
+            "applications",
+            "app_id",
+            "name",
+            "class",
+            "process_name",
+            "type",
+            "category_id"
+        );
+        
+        using var cmd = _connection.CreateCommand();
+        
+        // Check if the application already exists in the database.
+        cmd.CommandText = "SELECT * FROM applications WHERE class = $class AND process_name = $proc";
+        cmd.Parameters.AddWithValue("$class", app.Class);
+        cmd.Parameters.AddWithValue("$proc", app.ProcessName);
+
+        using var reader = cmd.ExecuteReader();
+
+        if (reader.Read())
+        {
+            // Application already exists, update it
+            int appId = reader.GetInt32(0);  // Assuming the first column is the ID of the application
+
+            // Update the existing record with new data.
+            using var updateCmd = _connection.CreateCommand();
+            updateCmd.CommandText =
+                "UPDATE applications SET name = $name, type = $type, category_id = $cat, category_confidence = $conf WHERE app_id = $id";
+            updateCmd.Parameters.AddWithValue("$name", app.Name);
+            updateCmd.Parameters.AddWithValue("$type", app.Type);
+            updateCmd.Parameters.AddWithValue("$cat", app.CategoryId);
+            updateCmd.Parameters.AddWithValue("$conf", app.CategoryConfidence);
+            updateCmd.Parameters.AddWithValue("$id", appId);
+
+            updateCmd.ExecuteNonQuery();
+            
+            return appId;
+        }
+
+        return InsertApplication(app);
+    }
+
+    
     public IEnumerable<ApplicationDto> GetApplicationsByCategory(int categoryId)
     {
         using var cmd = _connection.CreateCommand();

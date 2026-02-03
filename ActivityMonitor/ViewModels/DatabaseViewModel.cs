@@ -26,7 +26,7 @@ public class WindowCategoryDto
 public class DatabaseViewModel
 {
     public ObservableCollection<WindowCategoryDto> WindowCategories { get; }
-    private const string DbPath = "./data/database.db";
+    private const string DbPath = "../../../../Backend/bin/Debug/net9.0/data/database.db";
     private DatabaseManager _manager { get; }
 
     private Timer? _timer;

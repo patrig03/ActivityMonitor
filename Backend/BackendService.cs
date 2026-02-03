@@ -20,22 +20,14 @@ public static class Program
         DatabaseInitializer.EnsureDatabase(DbPath);
         DatabaseManager dbManager = new DatabaseManager(DbPath);
         
-        // CategoryDto categoryDto = new CategoryDto
-        // {
-        //     CategoryId = 1,
-        //     Name = "name" 
-        // };
-        // Console.WriteLine(dbManager.InsertCategory(categoryDto));
-        
         DataCollector collector = new ();
         
         while (true)
         {
             var apps = collector.CheckActivity();
-            var appIds = dbManager.InsertApplications(apps);
-            foreach (var appId in appIds)
+            foreach (var app in apps)
             {
-                Console.WriteLine($"Inserted application with ID: {appId}");
+                dbManager.UpdateOrInsertApplication(app);
             }
             Thread.Sleep(DeltaTime);
         }

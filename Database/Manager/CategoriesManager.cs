@@ -9,17 +9,19 @@ public partial class DatabaseManager
         TableValidator.EnsureTableExists(_connection,
             "categories", 
             "category_id",
-            "name"
+            "name",
+            "description"
         );
 
         using var cmd = _connection.CreateCommand();
         cmd.CommandText =
             """
-            INSERT INTO categories (name)
-            VALUES (@name);
+            INSERT INTO categories (name, description)
+            VALUES (@name, @description);
             """;
     
         cmd.Parameters.AddWithValue("@name", c.Name);
+        cmd.Parameters.AddWithValue("@description", c.Description);
 
         // Execute the command to insert the new category
         cmd.ExecuteNonQuery();
@@ -45,6 +47,7 @@ public partial class DatabaseManager
         {
             CategoryId = r.GetInt32(0),
             Name = r.GetString(1),
+            Description = r.GetString(2)
         };
     }
 
@@ -60,6 +63,7 @@ public partial class DatabaseManager
             {
                 CategoryId = r.GetInt32(0),
                 Name = r.GetString(1),
+                Description = r.GetString(2)
             };
         }
     }

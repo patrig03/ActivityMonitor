@@ -22,7 +22,7 @@ public static class Program
         // TODO: find good way to populate categories on database creation
         // dbManager.InsertDefaultCategories();
         
-        DataCollector collector = new ();
+        DataCollectorController collector = new ();
         
         while (true)
         {

@@ -4,7 +4,7 @@ using Database.Manager;
 
 namespace Backend;
 
-public class DataCollector
+public class DataCollectorController
 {
     private const string WmctrlCmd  = "wmctrl";
     private const string XpropCmd   = "xprop";
@@ -107,21 +107,9 @@ public class DataCollector
         {
             var s when s.Contains("DIALOG") => "Dialog",
             var s when s.Contains("UTILITY") => "Utility",
-            var s when s.Contains("NORMAL")  => "Application",
+            var s when s.Contains("NORMAL")  => "ApplicationRecord",
             _                               => "Unknown"
         };
     }
-
-    private int Categorize(string? process, string? wmClass)
-    {
-        var value = (process ?? wmClass ?? "").ToLowerInvariant();
-
-        return value switch
-        {
-            var v when v.Contains("rider") || v.Contains("code")   => 1, // IDE
-            var v when v.Contains("firefox") || v.Contains("chrome") => 2, // Browser
-            var v when v.Contains("term")                          => 3, // Terminal
-            _                                                     => 0  // Other
-        };
-    }
+    
 }

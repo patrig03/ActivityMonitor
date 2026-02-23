@@ -46,7 +46,7 @@ public class DatabaseViewModel
 
                 foreach (var app in updatedItems)
                 {
-                    var (category, confidence) = ActivityClassifier.Classify(app);
+                    var (category, confidence) = (0, 0);//ActivityClassifier.Classify(app);
                 
                     WindowCategories.Add(new WindowCategoryDto
                     {

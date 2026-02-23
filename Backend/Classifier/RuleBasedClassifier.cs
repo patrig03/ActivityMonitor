@@ -1,9 +1,24 @@
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text.RegularExpressions;
-using Database.DTO;
+using Backend.Classifier.Models;
+using Backend.Models;
+
+namespace Backend.Classifier;
+
+public class RuleBasedClassifier : IClassifier
+{
+    public Category ClassifyAsync(SessionRecord record)
+    {
+        throw new NotImplementedException();
+    }
+
+    public IEnumerable<Category> ClassifyAsync(IEnumerable<SessionRecord> records)
+    {
+        throw new NotImplementedException();
+    }
+}
+
+
+
+/*
 
 public enum Category
 {
@@ -126,3 +141,4 @@ public static class ActivityClassifier
         public bool IsFullscreenCandidate;
     }
 }
+*/

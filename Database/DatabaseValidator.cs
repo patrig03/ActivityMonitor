@@ -142,8 +142,8 @@ public static class DatabaseValidator
         cmd.ExecuteNonQuery();
     }
     
-    /// Verifies that table contains all expected columns and no extra columns are present
-    /// returns -1 if there are columns missing, 1 if there are extra columns and 0 if is equal
+    /// Verifies that the table contains all expected columns and no extra columns are present
+    /// returns -1 if there are columns missing, 1 if there are extra columns, and 0 if is equal
     public static int VerifyTable(SqliteCommand cmd, string tableName)
     {
         var tableCode = GetCodeFromTableName(tableName);

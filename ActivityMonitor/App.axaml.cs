@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core;
@@ -6,6 +7,7 @@ using System.Linq;
 using Avalonia.Markup.Xaml;
 using ActivityMonitor.ViewModels;
 using ActivityMonitor.Views;
+using Avalonia.Markup.Xaml.Templates;
 
 namespace ActivityMonitor;
 
@@ -14,6 +16,20 @@ public partial class App : Application
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
+        DataTemplates.Add(new DataTemplate
+        {
+            DataType = typeof(DashboardViewModel),
+            Content = typeof(DashboardView),
+        });
+        DataTemplates.Add(new DataTemplate
+        {
+            DataType = typeof(ReportsViewModel),
+            Content = typeof(ReportsView)
+        });
+        DataTemplates.Add(new DataTemplate{
+            DataType = typeof(SettingsViewModel), 
+            Content = typeof(SettingsView)
+        });
     }
 
     public override void OnFrameworkInitializationCompleted()

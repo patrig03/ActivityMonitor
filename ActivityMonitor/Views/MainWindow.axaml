@@ -1,14 +1,27 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:vm="using:ActivityMonitor.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:views="using:ActivityMonitor.Views"
+        x:DataType="views:MainWindow"
         mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="1000"
-        MinWidth="1400"
-        MinHeight="750"
         x:Class="ActivityMonitor.Views.MainWindow"
+        Background="#101010"
+        Foreground="White"
         Icon="/Assets/avalonia-logo.ico"
-        Title="ActivityMonitor">
-        <views:DashboardView />
+        Title="ActivityMonitor"
+        x:CompileBindings="False">
+
+        <Window.Resources>
+                <views:ActiveViewTemplateSelector x:Key="ActiveViewSelector"/>
+        </Window.Resources>
+
+        <Grid ColumnDefinitions="Auto *" RowDefinitions="*">
+                <views:Navbar Grid.Column="0"/>
+
+                <ContentControl Grid.Column="1" Margin="0, 0, 24, 0"
+                                Content="{Binding CurrentView,
+                          RelativeSource={RelativeSource AncestorType=Window}}"
+                                ContentTemplate="{StaticResource ActiveViewSelector}"/>
+        </Grid>
 </Window>

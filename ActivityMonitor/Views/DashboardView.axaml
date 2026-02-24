@@ -1,21 +1,166 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:viewModels="clr-namespace:ActivityMonitor.ViewModels"
-             xmlns:views="clr-namespace:ActivityMonitor.Views"
              x:Class="ActivityMonitor.Views.DashboardView"
-             xmlns:dto="clr-namespace:Database.DTO;assembly=Database"
-             x:DataType="viewModels:DatabaseViewModel"
-             x:CompileBindings="True">
-
-  <!-- Set the DataContext here in XAML when using compiled bindings -->
-  <UserControl.DataContext>
-    <viewModels:DatabaseViewModel/>
-  </UserControl.DataContext>
+             x:CompileBindings="False">
   
-  <Grid ColumnDefinitions="*" RowDefinitions="*" Background="#111111">
-    <!-- Database Table on the left -->
-    <views:DatabaseTable Grid.Column="0"/>
-  </Grid>
+  
 
+   <!-- ========= MAIN DASHBOARD CONTENT ========= -->
+    <Grid RowDefinitions="Auto, Auto, *"
+          Margin="12">
+        
+        <Grid Grid.Column="1"
+              RowDefinitions="Auto, Auto, *"
+              Margin="0, 32, 0, 0">
+        
+            <Grid.Styles>
+                <Style Selector="Button.header-action">
+                    <Setter Property="CornerRadius" Value="8"/>
+                    <Setter Property="Padding" Value="16,10"/>
+                    <Setter Property="FontWeight" Value="Medium"/>
+                    <Setter Property="FontSize" Value="13"/>
+                    <Setter Property="Background" Value="#17202D"/>
+                    <Setter Property="Foreground" Value="#EAF1FF"/>
+                    <Setter Property="BorderThickness" Value="0"/>
+                </Style>
+                <Style Selector="Button.header-action:pointerover">
+                    <Setter Property="Background" Value="#1A2433"/>
+                    <Setter Property="Foreground" Value="#FFFFFF"/>
+                </Style>
+            </Grid.Styles>
 
+            <!-- Rest of your Grid content -->
+        </Grid>
+
+        <!-- HEADER -->
+        <DockPanel Margin="0,0,0,12">
+            <!-- User Profile -->
+            <Button CornerRadius="8"
+                    Background="Transparent"
+                    Padding="4"
+                    BorderThickness="0"
+                    DockPanel.Dock="Right">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <Border CornerRadius="6"
+                            Background="#212121"
+                            Width="36"
+                            Height="36"
+                            VerticalAlignment="Center">
+                        <TextBlock Text="JD"
+                                   Foreground="White"
+                                   FontWeight="Bold"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"/>
+                    </Border>
+                    <StackPanel VerticalAlignment="Center" Spacing="2">
+                        <TextBlock Text="John Doe"
+                                   Foreground="#EAF1FF"
+                                   FontWeight="Medium"
+                                   FontSize="13"/>
+                        <TextBlock Text="Admin"
+                                   Foreground="#7C879C"
+                                   FontSize="11"/>
+                    </StackPanel>
+                    <PathIcon Data="M7,10L12,15L17,10H7Z"
+                              Width="16"
+                              Height="16"
+                              Foreground="#AAB3C6"
+                              VerticalAlignment="Center"/>
+                </StackPanel>
+                <Button.Styles>
+                    <Style Selector="Button:pointerover">
+                        <Setter Property="Background" Value="#1A2230"/>
+                    </Style>
+                </Button.Styles>
+            </Button>
+            
+            <!-- Notifications with Badge -->
+            <Button Classes="header-action"
+                    CornerRadius="8"
+                    Padding="16,10">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <PathIcon Data="M12,22C13.1,22 14,21.1 14,20H10C10,21.1 10.9,22 12,22ZM18,16V11C18,7.9 16.4,5.4 13.5,4.7V4C13.5,3.2 12.8,2.5 12,2.5C11.2,2.5 10.5,3.2 10.5,4V4.7C7.6,5.4 6,7.9 6,11V16L4,18V19H20V18L18,16Z"
+                             Width="18"
+                             Height="18"
+                             Foreground="White"/>
+                    <TextBlock Text="Notifications"
+                               Foreground="White"
+                               VerticalAlignment="Center"/>
+                    
+                    <!-- Notification Badge -->
+                    <Border Background="#212121"
+                            CornerRadius="10"
+                            Padding="6,2"
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Center"
+                            Margin="4,0,0,0">
+                        <TextBlock Text="3"
+                                   Foreground="White"
+                                   FontSize="10"
+                                   FontWeight="Bold"/>
+                    </Border>
+                </StackPanel>
+            </Button>
+
+        </DockPanel>
+
+        <!-- Optional: Quick Stats Bar -->
+        <Border Grid.Row="1"
+                Background="#212121"
+                CornerRadius="10"
+                Padding="16"
+                Margin="0,0,0,20">
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Center"
+                        Spacing="32">
+                
+                <StackPanel Spacing="4" HorizontalAlignment="Center">
+                    <TextBlock Text="Total Sessions"
+                               Foreground="#7C879C"
+                               FontSize="12"/>
+                    <TextBlock Text="142"
+                               Foreground="#EAF1FF"
+                               FontSize="24"
+                               FontWeight="Bold"/>
+                </StackPanel>
+                
+                <Separator Background="#1E2530" Width="1" Height="40" VerticalAlignment="Center"/>
+                
+                <StackPanel Spacing="4" HorizontalAlignment="Center">
+                    <TextBlock Text="Focus Time"
+                               Foreground="#7C879C"
+                               FontSize="12"/>
+                    <TextBlock Text="32h 15m"
+                               Foreground="#6DFF9C"
+                               FontSize="24"
+                               FontWeight="Bold"/>
+                </StackPanel>
+                
+                <Separator Background="#1E2530" Width="1" Height="40" VerticalAlignment="Center"/>
+                
+                <StackPanel Spacing="4" HorizontalAlignment="Center">
+                    <TextBlock Text="Productivity"
+                               Foreground="#7C879C"
+                               FontSize="12"/>
+                    <TextBlock Text="87%"
+                               Foreground="#FFB347"
+                               FontSize="24"
+                               FontWeight="Bold"/>
+                </StackPanel>
+                
+                <Separator Background="#1E2530" Width="1" Height="40" VerticalAlignment="Center"/>
+                
+                <StackPanel Spacing="4" HorizontalAlignment="Center">
+                    <TextBlock Text="Avg. Session"
+                               Foreground="#7C879C"
+                               FontSize="12"/>
+                    <TextBlock Text="47m"
+                               Foreground="#4DA6FF"
+                               FontSize="24"
+                               FontWeight="Bold"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+    </Grid>
+  
 </UserControl>

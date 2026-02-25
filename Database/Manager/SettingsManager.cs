@@ -6,7 +6,7 @@ public partial class DatabaseManager
 {
     public int InsertSettings(SettingsDto s)
     {
-        if (DatabaseValidator.VerifyTable(_connection.CreateCommand(), "settings") != 0)
+        if (_validator.VerifyTable(_connection.CreateCommand(), "settings") != 0)
         {
             throw new Exception("Database exception in settings table");
         }

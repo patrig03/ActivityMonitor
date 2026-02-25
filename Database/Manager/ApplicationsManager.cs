@@ -6,7 +6,7 @@ public partial class DatabaseManager
 {
     public int InsertApplication(ApplicationDto a)
     {
-        if (DatabaseValidator.VerifyTable(_connection.CreateCommand(), "applications") != 0)
+        if (_validator.VerifyTable(_connection.CreateCommand(), "applications") != 0)
         {
             throw new Exception("Database exception in applications table");
         }
@@ -15,8 +15,8 @@ public partial class DatabaseManager
         cmd.CommandText =
         """
         INSERT INTO applications
-        (name, class, process_name, type, category_id, category_confidence)
-        VALUES ($name, $class, $proc, $type, $cat, $conf);
+        (name, class, process_name, type, category_id)
+        VALUES ($name, $class, $proc, $type, $cat);
         SELECT last_insert_rowid();
         """;
 
@@ -25,15 +25,13 @@ public partial class DatabaseManager
         cmd.Parameters.AddWithValue("$proc", (object?)a.ProcessName ?? DBNull.Value);
         cmd.Parameters.AddWithValue("$type", a.Type);
         cmd.Parameters.AddWithValue("$cat", a.CategoryId);
-        cmd.Parameters.AddWithValue("conf", a.CategoryConfidence);
-
 
         return Convert.ToInt32(cmd.ExecuteScalar());
     }
     
     public IEnumerable<int> InsertApplications(IEnumerable<ApplicationDto> apps)
     {
-        if (DatabaseValidator.VerifyTable(_connection.CreateCommand(), "applications") != 0)
+        if (_validator.VerifyTable(_connection.CreateCommand(), "applications") != 0)
         {
             throw new Exception("Database exception in applications table");
         }
@@ -45,8 +43,8 @@ public partial class DatabaseManager
         cmd.CommandText =
             """
             INSERT INTO applications
-            (name, class, process_name, type, category_id,  category_confidence)
-            VALUES ($name, $class, $proc, $type, $cat, $conf);
+            (name, class, process_name, type, category_id)
+            VALUES ($name, $class, $proc, $type, $cat);
             SELECT last_insert_rowid();
             """;
 
@@ -56,14 +54,12 @@ public partial class DatabaseManager
         var procParam  = cmd.CreateParameter(); procParam.ParameterName  = "$proc";
         var typeParam  = cmd.CreateParameter(); typeParam.ParameterName  = "$type";
         var catParam   = cmd.CreateParameter(); catParam.ParameterName   = "$cat";
-        var confParam  = cmd.CreateParameter(); confParam.ParameterName  = "$conf";
 
         cmd.Parameters.Add(nameParam);
         cmd.Parameters.Add(classParam);
         cmd.Parameters.Add(procParam);
         cmd.Parameters.Add(typeParam);
         cmd.Parameters.Add(catParam);
-        cmd.Parameters.Add(confParam);
 
         foreach (var a in apps)
         {
@@ -72,7 +68,6 @@ public partial class DatabaseManager
             procParam.Value  = (object?)a.ProcessName ?? DBNull.Value;
             typeParam.Value  = a.Type;
             catParam.Value   = a.CategoryId;
-            confParam.Value  = 0;
 
             yield return Convert.ToInt32(cmd.ExecuteScalar());
         }
@@ -116,7 +111,7 @@ public partial class DatabaseManager
     
     public int UpdateOrInsertApplication(ApplicationDto app)
     {
-        if (DatabaseValidator.VerifyTable(_connection.CreateCommand(), "applications") != 0)
+        if (_validator.VerifyTable(_connection.CreateCommand(), "applications") != 0)
         {
             throw new Exception("Database exception in applications table");
         }
@@ -138,11 +133,10 @@ public partial class DatabaseManager
             // Update the existing record with new data.
             using var updateCmd = _connection.CreateCommand();
             updateCmd.CommandText =
-                "UPDATE applications SET name = $name, type = $type, category_id = $cat, category_confidence = $conf WHERE app_id = $id";
+                "UPDATE applications SET name = $name, type = $type, category_id = $cat WHERE app_id = $id";
             updateCmd.Parameters.AddWithValue("$name", app.Name);
             updateCmd.Parameters.AddWithValue("$type", app.Type);
             updateCmd.Parameters.AddWithValue("$cat", app.CategoryId);
-            updateCmd.Parameters.AddWithValue("$conf", app.CategoryConfidence);
             updateCmd.Parameters.AddWithValue("$id", appId);
 
             updateCmd.ExecuteNonQuery();

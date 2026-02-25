@@ -7,7 +7,7 @@ public partial class DatabaseManager
     
     public int InsertIntervention(InterventionDto intervention)
     {
-        if (DatabaseValidator.VerifyTable(_connection.CreateCommand(), "interventions") != 0)
+        if (_validator.VerifyTable(_connection.CreateCommand(), "interventions") != 0)
         {
             throw new Exception("Database exception in interventions table");
         }

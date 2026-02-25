@@ -13,14 +13,10 @@ public static class Program
 
     private static void Main()
     {
-        using var mutex = new Mutex(true, MutexName, out var isNew);
-        if (!isNew) { return; }
-
-        DatabaseValidator.EnsureDatabase(DbPath);
+        if (!VerifyMutex()) { Console.WriteLine("Another instance is already running"); return; }
+        
         var dbManager = new DatabaseManager(DbPath);
-
-        // TODO: find good way to populate categories on database creation
-        // dbManager.InsertDefaultCategories();
+        dbManager.EnsureDatabase();
         
         DataCollectorController collector = new ();
         
@@ -33,5 +29,15 @@ public static class Program
             }
             Thread.Sleep(DeltaTime);
         }
+    }
+    
+    /// <summary>
+    /// makes sure that only one instance of the program is running at a time
+    /// </summary>
+    /// <returns>returns true if only one instance is running</returns>
+    private static bool VerifyMutex()
+    {
+        using var mutex = new Mutex(true, MutexName, out var isNew);
+        return isNew;
     }
 }

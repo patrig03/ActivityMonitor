@@ -2,9 +2,8 @@ using Microsoft.Data.Sqlite;
 
 namespace Database;
 
-public static class DatabaseValidator
+public class DatabaseValidator : IDatabaseValidator
 {
-    
     private const string UsersTable = """
                                       CREATE TABLE IF NOT EXISTS users (
                                           user_id INTEGER PRIMARY KEY,
@@ -19,8 +18,6 @@ public static class DatabaseValidator
                                              settings_id INTEGER PRIMARY KEY,
                                              user_id INTEGER,
                                              focus_mode_enabled INTEGER,
-                                             notification_type TEXT,
-                                             theme TEXT,
                                              FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
                                          );
                                          """;
@@ -34,12 +31,11 @@ public static class DatabaseValidator
     private const string ApplicationsTable = """
                                              CREATE TABLE IF NOT EXISTS applications (
                                                  app_id INTEGER PRIMARY KEY,
+                                                 category_id INTEGER,
                                                  name TEXT,
                                                  class TEXT,
                                                  process_name TEXT,
                                                  type TEXT,
-                                                 category_id INTEGER,
-                                                 category_confidence DECIMAL,
                                                  FOREIGN KEY (category_id) REFERENCES categories(category_id)
                                              );
                                              """;
@@ -61,13 +57,7 @@ public static class DatabaseValidator
                                                     user_id INTEGER,
                                                     app_id INTEGER,
                                                     url TEXT,
-                                                    domain TEXT,
                                                     title TEXT,
-                                                    tab_id TEXT,
-                                                    window_id TEXT,
-                                                    start_time DATETIME,
-                                                    end_time DATETIME,
-                                                    duration_sec INTEGER,
                                                     FOREIGN KEY (user_id) REFERENCES users(user_id),
                                                     FOREIGN KEY (app_id) REFERENCES applications(app_id)
                                                 );
@@ -79,7 +69,6 @@ public static class DatabaseValidator
                                                category_id INTEGER,
                                                daily_limit_sec INTEGER,
                                                weekly_limit_sec INTEGER,
-                                               break_mode_enabled INTEGER,
                                                FOREIGN KEY (user_id) REFERENCES users(user_id),
                                                FOREIGN KEY (category_id) REFERENCES categories(category_id)
                                            );
@@ -92,27 +81,113 @@ public static class DatabaseValidator
                                                   session_id INTEGER,
                                                   triggered_at DATETIME,
                                                   type TEXT,
-                                                  intensity INTEGER,
                                                   FOREIGN KEY (user_id) REFERENCES users(user_id),
                                                   FOREIGN KEY (category_id) REFERENCES categories(category_id),
                                                   FOREIGN KEY (session_id) REFERENCES sessions(session_id)
                                               );
                                               """;
-    private const string ReportsAggregatedTable = """
-                                                  CREATE TABLE IF NOT EXISTS reports_aggregated (
-                                                      report_id INTEGER PRIMARY KEY,
-                                                      user_id INTEGER,
-                                                      period_type TEXT,
-                                                      period_start DATETIME,
-                                                      period_end DATETIME,
-                                                      category_id INTEGER,
-                                                      total_duration_sec INTEGER,
-                                                      FOREIGN KEY (user_id) REFERENCES users(user_id),
-                                                      FOREIGN KEY (category_id) REFERENCES categories(category_id)
-                                                  );
-                                                  """;
+
+    private const string CategoriesDefaultPopulation = """
+                                                       INSERT INTO categories (category_id, name, description) VALUES
+                                                       (1,  "Graphics",                     "Graphics viewers, editors, graphics demos, screensavers etc."),
+                                                       (2,  "Browsers",                     "Netscape, Opera, Mozilla, Mosaic, IE, ..."),
+                                                       (3,  "Email, news and Groupware",   "Email and related programs."),
+                                                       (4,  "Chat, Instant Messaging, Telephony",
+                                                           "Telegram, Teams, Skype, Zoom, ..."),
+                                                       (5,  "Programming/Software Engineering",
+                                                           "Languages, Compilers, IDEs, CASE tools etc."),
+                                                       (6,  "Utilities",                    "Misc. Utilities"),
+                                                       (7,  "Scientific/Technical/Math",
+                                                           "Scientific and mathematic applications"),
+                                                       (8,  "File System",                  "File System Utilities (e.g. CD writer stuff, file managers, shells, ...)"),
+                                                       (9,  "Office Suites",                "Productivity apps that contain bundles of applications."),
+                                                       (10, "CAD/CAE",                      "Computer Aided Design, Computer Aided Engineering"),
+                                                       (11, "Games",                        "Games"),
+                                                       
+                                                       (12, "Sound Editing",
+                                                           "Sound editing suites, recorders, mixing and sampling."),
+                                                       (13, "Audio Players",
+                                                           "MP3, WAV, and other format audio players."),
+                                                       
+                                                       (14, "Graphics Viewer",  "Image viewing"),
+                                                       (15, "Graphics Editing", "Image editing/vector drawing software"),
+                                                       (16, "Animation/Rendering/3D",
+                                                           "Image animation for multimedia or web"),
+                                                       
+                                                       (17, "Audio",   "Audio related applications"),
+                                                       (18, "Video",   "Video players, editors and codecs"),
+                                                       
+                                                       (19, "Compression",  "Compression Tools"),
+                                                       (20, "Word Processing", "Type, edit, print, OCR!"),
+                                                       (21, "Spreadsheet",    "Do it yourself Number crunching"),
+                                                       (22, "Database",       "Relational Database"),
+                                                       (23, "Presentation",   "Slide Shows with animation and sound and flowchart tools"),
+                                                       (24, "Web Design",     "Create your own web page"),
+                                                       (25, "Multimedia",     "Graphics, Audio and Video"),
+                                                       
+                                                       (26, "Productivity",          "Productivity applications"),
+                                                       (27, "Networking & Communication",
+                                                           "Network, Internet related programs and comm stuff"),
+                                                       (28, "Net Tools",
+                                                           "Tools such as proxies, web crawlers, search engines, ..."),
+                                                       
+                                                       (29, "Reference/Documentation/Info",
+                                                           "Encyclopedias, information resources, data tracking, ..."),
+                                                       (30, "EDA/Measurement",
+                                                           "Electronics design tools, measurement and stuff"),
+                                                       (31, "Mathematics",
+                                                           "Mathematical and Statistical software."),
+                                                       (32, "Text Editors",
+                                                           "Multipurpose text editing tool. No formatting just text."),
+                                                       
+                                                       (33, "Office Utilities",
+                                                           "Misc Office tools that usually work in conjunction with other Office software."),
+                                                       (34, "Finance/Accounting/Project/CRM",
+                                                           "Personal and Business Finance Software and project planning, CRM (Customer Relationship Management)."),
+                                                       (35, "Flowchart/Diagraming/graphs",
+                                                           "Software to design flowcharts and diagrams"),
+                                                       
+                                                       (36, "File transfer/sharing",
+                                                           "FTP, NFS, document sharing, Samba, scp, ..."),
+                                                       (37, "Installers",
+                                                           "Program installers like installshield, windows installer etc."),
+                                                       (38, "Remote Access",
+                                                           "SSH, Telnet, VNC, Terminal Services, ..."),
+                                                       
+                                                       (39, "Educational games / children",
+                                                           "Games that encourage learning."),
+                                                       (40, "Card, Puzzle and Board Games",
+                                                           "Card Games, mind puzzles and other stuff."),
+                                                       (41, "Educational Software, CBT",
+                                                           "Educational tools, Computer Based Training"),
+                                                       (42, "Action Games",
+                                                           "Arcade and platform action games"),
+                                                       (43, "Sports Games",
+                                                           "Professional sports, car racing, and more."),
+                                                       (44, "Simulation Games",
+                                                           "Flight and other real life simulators."),
+                                                       (45, "Adventures",
+                                                           "Graphical Adventure Games"),
+                                                       (46, "Online (MMORPG) Games",
+                                                           "Massively Multiplayer Online Role Playing Games."),
+                                                       (47, "1st Person Shooter",
+                                                           "Games such as Doom, Quake, Half-Life."),
+                                                       (48, "Role Playing Games",
+                                                           "Games where you build up your characters through battle and experience."),
+                                                       (49, "Strategy Games",
+                                                           "Build your army, conquer the world"),
+                                                       (50, "Game Tools",
+                                                           "Misc. tools related to games."),
+                                                       (51, "Emulators",
+                                                           "Software that emulates game hardware."),
+                                                       
+                                                       (52, "Desktop Publishing",
+                                                           "Various page layout, print, and publishing applications."),
+                                                       (53, "Astronomy",
+                                                           "An endless (almost) empty space... ;-)")
+                                                       """;
     
-    public static void EnsureDatabase(string dbPath)
+    public void EnsureDatabase(string dbPath)
     {
         Directory.CreateDirectory(Path.GetDirectoryName(dbPath)!);
 
@@ -131,20 +206,31 @@ public static class DatabaseValidator
         CreateTable(cmd, "browser_activity");
         CreateTable(cmd, "thresholds");
         CreateTable(cmd, "interventions");
-        CreateTable(cmd, "reports_aggregated");
         
-        
+        PopulateTableDefaults(cmd, "categories");
     }
-    private static void CreateTable(SqliteCommand cmd, string tableName)
+    private void CreateTable(SqliteCommand cmd, string tableName)
     {
         var tableCode = GetCodeFromTableName(tableName);
         cmd.CommandText = tableCode;
         cmd.ExecuteNonQuery();
     }
     
+    private void PopulateTableDefaults(SqliteCommand cmd, string tableName)
+    {
+        // Check if the table already contains rows before inserting defaults.
+        cmd.CommandText = $"SELECT COUNT(*) FROM {tableName}";
+        var count = Convert.ToInt32(cmd.ExecuteScalar());
+        if (count > 0) return;
+        
+        var code = GetPopulationsCode(tableName);
+        cmd.CommandText = code;
+        cmd.ExecuteNonQuery();
+    }
+    
     /// Verifies that the table contains all expected columns and no extra columns are present
     /// returns -1 if there are columns missing, 1 if there are extra columns, and 0 if is equal
-    public static int VerifyTable(SqliteCommand cmd, string tableName)
+    public int VerifyTable(SqliteCommand cmd, string tableName)
     {
         var tableCode = GetCodeFromTableName(tableName);
         var requiredColumns = ExtractColumnNames(tableCode);
@@ -171,6 +257,13 @@ public static class DatabaseValidator
         var extraColumns = found.Except(requiredColumns);
         return extraColumns.Any() ? 1 : 0;
     }
+    
+    /// <summary>
+    /// Extracts column names from the CREATE TABLE command.
+    /// </summary>
+    /// <param name="createTableCommand"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentException"></exception>
     private static string[] ExtractColumnNames(string createTableCommand)
     {
         if (string.IsNullOrWhiteSpace(createTableCommand))
@@ -214,6 +307,14 @@ public static class DatabaseValidator
         return columns.ToArray();
     }
 
+    /// <summary>
+    /// Returns the SQL code for the table with the given name
+    /// </summary>
+    /// <param>
+    ///     <name>tableName</name>
+    /// </param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentOutOfRangeException"></exception>
     private static string GetCodeFromTableName(string tableName)
     {
         return tableName switch
@@ -226,8 +327,22 @@ public static class DatabaseValidator
             "browser_activity" => BrowserActivityTable,
             "thresholds" => ThresholdsTable,
             "interventions" => InterventionsTable,
-            "reports_aggregated" => ReportsAggregatedTable,
             _ => throw new ArgumentOutOfRangeException(nameof(tableName), tableName, null)
         };
-    } 
+    }
+
+    /// <summary>
+    /// Returns the SQL code for populating the table with the given name
+    /// </summary>
+    /// <param name="tableName"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentOutOfRangeException"></exception>
+    private static string GetPopulationsCode(string tableName)
+    {
+        return tableName switch
+        {
+            "categories" => CategoriesDefaultPopulation,
+            _ => throw new ArgumentOutOfRangeException(nameof(tableName), tableName, null)
+        };
+    }
 }

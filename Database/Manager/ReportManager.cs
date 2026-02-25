@@ -7,7 +7,7 @@ public partial class DatabaseManager
     
     public void InsertAggregatedReport(ReportAggregatedDto r)
     {
-        if (DatabaseValidator.VerifyTable(_connection.CreateCommand(), "reports_aggregated") != 0)
+        if (_validator.VerifyTable(_connection.CreateCommand(), "reports_aggregated") != 0)
         {
             throw new Exception("Database exception in reports_aggregated table");
         }

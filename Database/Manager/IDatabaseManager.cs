@@ -7,6 +7,8 @@ using System.Collections.Generic;
 
 public interface IDatabaseManager : IDisposable
 {
+    void EnsureDatabase();
+    
     /* -------------------- USERS -------------------- */
 
     int InsertUser(UserDto user);

@@ -6,7 +6,7 @@ public partial class DatabaseManager
 {
     public int InsertUser(UserDto user)
     {
-        if (DatabaseValidator.VerifyTable(_connection.CreateCommand(), "users") != 0)
+        if (_validator.VerifyTable(_connection.CreateCommand(), "users") != 0)
         {
             throw new Exception("Database exception in users table");
         }

@@ -7,7 +7,7 @@ public partial class DatabaseManager
     
     public int InsertSession(SessionDto s)
     {
-        if (DatabaseValidator.VerifyTable(_connection.CreateCommand(), "sessions") != 0)
+        if (_validator.VerifyTable(_connection.CreateCommand(), "sessions") != 0)
         {
             throw new Exception("Database exception in sessions table");
         }

@@ -7,7 +7,7 @@ public partial class DatabaseManager
     
     public void InsertBrowserActivity(BrowserActivityDto a)
     {
-        if (DatabaseValidator.VerifyTable(_connection.CreateCommand(), "browser_activity") != 0)
+        if (_validator.VerifyTable(_connection.CreateCommand(), "browser_activity") != 0)
         {
             throw new Exception("Database exception in browser_activity table");
         }

@@ -7,7 +7,7 @@ public partial class DatabaseManager
     
     public int InsertThreshold(ThresholdDto threshold)
     {
-        if (DatabaseValidator.VerifyTable(_connection.CreateCommand(), "thresholds") != 0)
+        if (_validator.VerifyTable(_connection.CreateCommand(), "thresholds") != 0)
         {
             throw new Exception("Database exception in thresholds table");
         }

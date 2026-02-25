@@ -1,0 +1,63 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="ActivityMonitor.Views.QuickStatsBar">
+
+  <Border
+    Background="#212121"
+    CornerRadius="10"
+    Padding="16"
+    Margin="0,0,0,0">
+      <StackPanel Orientation="Horizontal"
+                  HorizontalAlignment="Center"
+                  Spacing="32">
+          
+        <StackPanel Spacing="4" HorizontalAlignment="Center">
+          <TextBlock Text="Total Sessions"
+                     Foreground="#7C879C"
+                     FontSize="12"/>
+          <TextBlock Text="142"
+                     Foreground="#EAF1FF"
+                     FontSize="24"
+                     FontWeight="Bold"/>
+        </StackPanel>
+        
+        <Separator Background="#1E2530" Width="1" Height="40" VerticalAlignment="Center"/>
+        
+        <StackPanel Spacing="4" HorizontalAlignment="Center">
+          <TextBlock Text="Focus Time"
+                     Foreground="#7C879C"
+                     FontSize="12"/>
+          <TextBlock Text="32h 15m"
+                     Foreground="#6DFF9C"
+                     FontSize="24"
+                     FontWeight="Bold"/>
+        </StackPanel>
+        
+        <Separator Background="#1E2530" Width="1" Height="40" VerticalAlignment="Center"/>
+        
+        <StackPanel Spacing="4" HorizontalAlignment="Center">
+          <TextBlock Text="Productivity"
+                     Foreground="#7C879C"
+                     FontSize="12"/>
+          <TextBlock Text="87%"
+                     Foreground="#FFB347"
+                     FontSize="24"
+                     FontWeight="Bold"/>
+        </StackPanel>
+        
+        <Separator Background="#1E2530" Width="1" Height="40" VerticalAlignment="Center"/>
+        
+        <StackPanel Spacing="4" HorizontalAlignment="Center">
+          <TextBlock Text="Avg. Session"
+                     Foreground="#7C879C"
+                     FontSize="12"/>
+          <TextBlock Text="47m"
+                     Foreground="#4DA6FF"
+                     FontSize="24"
+                     FontWeight="Bold"/>
+        </StackPanel>
+      </StackPanel>
+  </Border>
+</UserControl>

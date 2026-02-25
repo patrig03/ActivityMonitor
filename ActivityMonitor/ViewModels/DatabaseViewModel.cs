@@ -16,9 +16,7 @@ public class WindowCategoryDto
     public DateTime LastVisible { get; set; }
     public TimeSpan ActiveFor { get; set; }
     public DateTime LastActive { get; set; }
-    
-    public string CategoryName { get; set; } = "";
-    public double Confidence { get; set; }
+
 }
 
 
@@ -46,14 +44,11 @@ public class DatabaseViewModel
 
                 foreach (var app in updatedItems)
                 {
-                    var (category, confidence) = (0, 0);//ActivityClassifier.Classify(app);
                 
                     WindowCategories.Add(new WindowCategoryDto
                     {
                         WmClass = app.Class,
                         Title = app.Name,
-                        CategoryName = category.ToString(),
-                        Confidence = confidence
                     });
                 }
             });

@@ -21,7 +21,7 @@
         </Style>
         
         <Style Selector="DataGridColumnHeader">
-            <Setter Property="Background" Value="#333333"/>
+            <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Foreground" Value="#ffffff"/>
             <Setter Property="BorderThickness" Value="0,0,0,2"/>
             <Setter Property="BorderBrush" Value="#30FFFFFF"/>
@@ -128,22 +128,6 @@
                 </DataGridTextColumn.CellStyleClasses>
             </DataGridTextColumn>
             
-            <!-- Category Column -->
-            <DataGridTextColumn Header="Category"
-                                Binding="{Binding CategoryName}"
-                                Width="Auto"
-                                MinWidth="150"
-                                CanUserSort="True"/>
-
-            <!-- Confidence Column - Centered -->
-            <DataGridTextColumn Header="Confidence"
-                                Binding="{Binding Confidence, StringFormat={}{0:P1}}"
-                                Width="Auto"
-                                MinWidth="120">
-                <DataGridTextColumn.CellStyleClasses>
-                    <x:String>center</x:String>
-                </DataGridTextColumn.CellStyleClasses>
-            </DataGridTextColumn>
 
         </DataGrid.Columns>
     </DataGrid>

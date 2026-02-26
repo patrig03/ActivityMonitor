@@ -66,8 +66,8 @@ public static class ActivityClassifier
 
     static Features ExtractFeatures(ApplicationDto row)
     {
-        var proc = row.Class.ToLowerInvariant();
-        var title = row.Name ?? "";
+        var proc = row.ClassName.ToLowerInvariant();
+        var title = row.WindowTitle ?? "";
 
         return new Features
         {

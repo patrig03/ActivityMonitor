@@ -47,8 +47,8 @@ public class DatabaseViewModel
                 
                     WindowCategories.Add(new WindowCategoryDto
                     {
-                        WmClass = app.Class,
-                        Title = app.Name,
+                        WmClass = app.ClassName,
+                        Title = app.WindowTitle,
                     });
                 }
             });

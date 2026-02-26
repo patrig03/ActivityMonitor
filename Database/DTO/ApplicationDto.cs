@@ -2,11 +2,9 @@ namespace Database.DTO;
 
 public sealed class ApplicationDto
 {
-    public int AppId { get; set; }
-    public string Name { get; set; } = null!;
-    public string? Class { get; set; }
+    public int? AppId { get; set; }
+    public string? WindowTitle { get; set; }
+    public string? ClassName { get; set; }
     public string? ProcessName { get; set; }
-    public string Type { get; set; } = null!;
-    public int CategoryId { get; set; }
-    public int CategoryConfidence { get; set; }
+    public int? CategoryId { get; set; }
 }

@@ -1,18 +1,22 @@
 using System.Diagnostics;
-using Database.DTO;
+using Backend.DataCollector.Models;
 using Database.Manager;
 
-namespace Backend;
+namespace Backend.DataCollector;
 
 public class DataCollectorController
 {
     private const string WmctrlCmd  = "wmctrl";
     private const string XpropCmd   = "xprop";
     
-    public IEnumerable<ApplicationDto> CheckActivity()
+    public void CheckActivity(IDatabaseManager db)
     {
         var windowsOutput = ExecuteCommand(WmctrlCmd, "-lGpx");
-        return ParseWindows(windowsOutput);
+        
+        var app = ParseWindows(windowsOutput);
+        if (app == null) throw new Exception("No active window found");
+        
+        db.UpsertApplication(app.ToDto());
     }
 
     private string ExecuteCommand(string file, string args)
@@ -29,38 +33,51 @@ public class DataCollectorController
             }
         };
         process.Start();
-        string output = process.StandardOutput.ReadToEnd();
+        var output = process.StandardOutput.ReadToEnd();
         process.WaitForExit();
         return output;
     }
 
-    private ApplicationDto[] ParseWindows(string wmctrlResult)
+    private ApplicationRecord? ParseWindows(string wmctrlResult)
     {
         var lines = wmctrlResult.Split('\n', StringSplitOptions.RemoveEmptyEntries);
 
         return lines
             .Select(ParseWindowLine)
             .Where(w => w != null!)
-            .ToArray()!;
+            .ToArray()
+            .First();
     }
 
-    private ApplicationDto? ParseWindowLine(string line)
+    private ApplicationRecord? ParseWindowLine(string line)
     {
-        // wmctrl -lGpx output: <id> <desktop> <x> <y> <w> <h> <pid> <class> <title…>
+        // wmctrl -lGpx output: <id> <desktop> <pid> <x> <y> <w> <h> <class> <host> <title>
         var parts = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);
         if (parts.Length < 8) return null;
 
-        string windowId   = parts[0];
-        string pidStr     = parts[2];
-        string wmClass    = parts[7];
-        string title      = string.Join(' ', parts.Skip(8));
+        var windowId   = parts[0];
+        var pidStr     = parts[2];
+        var wmClass    = parts[7];
+        var title      = string.Join(' ', parts.Skip(9));
 
-        if (!int.TryParse(pidStr, out int pid)) return null;
+        if (!int.TryParse(pidStr, out var pid)) return null;
 
         var xpropOutput = ExecuteCommand(XpropCmd, $"-id {windowId}");
-        string windowType = GetXPropValue(xpropOutput, "_NET_WM_WINDOW_TYPE");
+        var state = GetXPropValue(xpropOutput, "_NET_WM_STATE");
+        var process = GetProcessName(pid);
 
-        return BuildDto(pid, title, wmClass, windowType);
+        if (state == null) return null;
+        if (!state.Contains("_NET_WM_STATE_FOCUSED")) return null;
+        if (process == null) return null;
+        
+        return new ApplicationRecord
+        {
+            Id = null,
+            CategoryId = null,
+            ProcessName = process,
+            WindowName = title,
+            ClassName = wmClass
+        };
     }
 
     private string? GetXPropValue(string output, string key)
@@ -70,21 +87,6 @@ public class DataCollectorController
             .Split('\n')
             .FirstOrDefault(l => l.TrimStart().StartsWith(key));
         return line?.Split('=')?.Last()?.Trim();
-    }
-
-    private ApplicationDto BuildDto(int pid, string title, string wmClass, string? windowType)
-    {
-        var processName = GetProcessName(pid);
-
-        return new ApplicationDto
-        {
-            AppId        = pid,
-            Name         = title,
-            Class        = wmClass,
-            ProcessName  = processName,
-            Type         = NormalizeType(windowType),
-            CategoryId   = 1
-        };
     }
 
     private string? GetProcessName(int pid)
@@ -98,18 +100,4 @@ public class DataCollectorController
             return null;
         }
     }
-
-    private string NormalizeType(string? raw)
-    {
-        if (raw == null) return "Unknown";
-
-        return raw switch
-        {
-            var s when s.Contains("DIALOG") => "Dialog",
-            var s when s.Contains("UTILITY") => "Utility",
-            var s when s.Contains("NORMAL")  => "ApplicationRecord",
-            _                               => "Unknown"
-        };
-    }
-    
 }

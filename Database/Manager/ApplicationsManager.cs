@@ -4,6 +4,12 @@ namespace Database.Manager;
 
 public partial class DatabaseManager
 {
+    /// <summary>
+    /// Inserts an application into the database.
+    /// </summary>
+    /// <param name="a"></param>
+    /// <returns>int: id of the newly inserted app</returns>
+    /// <exception cref="Exception"></exception>
     public int InsertApplication(ApplicationDto a)
     {
         if (_validator.VerifyTable(_connection.CreateCommand(), "applications") != 0)
@@ -15,18 +21,33 @@ public partial class DatabaseManager
         cmd.CommandText =
         """
         INSERT INTO applications
-        (name, class, process_name, type, category_id)
-        VALUES ($name, $class, $proc, $type, $cat);
+        (name, class, process_name, category_id)
+        VALUES ($name, $class, $proc, $cat);
         SELECT last_insert_rowid();
         """;
 
-        cmd.Parameters.AddWithValue("$name", a.Name);
-        cmd.Parameters.AddWithValue("$class", (object?)a.Class ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("$name", (object?)a.WindowTitle ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("$class", (object?)a.ClassName ?? DBNull.Value);
         cmd.Parameters.AddWithValue("$proc", (object?)a.ProcessName ?? DBNull.Value);
-        cmd.Parameters.AddWithValue("$type", a.Type);
-        cmd.Parameters.AddWithValue("$cat", a.CategoryId);
+        cmd.Parameters.AddWithValue("$cat", (object?)a.CategoryId ?? DBNull.Value);
 
         return Convert.ToInt32(cmd.ExecuteScalar());
+    }
+
+    /// <summary>
+    /// Inserts or updates an application in the database.
+    /// </summary>
+    /// <param name="a"></param>
+    /// <returns>id of the inserted or updated row</returns>
+    /// <exception cref="Exception"></exception>
+    public int UpsertApplication(ApplicationDto a)
+    {
+        if (IsInDb(a) != null)
+        {
+            return UpdateApplication(a) ?? throw new Exception("Could not update application");
+        }
+
+        return InsertApplication(a);
     }
     
     public IEnumerable<int> InsertApplications(IEnumerable<ApplicationDto> apps)
@@ -43,8 +64,8 @@ public partial class DatabaseManager
         cmd.CommandText =
             """
             INSERT INTO applications
-            (name, class, process_name, type, category_id)
-            VALUES ($name, $class, $proc, $type, $cat);
+            (name, class, process_name, category_id)
+            VALUES ($name, $class, $proc, $cat);
             SELECT last_insert_rowid();
             """;
 
@@ -52,22 +73,19 @@ public partial class DatabaseManager
         var nameParam  = cmd.CreateParameter(); nameParam.ParameterName  = "$name";
         var classParam = cmd.CreateParameter(); classParam.ParameterName = "$class";
         var procParam  = cmd.CreateParameter(); procParam.ParameterName  = "$proc";
-        var typeParam  = cmd.CreateParameter(); typeParam.ParameterName  = "$type";
         var catParam   = cmd.CreateParameter(); catParam.ParameterName   = "$cat";
 
         cmd.Parameters.Add(nameParam);
         cmd.Parameters.Add(classParam);
         cmd.Parameters.Add(procParam);
-        cmd.Parameters.Add(typeParam);
         cmd.Parameters.Add(catParam);
 
         foreach (var a in apps)
         {
-            nameParam.Value  = a.Name;
-            classParam.Value = (object?)a.Class ?? DBNull.Value;
+            nameParam.Value  = (object?)a.WindowTitle ?? DBNull.Value;
+            classParam.Value = (object?)a.ClassName ?? DBNull.Value;
             procParam.Value  = (object?)a.ProcessName ?? DBNull.Value;
-            typeParam.Value  = a.Type;
-            catParam.Value   = a.CategoryId;
+            catParam.Value   = (object?)a.CategoryId ?? DBNull.Value;
 
             yield return Convert.ToInt32(cmd.ExecuteScalar());
         }
@@ -88,28 +106,34 @@ public partial class DatabaseManager
         return new ApplicationDto
         {
             AppId = r.GetInt32(0),
-            Name = r.GetString(1),
-            Class = r.IsDBNull(2) ? null : r.GetString(2),
+            WindowTitle = r.GetString(1),
+            ClassName = r.IsDBNull(2) ? null : r.GetString(2),
             ProcessName = r.IsDBNull(3) ? null : r.GetString(3),
-            Type = r.GetString(4),
             CategoryId = r.GetInt32(5),
-            CategoryConfidence = r.GetInt32(6)
         };
     }
 
-
-    public bool IsInDb(ApplicationDto applicationDto)
+    /// <summary>
+    /// checks if the application is already in the database
+    /// </summary>
+    /// <param name="applicationDto"></param>
+    /// <returns>id of the application if in database, else null</returns>
+    public int? IsInDb(ApplicationDto applicationDto)
     {
         using var cmd = _connection.CreateCommand();
         cmd.CommandText = "SELECT * FROM applications WHERE class = $class AND process_name = $proc";
-        cmd.Parameters.AddWithValue("$class", applicationDto.Class);
+        cmd.Parameters.AddWithValue("$class", applicationDto.ClassName);
         cmd.Parameters.AddWithValue("$proc", applicationDto.ProcessName);
 
         using var r = cmd.ExecuteReader();
-        return r.Read();
+        if (r.Read())
+        {
+            return r.GetInt32(0);
+        }
+        return null;
     }
     
-    public int UpdateOrInsertApplication(ApplicationDto app)
+    public int? UpdateApplication(ApplicationDto app)
     {
         if (_validator.VerifyTable(_connection.CreateCommand(), "applications") != 0)
         {
@@ -118,33 +142,21 @@ public partial class DatabaseManager
         
         using var cmd = _connection.CreateCommand();
         
-        // Check if the application already exists in the database.
-        cmd.CommandText = "SELECT * FROM applications WHERE class = $class AND process_name = $proc";
-        cmd.Parameters.AddWithValue("$class", app.Class);
-        cmd.Parameters.AddWithValue("$proc", app.ProcessName);
+        var appId = IsInDb(app);
+        if (appId == null) return null;
+        
+        using var updateCmd = _connection.CreateCommand();
+        updateCmd.CommandText =
+            "UPDATE applications SET name = $name, process_name = $processName, class = $class, category_id = $cat WHERE app_id = $id";
+        updateCmd.Parameters.AddWithValue("$name", (object?)app.WindowTitle ?? DBNull.Value);
+        updateCmd.Parameters.AddWithValue("$processName", (object?)app.ProcessName ?? DBNull.Value);
+        updateCmd.Parameters.AddWithValue("$class", (object?)app.ClassName ?? DBNull.Value);
+        updateCmd.Parameters.AddWithValue("$cat", (object?)app.CategoryId ?? DBNull.Value);
+        updateCmd.Parameters.AddWithValue("$id", appId);
 
-        using var reader = cmd.ExecuteReader();
-
-        if (reader.Read())
-        {
-            // Application already exists, update it
-            int appId = reader.GetInt32(0);  // Assuming the first column is the ID of the application
-
-            // Update the existing record with new data.
-            using var updateCmd = _connection.CreateCommand();
-            updateCmd.CommandText =
-                "UPDATE applications SET name = $name, type = $type, category_id = $cat WHERE app_id = $id";
-            updateCmd.Parameters.AddWithValue("$name", app.Name);
-            updateCmd.Parameters.AddWithValue("$type", app.Type);
-            updateCmd.Parameters.AddWithValue("$cat", app.CategoryId);
-            updateCmd.Parameters.AddWithValue("$id", appId);
-
-            updateCmd.ExecuteNonQuery();
-            
-            return appId;
-        }
-
-        return InsertApplication(app);
+        updateCmd.ExecuteNonQuery();
+        
+        return appId;
     }
 
     
@@ -161,12 +173,10 @@ public partial class DatabaseManager
             yield return new ApplicationDto
             {
                 AppId = r.GetInt32(0),
-                Name = r.GetString(1),
-                Class = r.IsDBNull(2) ? null : r.GetString(2),
+                WindowTitle = r.IsDBNull(1) ? null : r.GetString(1),
+                ClassName = r.IsDBNull(2) ? null : r.GetString(2),
                 ProcessName = r.IsDBNull(3) ? null : r.GetString(3),
-                Type = r.GetString(4),
-                CategoryId = r.GetInt32(5),
-                CategoryConfidence = r.GetInt32(6)
+                CategoryId = r.IsDBNull(5) ? null : r.GetInt32(5),
             };
         }
     }
@@ -181,12 +191,10 @@ public partial class DatabaseManager
             yield return new ApplicationDto
             {
                 AppId = r.GetInt32(0),
-                Name = r.GetString(1),
-                Class = r.IsDBNull(2) ? null : r.GetString(2),
+                WindowTitle = r.IsDBNull(1) ? null : r.GetString(1),
+                ClassName = r.IsDBNull(2) ? null : r.GetString(2),
                 ProcessName = r.IsDBNull(3) ? null : r.GetString(3),
-                Type = r.GetString(4),
-                CategoryId = r.GetInt32(5),
-                CategoryConfidence = r.GetInt32(6)
+                CategoryId = r.IsDBNull(5) ? null : r.GetInt32(5),
             };
         }
     }

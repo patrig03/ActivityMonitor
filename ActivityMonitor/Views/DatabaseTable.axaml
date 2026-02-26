@@ -67,7 +67,7 @@
 
         <DataGrid.Columns>
             <!-- Class Column -->
-            <DataGridTextColumn Header="Class"
+            <DataGridTextColumn Header="ClassName"
                                 Binding="{Binding WmClass}"
                                 Width="Auto"
                                 MinWidth="150"

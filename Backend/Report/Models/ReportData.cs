@@ -1,3 +1,4 @@
+using Backend.DataCollector.Models;
 using Backend.Interventions.Models;
 using Backend.Models;
 

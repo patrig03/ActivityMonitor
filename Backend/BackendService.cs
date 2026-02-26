@@ -1,4 +1,4 @@
-using Database;
+using Backend.DataCollector;
 using Database.Manager;
 
 namespace Backend;
@@ -22,11 +22,7 @@ public static class Program
         
         while (true)
         {
-            var apps = collector.CheckActivity();
-            foreach (var app in apps)
-            {
-                dbManager.UpdateOrInsertApplication(app);
-            }
+            collector.CheckActivity(dbManager);
             Thread.Sleep(DeltaTime);
         }
     }

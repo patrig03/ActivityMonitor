@@ -5,6 +5,26 @@ namespace Database.Manager;
 public partial class DatabaseManager
 {
     
+    /// <summary>
+    /// checks if the session is already in the database
+    /// </summary>
+    /// <param name="s"></param>
+    /// <returns>id of the session if in the database, else null</returns>
+    public int? IsInDb(SessionDto s)
+    {
+        using var cmd = _connection.CreateCommand();
+        cmd.CommandText = "SELECT * FROM sessions WHERE app_id = $appid AND user_id = $userid";
+        cmd.Parameters.AddWithValue("$appid", (object?)s.AppId ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("$userid", (object?)s.UserId ?? DBNull.Value);
+
+        using var r = cmd.ExecuteReader();
+        if (r.Read())
+        {
+            return r.GetInt32(0);
+        }
+        return null;
+    }
+    
     public int InsertSession(SessionDto s)
     {
         if (_validator.VerifyTable(_connection.CreateCommand(), "sessions") != 0)
@@ -15,26 +35,61 @@ public partial class DatabaseManager
         using var cmd = _connection.CreateCommand();
         cmd.CommandText =
             """
-            INSERT INTO sessions (app_id, user_id, start_time, end_time, duration_sec)
-            VALUES ($app, $user, $start, $end, $dur);
+            INSERT INTO sessions (app_id, user_id, start_time, end_time)
+            VALUES ($app, $user, $start, $end);
             SELECT last_insert_rowid();
             """;
 
-        cmd.Parameters.AddWithValue("$app", s.AppId);
-        cmd.Parameters.AddWithValue("$user", s.UserId);
-        cmd.Parameters.AddWithValue("$start", s.StartTime);
+        cmd.Parameters.AddWithValue("$app", (object?)s.AppId ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("$user", (object?)s.UserId ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("$start", (object?)s.StartTime ?? DBNull.Value);
         cmd.Parameters.AddWithValue("$end", (object?)s.EndTime ?? DBNull.Value);
-        cmd.Parameters.AddWithValue("$dur", s.DurationSec);
 
         return Convert.ToInt32(cmd.ExecuteScalar());
     }
 
+    public int? UpdateSession(SessionDto s)
+    {
+        if (_validator.VerifyTable(_connection.CreateCommand(), "applications") != 0)
+        {
+            throw new Exception("Database exception in applications table");
+        }
+        
+        using var cmd = _connection.CreateCommand();
+        
+        var appId = IsInDb(s);
+        if (appId == null) return null;
+        
+        using var updateCmd = _connection.CreateCommand();
+        updateCmd.CommandText =
+            "UPDATE sessions SET user_id = $userid, app_id = $appid, start_time = $start, end_time = $end WHERE session_id = $id";
+        updateCmd.Parameters.AddWithValue("$userid", (object?)s.UserId ?? DBNull.Value);
+        updateCmd.Parameters.AddWithValue("$appid", (object?)s.AppId ?? DBNull.Value);
+        updateCmd.Parameters.AddWithValue("$start", (object?)s.StartTime ?? DBNull.Value);
+        updateCmd.Parameters.AddWithValue("$end", (object?)s.EndTime ?? DBNull.Value);
+        updateCmd.Parameters.AddWithValue("$id", appId);
+
+        updateCmd.ExecuteNonQuery();
+        
+        return appId;
+    }
+    
+    public int UpsertSession(SessionDto s)
+    {
+        if (IsInDb(s) != null)
+        {
+            return UpdateSession(s) ?? throw new Exception("Could not update application");
+        }
+
+        return InsertSession(s);
+    }
+    
     public SessionDto? GetSession(int sessionId)
     {
         using var cmd = _connection.CreateCommand();
         cmd.CommandText =
             """
-            SELECT session_id, app_id, user_id, start_time, end_time, duration_sec
+            SELECT session_id, app_id, user_id, start_time, end_time
             FROM sessions
             WHERE session_id = $id;
             """;
@@ -47,11 +102,10 @@ public partial class DatabaseManager
         return new SessionDto
         {
             SessionId = reader.GetInt32(0),
-            AppId = reader.GetInt32(1),
-            UserId = reader.GetInt32(2),
+            AppId     = reader.GetInt32(1),
+            UserId    = reader.GetInt32(2),
             StartTime = reader.GetDateTime(3),
-            EndTime = reader.IsDBNull(4) ? null : reader.GetDateTime(4),
-            DurationSec = reader.GetInt32(5)
+            EndTime   = reader.IsDBNull(4) ? null : reader.GetDateTime(4)
         };
     }
     
@@ -70,8 +124,7 @@ public partial class DatabaseManager
                 AppId = r.GetInt32(1),
                 UserId = r.GetInt32(2),
                 StartTime = r.GetDateTime(3),
-                EndTime = r.IsDBNull(4) ? null : r.GetDateTime(4),
-                DurationSec = r.GetInt32(5)
+                EndTime = r.GetDateTime(4),
             };
         }
     }

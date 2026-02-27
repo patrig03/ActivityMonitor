@@ -121,7 +121,8 @@ public partial class DatabaseManager
     public int? IsInDb(ApplicationDto applicationDto)
     {
         using var cmd = _connection.CreateCommand();
-        cmd.CommandText = "SELECT * FROM applications WHERE class = $class AND process_name = $proc";
+        cmd.CommandText = "SELECT * FROM applications WHERE name = $name AND class = $class AND process_name = $proc";
+        cmd.Parameters.AddWithValue("name", applicationDto.WindowTitle);
         cmd.Parameters.AddWithValue("$class", applicationDto.ClassName);
         cmd.Parameters.AddWithValue("$proc", applicationDto.ProcessName);
 

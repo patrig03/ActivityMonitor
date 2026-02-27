@@ -46,7 +46,6 @@ public class DatabaseValidator : IDatabaseValidator
                                              user_id INTEGER,
                                              start_time DATETIME,
                                              end_time DATETIME,
-                                             duration_sec INTEGER,
                                              FOREIGN KEY (app_id) REFERENCES applications(app_id),
                                              FOREIGN KEY (user_id) REFERENCES users(user_id)
                                          );

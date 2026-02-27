@@ -1,4 +1,5 @@
 using Backend.DataCollector;
+using Database.DTO;
 using Database.Manager;
 
 namespace Backend;
@@ -19,6 +20,14 @@ public static class Program
         dbManager.EnsureDatabase();
         
         DataCollectorController collector = new ();
+
+        // dbManager.InsertUser(new UserDto
+        // {
+        //     DisplayName = "Test User",
+        //     PinHash = "test",
+        //     SyncEnabled = true,
+        //     CreatedAt = DateTime.Now
+        // });
         
         while (true)
         {

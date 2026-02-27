@@ -33,11 +33,15 @@ public interface IDatabaseManager : IDisposable
     ApplicationDto? GetApplication(int appId);
     IEnumerable<ApplicationDto> GetApplicationsByCategory(int categoryId);
     IEnumerable<ApplicationDto> GetAllApplications();
+    int? IsInDb(ApplicationDto applicationDto);
 
 
     /* -------------------- SESSIONS -------------------- */
 
+    int? IsInDb(SessionDto s);
     int InsertSession(SessionDto session);
+    int? UpdateSession(SessionDto s);
+    int UpsertSession(SessionDto s);
     SessionDto? GetSession(int sessionId);
     IEnumerable<SessionDto> GetSessionsForUser(int userId);
 

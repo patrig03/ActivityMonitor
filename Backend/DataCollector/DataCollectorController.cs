@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Backend.DataCollector.Models;
+using Backend.Models;
 using Database.Manager;
 
 namespace Backend.DataCollector;
@@ -16,7 +17,29 @@ public class DataCollectorController
         var app = ParseWindows(windowsOutput);
         if (app == null) throw new Exception("No active window found");
         
-        db.UpsertApplication(app.ToDto());
+        var dto = app.ToDto();
+        var appid = db.UpsertApplication(dto);
+
+        var session = new SessionRecord
+        {
+            ApplicationId = appid,
+            UserId = 1,
+        };
+        var sessionId = db.IsInDb(session.ToDto());
+        
+        if (sessionId == null)
+        {
+            session.StartTime = DateTime.Now;
+        }
+        else
+        {
+            var sdto = db.GetSession(sessionId.Value);
+            if (sdto == null) throw new Exception("Session not found");
+            session = new SessionRecord().FromDto(sdto);
+        }
+        session.EndTime = DateTime.Now;
+
+        db.UpsertSession(session.ToDto());
     }
 
     private string ExecuteCommand(string file, string args)

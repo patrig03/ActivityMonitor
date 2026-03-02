@@ -1,10 +1,11 @@
 using Backend.Classifier.Models;
+using Backend.DataCollector.Models;
 using Backend.Models;
 
 namespace Backend.Classifier;
 
 public interface IClassifier
 {
-    Category ClassifyAsync(SessionRecord record);
-    IEnumerable<Category> ClassifyAsync(IEnumerable<SessionRecord> records);
+    int? ClassifyAsync(ApplicationRecord record);
+    IEnumerable<int?> ClassifyAsync(IEnumerable<ApplicationRecord> records);
 }

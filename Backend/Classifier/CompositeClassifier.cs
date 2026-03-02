@@ -1,16 +1,15 @@
-using Backend.Classifier.Models;
-using Backend.Models;
+using Backend.DataCollector.Models;
 
 namespace Backend.Classifier;
 
 public class CompositeClassifier : IClassifier
 {
-    public Category ClassifyAsync(SessionRecord record)
+    public int? ClassifyAsync(ApplicationRecord record)
     {
         throw new NotImplementedException();
     }
 
-    public IEnumerable<Category> ClassifyAsync(IEnumerable<SessionRecord> records)
+    public IEnumerable<int?> ClassifyAsync(IEnumerable<ApplicationRecord> records)
     {
         throw new NotImplementedException();
     }

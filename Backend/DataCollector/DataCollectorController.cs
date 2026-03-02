@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Backend.Classifier;
 using Backend.DataCollector.Models;
 using Backend.Models;
 using Database.Manager;
@@ -11,13 +12,16 @@ public class DataCollectorController
     private const string XpropCmd   = "xprop";
     private SessionRecord previousRecord = new ();
     
+    private IClassifier _classifier = new RuleBasedClassifier();
+    
     public void CheckActivity(IDatabaseManager db)
     {
         var windowsOutput = ExecuteCommand(WmctrlCmd, "-lGpx");
         
         var app = ParseWindows(windowsOutput);
         if (app == null) throw new Exception("No active window found");
-        
+
+        app.CategoryId = _classifier.ClassifyAsync(app);
         var dto = app.ToDto();
         var appid = db.UpsertApplication(dto);
 

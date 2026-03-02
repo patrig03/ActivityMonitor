@@ -1,144 +1,89 @@
-using Backend.Classifier.Models;
-using Backend.Models;
+using System.Text.RegularExpressions;
+using Backend.DataCollector.Models;
 
 namespace Backend.Classifier;
 
 public class RuleBasedClassifier : IClassifier
 {
-    public Category ClassifyAsync(SessionRecord record)
+    private readonly List<(int Category, Regex Pattern)> _rules = new()
     {
-        throw new NotImplementedException();
-    }
+        (2, R("(chrome|chromium|firefox|librewolf|brave|edge|opera|vivaldi|waterfox|palemoon)")),
+        (2, R("(msedge|google-chrome|navigator|browser)")),
 
-    public IEnumerable<Category> ClassifyAsync(IEnumerable<SessionRecord> records)
-    {
-        throw new NotImplementedException();
-    }
-}
+        // 4 Chat / IM / Telephony
+        (4, R("(slack|discord|teams|skype|telegram|whatsapp|signal|viber|zoom|webex|element|matrix|mattermost|rocketchat)")),
+        (4, R("(linphone|jitsi|ringcentral|messenger)")),
 
+        // 5 Programming / Software Engineering
+        (5, R("(visual studio|vscode|code-oss|rider|intellij|idea|pycharm|clion|goland|webstorm|phpstorm|eclipse|netbeans)")),
+        (5, R("(devenv|dotnet|msbuild|nuget|gcc|g\\+\\+|clang|cmake|make|ninja|gradle|maven|node|npm|yarn|cargo|rustc|go build)")),
+        (5, R("(postman|insomnia|docker|kubectl|wireshark)")),
 
+        // 8 File System
+        (8, R("(explorer\\.exe|explorer|nautilus|dolphin|thunar|pcmanfm|nemo|caja|finder)")),
+        (8, R("(file manager|filezilla)")),
 
-/*
+        // 11 Games (broad)
+        (11, R("(steam|epicgameslauncher|gog|battle\\.net|itch|riotclient)")),
+        (11, R("(game|launcher)")),
 
-public enum Category
-{
-    Development,
-    Productivity,
-    Browsing,
-    Media,
-    Games,
-    Communication,
-    System,
-    Other
-}
+        // 15 Graphics Editing
+        (15, R("(photoshop|gimp|krita|affinity photo|paint\\.net|coreldraw|inkscape|illustrator)")),
+        (15, R("(photo editor|image editor)")),
 
+        // 16 Animation / Rendering / 3D
+        (16, R("(blender|maya|3ds ?max|houdini|cinema ?4d|zbrush|substance)")),
+        (16, R("(unreal editor|unity editor|godot)")),
 
-public static class ActivityClassifier
-{
-    // ---------- Regex / keyword sets ----------
+        // 18 Video
+        (18, R("(vlc|mpv|mplayer|kdenlive|premiere|davinci resolve|after effects|obs|shotcut|capcut)")),
+        (18, R("(video editor|media player)")),
 
-    static readonly Regex MediaExt =
-        new(@"\.(mkv|mp4|avi|webm|mp3|flac|wav)\b", RegexOptions.IgnoreCase);
+        // 19 Compression
+        (19, R("(7z|7-zip|winrar|rar|tar|gzip|bzip2|xz|peazip|ark)")),
 
-    static readonly Regex DevExt =
-        new(@"\.(cs|cpp|h|hpp|axaml|xaml|js|ts|py|java|rs|go)\b", RegexOptions.IgnoreCase);
+        // 20 Word Processing
+        (20, R("(winword|word|libreoffice writer|onlyoffice.*document|wps.*writer)")),
 
-    static readonly string[] BrowserProcesses =
-    {
-        "librewolf", "firefox", "chrome", "chromium", "brave", "edge"
+        // 21 Spreadsheet
+        (21, R("(excel|libreoffice calc|onlyoffice.*spreadsheet|wps.*spreadsheet)")),
+
+        // 23 Presentation
+        (23, R("(powerpoint|libreoffice impress|onlyoffice.*presentation|wps.*presentation)")),
+
+        // 32 Text Editors
+        (32, R("(notepad(\\+\\+)?|gedit|kate|sublime|vim|nvim|emacs|micro|xed)")),
+
+        // 38 Remote Access
+        (38, R("(mstsc|remmina|anydesk|teamviewer|rustdesk|realvnc|tightvnc|nomachine)")),
+
+        // 51 Emulators
+        (51, R("(pcsx2|retroarch|dolphin-emu|yuzu|ryujinx|citra|ppsspp|mame)")),
+
+        // 53 Astronomy
+        (53, R("(stellarium|celestia|kstars|cartes du ciel)"))
     };
 
-    static readonly HashSet<string> EntertainmentDomains =
-        new(StringComparer.OrdinalIgnoreCase)
+    public int? ClassifyAsync(ApplicationRecord record)
+    {
+        var text = $"{record.ClassName} {record.ProcessName}"
+            .ToLowerInvariant();
+
+        foreach (var (category, pattern) in _rules)
         {
-            "youtube", "twitch", "netflix", "crunchyroll"
-        };
-
-    // ---------- Public API ----------
-
-    public static (Category category, double confidence) Classify(ApplicationDto row)
-    {
-        var features = ExtractFeatures(row);
-        return Decide(features);
-    }
-
-    // ---------- Feature extraction ----------
-
-    static Features ExtractFeatures(ApplicationDto row)
-    {
-        var proc = row.ClassName.ToLowerInvariant();
-        var title = row.WindowTitle ?? "";
-
-        return new Features
-        {
-            IsBrowser = BrowserProcesses.Any(p => proc.Contains(p)),
-            HasMediaExt = MediaExt.IsMatch(title),
-            HasDevExt = DevExt.IsMatch(title),
-            Domain = ExtractDomain(title),
-        };
-    }
-
-    static string? ExtractDomain(string title)
-    {
-        // works for "YouTube — LibreWolf" and URLs
-        var m = Regex.Match(title, @"([a-z0-9\-]+)\.(com|org|net|io|edu)",
-            RegexOptions.IgnoreCase);
-        return m.Success ? m.Groups[1].Value : null;
-    }
-
-    // ---------- Decision logic ----------
-
-    static (Category, double) Decide(Features f)
-    {
-        double scoreDev = 0, scoreMedia = 0, scoreGame = 0, scoreBrowse = 0;
-
-        if (f.HasDevExt) scoreDev += 3;
-        if (f.HasMediaExt) scoreMedia += 4;
-
-        if (f.IsBrowser)
-        {
-            scoreBrowse += 1;
-
-            if (f.Domain != null)
-            {
-                if (EntertainmentDomains.Contains(f.Domain))
-                    scoreMedia += 3;
-                else
-                    scoreBrowse += 1;
-            }
+            if (pattern.IsMatch(text))
+                return category;
         }
 
-        if (f.IsFullscreenCandidate && f.ActiveSeconds > 1800)
-            scoreGame += 2;
-
-        var scores = new Dictionary<Category, double>
-        {
-            [Category.Development] = scoreDev,
-            [Category.Media] = scoreMedia,
-            [Category.Games] = scoreGame,
-            [Category.Browsing] = scoreBrowse,
-            [Category.Productivity] = scoreDev * 0.5 + scoreBrowse * 0.5
-        };
-
-        var best = scores.OrderByDescending(x => x.Value).First();
-
-        double confidence = Math.Min(1.0, best.Value / 5.0);
-
-        return best.Value == 0
-            ? (Category.Other, 0.2)
-            : (best.Key, confidence);
+        return null;
     }
 
-    // ---------- Internal feature struct ----------
-
-    record Features
+    public IEnumerable<int?> ClassifyAsync(IEnumerable<ApplicationRecord> records)
     {
-        public bool IsBrowser;
-        public bool HasMediaExt;
-        public bool HasDevExt;
-        public string? Domain;
-        public double ActiveSeconds;
-        public bool IsFullscreenCandidate;
+        foreach (var r in records)
+            yield return ClassifyAsync(r);
     }
+
+    private static Regex R(string pattern) =>
+        new(pattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
 }
-*/

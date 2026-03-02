@@ -35,7 +35,6 @@ public class DatabaseValidator : IDatabaseValidator
                                                  name TEXT,
                                                  class TEXT,
                                                  process_name TEXT,
-                                                 type TEXT,
                                                  FOREIGN KEY (category_id) REFERENCES categories(category_id)
                                              );
                                              """;
@@ -185,6 +184,12 @@ public class DatabaseValidator : IDatabaseValidator
                                                        (53, "Astronomy",
                                                            "An endless (almost) empty space... ;-)")
                                                        """;
+
+    private const string UsersDefault = """
+                                        INSERT INTO users (display_name, pin_hash, sync_enabled, created_at)
+                                        VALUES ("Default user", "", false, datetime('now'));
+                                        SELECT last_insert_rowid();
+                                        """;
     
     public void EnsureDatabase(string dbPath)
     {
@@ -207,6 +212,7 @@ public class DatabaseValidator : IDatabaseValidator
         CreateTable(cmd, "interventions");
         
         PopulateTableDefaults(cmd, "categories");
+        PopulateTableDefaults(cmd, "users");
     }
     private void CreateTable(SqliteCommand cmd, string tableName)
     {
@@ -341,6 +347,7 @@ public class DatabaseValidator : IDatabaseValidator
         return tableName switch
         {
             "categories" => CategoriesDefaultPopulation,
+            "users" => UsersDefault,
             _ => throw new ArgumentOutOfRangeException(nameof(tableName), tableName, null)
         };
     }

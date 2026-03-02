@@ -10,6 +10,7 @@ public partial class DatabaseManager : IDatabaseManager
 
     public DatabaseManager(string dbPath)
     {
+        _validator.EnsureDatabase(dbPath);
         _dbPath = dbPath;
         _connection = new SqliteConnection($"Data Source={dbPath}");
         _connection.Open();

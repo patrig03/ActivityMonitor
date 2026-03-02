@@ -63,11 +63,5 @@ public interface IDatabaseManager : IDisposable
 
     /* -------------------- REPORTS -------------------- */
 
-    void InsertAggregatedReport(ReportAggregatedDto report);
-    IEnumerable<ReportAggregatedDto> GetReports(
-        int userId,
-        string periodType,
-        DateTime periodStart,
-        DateTime periodEnd
-    );
+    List<ReportDto> GetActivityReport();
 }

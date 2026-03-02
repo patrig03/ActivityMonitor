@@ -19,8 +19,6 @@ public class WindowCategoryDto
 
 }
 
-
-
 public class DatabaseViewModel
 {
     public ObservableCollection<WindowCategoryDto> WindowCategories { get; }
@@ -31,8 +29,8 @@ public class DatabaseViewModel
 
     public DatabaseViewModel()
     {
-        _manager = new DatabaseManager(DbPath);
-        WindowCategories = new ObservableCollection<WindowCategoryDto>();
+        _manager = new (DbPath);
+        WindowCategories = new ();
 
         _timer = new Timer(_ =>
         {

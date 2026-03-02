@@ -1,5 +1,4 @@
 using Backend.DataCollector;
-using Database.DTO;
 using Database.Manager;
 
 namespace Backend;
@@ -21,8 +20,6 @@ public static class Program
         
         DataCollectorController collector = new ();
 
-
-        
         while (true)
         {
             collector.CheckActivity(dbManager);

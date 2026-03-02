@@ -13,9 +13,10 @@ public partial class DatabaseManager
     public int? IsInDb(SessionDto s)
     {
         using var cmd = _connection.CreateCommand();
-        cmd.CommandText = "SELECT * FROM sessions WHERE app_id = $appid AND user_id = $userid";
+        cmd.CommandText = "SELECT * FROM sessions WHERE app_id = $appid AND user_id = $userid AND start_time = $start";
         cmd.Parameters.AddWithValue("$appid", (object?)s.AppId ?? DBNull.Value);
         cmd.Parameters.AddWithValue("$userid", (object?)s.UserId ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("start", (object?)s.StartTime ?? DBNull.Value);
 
         using var r = cmd.ExecuteReader();
         if (r.Read())

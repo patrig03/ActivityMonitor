@@ -9,6 +9,7 @@ public class DataCollectorController
 {
     private const string WmctrlCmd  = "wmctrl";
     private const string XpropCmd   = "xprop";
+    private SessionRecord previousRecord = new ();
     
     public void CheckActivity(IDatabaseManager db)
     {
@@ -24,22 +25,33 @@ public class DataCollectorController
         {
             ApplicationId = appid,
             UserId = 1,
+            StartTime = previousRecord.StartTime,
         };
         var sessionId = db.IsInDb(session.ToDto());
         
         if (sessionId == null)
         {
             session.StartTime = DateTime.Now;
+            session.EndTime = DateTime.Now;
+            previousRecord = session;
+            previousRecord.Id = db.InsertSession(session.ToDto());
+            return;
+        }
+
+        var sdto = db.GetSession(sessionId.Value);
+        if (sdto == null) throw new Exception("Session not found");
+        session = new SessionRecord().FromDto(sdto);
+        if (previousRecord.Id == sessionId) 
+        {
+            session.EndTime = DateTime.Now;
+            db.UpdateSession(session.ToDto());
         }
         else
         {
-            var sdto = db.GetSession(sessionId.Value);
-            if (sdto == null) throw new Exception("Session not found");
-            session = new SessionRecord().FromDto(sdto);
+            previousRecord = session;
+            db.InsertSession(session.ToDto());
         }
-        session.EndTime = DateTime.Now;
-
-        db.UpsertSession(session.ToDto());
+        
     }
 
     private string ExecuteCommand(string file, string args)

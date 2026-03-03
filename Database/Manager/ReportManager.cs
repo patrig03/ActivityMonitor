@@ -19,6 +19,7 @@ public partial class DatabaseManager
                               SELECT 
                                   a.category_id,
                                   a.name,
+                                  a.process_name,
                                   s.start_time,
                                   s.end_time
                               FROM sessions s
@@ -28,17 +29,18 @@ public partial class DatabaseManager
 
         using var reader = cmd.ExecuteReader();
 
-        var grouped = new Dictionary<(int CategoryId, string AppName), List<(DateTime Start, DateTime End)>>();
+        var grouped = new Dictionary<(int? CategoryId, string AppName, string ProcessName), List<(DateTime Start, DateTime End)>>();
 
         while (reader.Read())
         {
-            var categoryId = reader.GetInt32(0);
-            var appName = reader.GetString(1);
+            int? categoryId = reader.IsDBNull(0) ? null : reader.GetInt32(0);
+            var appName = reader.IsDBNull(1) ? "" : reader.GetString(1);
+            var processName = reader.IsDBNull(2) ? "" : reader.GetString(2);
 
-            var start = DateTime.Parse(reader.GetString(2), CultureInfo.InvariantCulture);
-            var end   = DateTime.Parse(reader.GetString(3), CultureInfo.InvariantCulture);
+            var start = DateTime.Parse(reader.GetString(3), CultureInfo.InvariantCulture);
+            var end   = DateTime.Parse(reader.GetString(4), CultureInfo.InvariantCulture);
 
-            var key = (categoryId, appName);
+            var key = (categoryId, appName, processName);
 
             if (!grouped.ContainsKey(key))
                 grouped[key] = new();
@@ -46,9 +48,10 @@ public partial class DatabaseManager
             grouped[key].Add((start, end));
         }
 
+        double total = 0;
         foreach (var group in grouped)
         {
-            var (categoryId, appName) = group.Key;
+            var (categoryId, appName, processName) = group.Key;
             var sessions = group.Value;
 
             var sb = new StringBuilder();
@@ -56,14 +59,16 @@ public partial class DatabaseManager
             foreach (var s in sessions)
             {
                 var duration = (s.End - s.Start).TotalSeconds;
+                total += duration;
                 sb.AppendLine($"{s.Start:HH:mm:ss} → {s.End:HH:mm:ss}   ({duration:0}s)");
             }
 
             result.Add(new ReportDto
             {
-                CategoryName = $"Category {categoryId}: {GetCategory(categoryId)?.Name}",
-                ApplicationName = appName,
-                SessionDetails = sb.ToString().TrimEnd()
+                CategoryName = $"Category {categoryId}: {(categoryId == null ? "Unknown" : GetCategory(categoryId??0)?.Name)}",
+                ApplicationName = $"Process: {processName}\n{appName}",
+                // SessionDetails = $"{sb.ToString().TrimEnd()}\nTotal: {TimeSpan.FromSeconds(total).ToString()}"
+                SessionDetails = $"Total: {TimeSpan.FromSeconds(total).ToString("c")}"
             });
         }
 

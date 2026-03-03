@@ -30,9 +30,19 @@ public class ReportsViewModel
             Dispatcher.UIThread.Post(() =>
             {
                 Reports.Clear();
+                string? lastCategoryName = null;
 
                 foreach (var app in updatedItems)
                 {
+                    if (app.CategoryName != lastCategoryName)
+                    {
+                        lastCategoryName = app.CategoryName;
+                    }
+                    else
+                    {
+                        app.CategoryName = string.Empty;
+                    }
+                    
                     Reports.Add(app);
                 }
             });

@@ -9,10 +9,12 @@
     <ItemsControl ItemsSource="{Binding Reports}">
       <ItemsControl.ItemTemplate>
         <DataTemplate>
-          <StackPanel Margin="20" Spacing="12">
+          <StackPanel Margin="10" Spacing="12">
 
             <TextBlock Text="{Binding CategoryName}"
-                       FontSize="18" FontWeight="Bold"/>
+                       Margin="0, 40, 0, 20"
+                       FontSize="18" FontWeight="Bold"
+                       IsVisible="{Binding CategoryName, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
 
             <TextBlock Text="{Binding ApplicationName}"
                        FontSize="16" FontWeight="SemiBold"/>

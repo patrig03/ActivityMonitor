@@ -21,7 +21,6 @@ public class ReportsViewModel
         _manager = new (DbPath);
         Reports = new ();
 
-            Console.WriteLine("check");
         _timer = new Timer(_ =>
         {
             var updatedItems = _manager.GetActivityReport();

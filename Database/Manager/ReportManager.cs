@@ -48,9 +48,10 @@ public partial class DatabaseManager
             grouped[key].Add((start, end));
         }
 
-        double total = 0;
         foreach (var group in grouped)
         {
+            double total = 0; // reset per group
+
             var (categoryId, appName, processName) = group.Key;
             var sessions = group.Value;
 
@@ -60,16 +61,16 @@ public partial class DatabaseManager
             {
                 var duration = (s.End - s.Start).TotalSeconds;
                 total += duration;
-                sb.AppendLine($"{s.Start:HH:mm:ss} → {s.End:HH:mm:ss}   ({duration:0}s)");
+                sb.AppendLine($"{s.Start:HH:mm:ss} → {s.End:HH:mm:ss}   ({duration:0.###}s)");
             }
 
             result.Add(new ReportDto
             {
                 CategoryName = $"Category {categoryId}: {(categoryId == null ? "Unknown" : GetCategory(categoryId??0)?.Name)}",
                 ApplicationName = $"Process: {processName}\n{appName}",
-                // SessionDetails = $"{sb.ToString().TrimEnd()}\nTotal: {TimeSpan.FromSeconds(total).ToString()}"
-                SessionDetails = $"Total: {TimeSpan.FromSeconds(total).ToString("c")}"
+                SessionDetails = "Total: " + TimeSpan.FromSeconds(total).ToString(@"hh\:mm\:ss")
             });
+        
         }
 
         return result;

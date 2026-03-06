@@ -4,7 +4,7 @@ namespace Backend.DataCollector.Browser;
 
 public class ChromiumCollector : IBrowserDataCollector
 {
-    public IEnumerable<BrowserRecord> QueryTabs()
+    public BrowserRecord QueryTabs()
     {
         throw new NotImplementedException();
     }

@@ -16,21 +16,15 @@ public partial class DatabaseManager
         cmd.CommandText =
         """
         INSERT INTO browser_activity
-        (user_id, app_id, url, domain, title, tab_id, window_id, start_time, end_time, duration_sec)
+        (user_id, app_id, url, title)
         VALUES
-        ($user, $app, $url, $domain, $title, $tab, $window, $start, $end, $dur);
+        ($user, $app, $url, $title);
         """;
 
         cmd.Parameters.AddWithValue("$user", a.UserId);
         cmd.Parameters.AddWithValue("$app", a.AppId);
         cmd.Parameters.AddWithValue("$url", a.Url);
-        cmd.Parameters.AddWithValue("$domain", a.Domain);
         cmd.Parameters.AddWithValue("$title", a.Title);
-        cmd.Parameters.AddWithValue("$tab", a.TabId);
-        cmd.Parameters.AddWithValue("$window", a.WindowId);
-        cmd.Parameters.AddWithValue("$start", a.StartTime);
-        cmd.Parameters.AddWithValue("$end", (object?)a.EndTime ?? DBNull.Value);
-        cmd.Parameters.AddWithValue("$dur", a.DurationSec);
 
         cmd.ExecuteNonQuery();
     }
@@ -40,7 +34,7 @@ public partial class DatabaseManager
         using var cmd = _connection.CreateCommand();
         cmd.CommandText =
             """
-            SELECT activity_id, user_id, app_id, url, domain, title, tab_id, window_id, start_time, end_time, duration_sec
+            SELECT activity_id, user_id, app_id, url, title
             FROM browser_activity
             WHERE session_id = $sessionId;
             """;
@@ -58,13 +52,8 @@ public partial class DatabaseManager
                 UserId = reader.GetInt32(1),
                 AppId = reader.GetInt32(2),
                 Url = reader.GetString(3),
-                Domain = reader.GetString(4),
                 Title = reader.GetString(5),
-                TabId = reader.GetString(6),
-                WindowId = reader.GetString(7),
-                StartTime = reader.GetDateTime(8),
-                EndTime = reader.IsDBNull(9) ? null : reader.GetDateTime(9),
-                DurationSec = reader.GetInt32(10)
+
             });
         }
 

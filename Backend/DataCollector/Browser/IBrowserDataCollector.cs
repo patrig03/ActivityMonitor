@@ -4,5 +4,5 @@ namespace Backend.DataCollector.Browser;
 
 public interface IBrowserDataCollector
 {
-    IEnumerable<BrowserRecord> QueryTabs();
+    BrowserRecord QueryTabs();
 }

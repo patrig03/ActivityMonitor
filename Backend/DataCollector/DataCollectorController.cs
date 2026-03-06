@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Backend.Classifier;
+using Backend.DataCollector.Browser;
 using Backend.DataCollector.Models;
 using Backend.Models;
 using Database.Manager;
@@ -13,6 +14,7 @@ public class DataCollectorController
     private SessionRecord previousRecord = new ();
     
     private IClassifier _classifier = new RuleBasedClassifier();
+    private IBrowserDataCollector _browserCollector = new FirefoxCollector();
     
     public void CheckActivity(IDatabaseManager db)
     {
@@ -24,6 +26,13 @@ public class DataCollectorController
         app.CategoryId = _classifier.ClassifyAsync(app);
         var dto = app.ToDto();
         var appid = db.UpsertApplication(dto);
+
+        if (app.CategoryId == 2)
+        {
+            var browserRecord = _browserCollector.QueryTabs();
+            browserRecord.BrowserId = appid;
+            db.InsertBrowserActivity(browserRecord.ToDto());
+        }
 
         var session = new SessionRecord
         {

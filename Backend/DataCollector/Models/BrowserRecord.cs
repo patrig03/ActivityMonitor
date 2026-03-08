@@ -17,7 +17,6 @@ public class BrowserRecord
             ActivityId = Id,
             AppId = BrowserId,
             Url = Url,
-            Title = ""
         };
     }
 }

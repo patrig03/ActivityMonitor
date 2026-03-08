@@ -1,4 +1,5 @@
 using Backend.DataCollector;
+using Backend.Interventions.NotifierStrategy;
 using Database.Manager;
 
 namespace Backend;
@@ -20,6 +21,9 @@ public static class Program
         
         DataCollectorController collector = new ();
 
+        INotifierStrategy notifier = new ReminderNotification();
+        notifier.Notify("You have exceeded the daily limit for this category");
+        
         while (true)
         {
             collector.CheckActivity(dbManager);

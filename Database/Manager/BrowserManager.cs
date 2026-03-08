@@ -16,15 +16,14 @@ public partial class DatabaseManager
         cmd.CommandText =
         """
         INSERT INTO browser_activity
-        (user_id, app_id, url, title)
+        (user_id, app_id, url)
         VALUES
-        ($user, $app, $url, $title);
+        ($user, $app, $url);
         """;
 
         cmd.Parameters.AddWithValue("$user", a.UserId);
         cmd.Parameters.AddWithValue("$app", a.AppId);
         cmd.Parameters.AddWithValue("$url", a.Url);
-        cmd.Parameters.AddWithValue("$title", a.Title);
 
         cmd.ExecuteNonQuery();
     }
@@ -52,7 +51,6 @@ public partial class DatabaseManager
                 UserId = reader.GetInt32(1),
                 AppId = reader.GetInt32(2),
                 Url = reader.GetString(3),
-                Title = reader.GetString(5),
 
             });
         }

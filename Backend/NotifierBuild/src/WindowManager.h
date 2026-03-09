@@ -11,7 +11,7 @@ namespace WindowManager {
     inline bool framebufferResized = false;
     inline std::string window_title;
 
-    void Init(const int& width, const int& height, const std::string& title, const init_flags& flags = init_flags::None);
+    void Init(const int& width, const int& height, const std::string& title, const init_flags& flags);
     void FramebufferResizeCallback(GLFWwindow* window, int width, int height);
     void Cleanup();
 

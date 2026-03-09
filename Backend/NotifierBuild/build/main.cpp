@@ -9,8 +9,8 @@
 
 
 // -n [message] [buttons]
-// -s [message] [lock]
-// -h [message] [seconds]
+// -s [message] [window_id] [lock]
+// -h [message] [window_id] [seconds]
 int main(int argc, char** argv) {
     if (argc < 2) {
         std::printf("Usage\n");
@@ -47,7 +47,8 @@ int main(int argc, char** argv) {
     else if (argc > 2 && strcmp(argv[1], "-h") == 0) {
         hard_lock_data data = {
             .message = argv[2],
-            .seconds = atoi(argv[3])
+            .seconds = atoi(argv[4]),
+            .window_id = strtoul(argv[3], nullptr, 0)
         };
         RenderHardLock(data);
     }

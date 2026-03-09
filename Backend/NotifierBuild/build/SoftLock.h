@@ -83,6 +83,7 @@ inline void RenderSoftLock(soft_lock_data& data) {
     Display* display = XOpenDisplay(nullptr);
     if (!display) {
         std::cerr << "Failed to open X display\n";
+        delete[] password_buffer;
         return;
     }
     

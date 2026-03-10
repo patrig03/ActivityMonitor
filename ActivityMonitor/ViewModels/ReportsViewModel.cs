@@ -1,5 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Threading;
 using Avalonia.Threading;
 using Backend.Report.Models;
@@ -12,7 +13,7 @@ public class ReportsViewModel
 {
     public ObservableCollection<ReportDto> Reports { get; set; }
     private DatabaseManager _manager { get; }
-    private const string DbPath = "../../../../Backend/bin/Debug/net9.0/data/database.db";
+    private static readonly string DbPath = GetDatabasePath();
 
     private Timer? _timer;
     
@@ -47,5 +48,13 @@ public class ReportsViewModel
             });
 
         }, null, TimeSpan.Zero, TimeSpan.FromSeconds(10));
+    }
+    
+    private static string GetDatabasePath()
+    {
+        var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+        appDataPath = Path.Combine(appDataPath, "ActivityMonitor");
+        Directory.CreateDirectory(appDataPath);
+        return Path.Combine(appDataPath, "database.db");
     }
 }

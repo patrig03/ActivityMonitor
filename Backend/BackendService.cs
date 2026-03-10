@@ -9,8 +9,8 @@ using System.Threading;
 public static class Program
 {
     private static readonly TimeSpan DeltaTime = TimeSpan.FromSeconds(10);
-    private const string MutexName = "Global\\MyBackgroundBackendSingleton";
-    private const string DbPath = "./data/database.db";
+    private const string MutexName = "Global\\ActivityMonitorBackgroundService";
+    private static readonly string DbPath = GetDatabasePath();
 
     private static void Main()
     {
@@ -39,5 +39,13 @@ public static class Program
     {
         using var mutex = new Mutex(true, MutexName, out var isNew);
         return isNew;
+    }
+    
+    private static string GetDatabasePath()
+    {
+        var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+        appDataPath = Path.Combine(appDataPath, "ActivityMonitor");
+        Directory.CreateDirectory(appDataPath);
+        return Path.Combine(appDataPath, "database.db");
     }
 }

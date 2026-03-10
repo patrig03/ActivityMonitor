@@ -7,7 +7,7 @@ public class ReminderNotification
     public void Notify(string message)
     {
         var process = new Process();
-        process.StartInfo.FileName = "/home/patri/Projects/ActivityMonitor/Backend/NotifierBuild/build/cmake-build-release/Notifier";
+        process.StartInfo.FileName = "/home/patri/Projects/Notifier/cmake-build-release/Notifier";
         process.StartInfo.Arguments = $"-n \"{message}\" Close Snooze";
         process.StartInfo.UseShellExecute = false;
         process.StartInfo.RedirectStandardOutput = true;

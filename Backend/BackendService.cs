@@ -1,5 +1,7 @@
 using Backend.DataCollector;
+using Backend.Interventions;
 using Backend.Interventions.NotifierStrategy;
+using Database.DTO;
 using Database.Manager;
 
 namespace Backend;
@@ -20,13 +22,22 @@ public static class Program
         dbManager.EnsureDatabase();
         
         DataCollectorController collector = new ();
+        InterventionController intervener = new();
 
-        var notifier = new ReminderNotification();
-        notifier.Notify("You have exceeded the daily limit for this category");
+        dbManager.InsertThreshold(new ThresholdDto
+        {
+            UserId = 1,
+            CategoryId = 5,
+            Active = true,
+            InterventionType = 1,
+            DailyLimitSec = 20,
+            WeeklyLimitSec = 100
+        });
         
         while (true)
         {
             collector.CheckActivity(dbManager);
+            intervener.VerifyThresholds(dbManager);
             Thread.Sleep(DeltaTime);
         }
     }

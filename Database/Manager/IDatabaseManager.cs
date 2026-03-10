@@ -45,6 +45,8 @@ public interface IDatabaseManager : IDisposable
     int UpsertSession(SessionDto s);
     SessionDto? GetSession(int sessionId);
     IEnumerable<SessionDto> GetSessionsForUser(int userId);
+    IEnumerable<SessionDto> GetSessionsByCategory(int categoryId);
+    int GetSessionDurationForCategory(int categoryId);
 
     /* -------------------- BROWSER ACTIVITY -------------------- */
 
@@ -55,6 +57,8 @@ public interface IDatabaseManager : IDisposable
 
     int InsertThreshold(ThresholdDto threshold);
     ThresholdDto? GetThreshold(int userId, int categoryId);
+    IEnumerable<ThresholdDto?> GetAllThresholds();
+
 
     /* -------------------- INTERVENTIONS -------------------- */
 

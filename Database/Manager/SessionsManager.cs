@@ -129,5 +129,50 @@ public partial class DatabaseManager
             };
         }
     }
+
+    public IEnumerable<SessionDto> GetSessionsByCategory(int categoryId)
+    {
+        using var cmd = _connection.CreateCommand();
+        cmd.CommandText = """
+                          SELECT s.*
+                          FROM sessions s
+                                   INNER JOIN applications a ON s.app_id = a.app_id
+                          WHERE a.category_id = $category_id
+                          """;
+        cmd.Parameters.AddWithValue("$category_id", categoryId);
+
+        using var r = cmd.ExecuteReader();
+        while (r.Read())
+        {
+            yield return new SessionDto
+            {
+                SessionId = r.GetInt32(0),
+                AppId = r.GetInt32(1),
+                UserId = r.GetInt32(2),
+                StartTime = r.GetDateTime(3),
+                EndTime = r.GetDateTime(4),
+            };
+        }
+    }
+
+    public int GetSessionDurationForCategory(int categoryId)
+    {
+        using var cmd = _connection.CreateCommand();
+        cmd.CommandText =         """
+                                  SELECT SUM((julianday(s.end_time) - julianday(s.start_time)) * 86400.0) AS total_seconds
+                                  FROM sessions s
+                                  INNER JOIN applications a ON s.app_id = a.app_id
+                                  WHERE a.category_id = $category_id;
+                                  """;
+        cmd.Parameters.AddWithValue("$category_id", categoryId);
+
+        using var r = cmd.ExecuteReader();
+        var duration = 0;
+        if (r.Read())
+        {
+            duration =  r.GetInt32(0);
+        }
+        return duration;
+    }
     
 }

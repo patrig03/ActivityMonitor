@@ -65,6 +65,8 @@ public class DatabaseValidator : IDatabaseValidator
                                                threshold_id INTEGER PRIMARY KEY,
                                                user_id INTEGER,
                                                category_id INTEGER,
+                                               is_active BOOLEAN,
+                                               intervention_type INTEGER,
                                                daily_limit_sec INTEGER,
                                                weekly_limit_sec INTEGER,
                                                FOREIGN KEY (user_id) REFERENCES users(user_id),

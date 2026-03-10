@@ -15,16 +15,18 @@ public partial class DatabaseManager
         using var cmd = _connection.CreateCommand();
         cmd.CommandText =
             """
-            INSERT INTO thresholds (user_id, category_id, daily_limit_sec, weekly_limit_sec, break_mode_enabled)
-            VALUES ($user, $category, $daily, $weekly, $break);
+            INSERT INTO thresholds (threshold_id, user_id, category_id, is_active, intervention_type, daily_limit_sec, weekly_limit_sec)
+            VALUES ($id, $user, $category, $is_active, $intervention_type, $daily, $weekly);
             SELECT last_insert_rowid();
             """;
 
+        cmd.Parameters.AddWithValue("id", threshold.Id);
         cmd.Parameters.AddWithValue("$user", threshold.UserId);
         cmd.Parameters.AddWithValue("$category", threshold.CategoryId);
+        cmd.Parameters.AddWithValue("is_active", threshold.Active);
+        cmd.Parameters.AddWithValue("intervention_type", threshold.InterventionType);
         cmd.Parameters.AddWithValue("$daily", threshold.DailyLimitSec);
         cmd.Parameters.AddWithValue("$weekly", threshold.WeeklyLimitSec);
-        cmd.Parameters.AddWithValue("$break", threshold.BreakModeEnabled ? 1 : 0);
 
         return Convert.ToInt32(cmd.ExecuteScalar());
     }
@@ -34,7 +36,7 @@ public partial class DatabaseManager
         using var cmd = _connection.CreateCommand();
         cmd.CommandText =
             """
-            SELECT threshold_id, user_id, category_id, daily_limit_sec, weekly_limit_sec, break_mode_enabled
+            SELECT threshold_id, user_id, category_id, is_active, intervention_type, daily_limit_sec, weekly_limit_sec
             FROM thresholds
             WHERE user_id = $user AND category_id = $category;
             """;
@@ -47,12 +49,34 @@ public partial class DatabaseManager
 
         return new ThresholdDto
         {
-            ThresholdId = reader.GetInt32(0),
+            Id = reader.GetInt32(0),
             UserId = reader.GetInt32(1),
             CategoryId = reader.GetInt32(2),
-            DailyLimitSec = reader.GetInt32(3),
-            WeeklyLimitSec = reader.GetInt32(4),
-            BreakModeEnabled = reader.GetInt32(5) != 0
+            Active = reader.GetBoolean(3),
+            InterventionType = reader.GetInt32(4),
+            DailyLimitSec = reader.GetInt32(5),
+            WeeklyLimitSec = reader.GetInt32(6),
         };
+    }
+
+    public IEnumerable<ThresholdDto?> GetAllThresholds()
+    {
+        using var cmd = _connection.CreateCommand();
+        cmd.CommandText = "SELECT * FROM thresholds";
+
+        using var r = cmd.ExecuteReader();
+        while (r.Read())
+        {
+            yield return new ThresholdDto
+            {
+                Id = r.GetInt32(0),
+                UserId = r.GetInt32(1),
+                CategoryId = r.GetInt32(2),
+                Active = r.GetBoolean(3),
+                InterventionType = r.GetInt32(4),
+                DailyLimitSec = r.GetInt32(5),
+                WeeklyLimitSec = r.GetInt32(6),
+            };
+        }
     }
 }

@@ -42,10 +42,11 @@ public partial class Navbar : UserControl
 
         main.CurrentView = clicked.Content?.ToString() switch
         {
-            "Dashboard" => MainWindow.ActiveView.Dashboard,
-            "Reports"   => MainWindow.ActiveView.Reports,
-            "Settings"  => MainWindow.ActiveView.Settings,
-            _           => throw new Exception("Invalid navbar button clicked!")
+            "Dashboard"         => MainWindow.ActiveView.Dashboard,
+            "Reports"           => MainWindow.ActiveView.Reports,
+            "Interventions"     => MainWindow.ActiveView.Interventions,
+            "Settings"          => MainWindow.ActiveView.Settings,
+            _                   => throw new Exception("Invalid navbar button clicked!")
         };
     }
 

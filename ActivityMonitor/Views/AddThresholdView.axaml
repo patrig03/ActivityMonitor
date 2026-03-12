@@ -1,0 +1,59 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewModels="clr-namespace:ActivityMonitor.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="ActivityMonitor.Views.AddThresholdView"
+             x:DataType="viewModels:InterventionsViewModel">
+
+  
+  <DockPanel>
+    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="10" Spacing="10">
+      <Button Classes="button" Content="Add New" Command="{Binding AddCommand}"/>
+    </StackPanel>
+    
+    <ScrollViewer>
+      <ItemsControl ItemsSource="{Binding Data}">
+        <ItemsControl.ItemTemplate>
+          <DataTemplate>
+            <Border BorderBrush="Gray" BorderThickness="2" CornerRadius="8" Margin="10" Padding="10">
+              <StackPanel Spacing="12">
+                
+                <TextBlock Text="Category:" FontWeight="Bold"/>
+                <TextBox Background="White" Foreground="Black" Text="{Binding category.Name}" Watermark="Category Name"/>
+                
+                <TextBlock Text="Settings:" FontWeight="Bold" Margin="0,10,0,0"/>
+                
+                <CheckBox Background="Black" Foreground="White" Content="Active" IsChecked="{Binding threshold.Active}"/>
+                
+                <StackPanel Spacing="5">
+                  <TextBlock Text="Intervention Type:"/>
+                  <TextBox Background="White" Foreground="Black" Text="{Binding threshold.InterventionType}" Watermark="Intervention Type"/>
+                </StackPanel>
+                
+                <StackPanel Spacing="5">
+                  <TextBlock Text="Daily Limit:"/>
+                  <TextBox Background="White" Foreground="Black" Text="{Binding threshold.DailyLimit}"/>
+                </StackPanel>
+                
+                <StackPanel Spacing="5">
+                  <TextBlock Text="Weekly Limit:"/>
+                  <TextBox Background="White" Foreground="Black" Text="{Binding threshold.WeeklyLimit}" Watermark="Weekly Limit (hh:mm:ss)"/>
+                </StackPanel>
+                
+                <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,10,0,0">
+                  <Button Classes="button" Content="Save" Command="{Binding $parent[ItemsControl].((viewModels:InterventionsViewModel)DataContext).SaveCommand}" CommandParameter="{Binding}"/>
+                  <Button Classes="button" Content="Delete" Command="{Binding $parent[ItemsControl].((viewModels:InterventionsViewModel)DataContext).DeleteCommand}" CommandParameter="{Binding}"/>
+                </StackPanel>
+                
+              </StackPanel>
+            </Border>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+    </ScrollViewer>
+  </DockPanel>
+  
+  
+</UserControl>

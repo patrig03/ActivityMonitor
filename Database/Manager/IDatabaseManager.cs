@@ -58,6 +58,9 @@ public interface IDatabaseManager : IDisposable
     int InsertThreshold(ThresholdDto threshold);
     ThresholdDto? GetThreshold(int userId, int categoryId);
     IEnumerable<ThresholdDto?> GetAllThresholds();
+    void DeleteThreshold(ThresholdDto threshold);
+    int UpdateThreshold(ThresholdDto threshold);
+    int UpsertThreshold(ThresholdDto threshold);
 
 
     /* -------------------- INTERVENTIONS -------------------- */

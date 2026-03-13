@@ -15,12 +15,11 @@ public partial class DatabaseManager
         using var cmd = _connection.CreateCommand();
         cmd.CommandText =
             """
-            INSERT INTO thresholds (threshold_id, user_id, category_id, is_active, intervention_type, daily_limit_sec, weekly_limit_sec)
-            VALUES ($id, $user, $category, $is_active, $intervention_type, $daily, $weekly);
+            INSERT INTO thresholds (user_id, category_id, is_active, intervention_type, daily_limit_sec, weekly_limit_sec)
+            VALUES ($user, $category, $is_active, $intervention_type, $daily, $weekly);
             SELECT last_insert_rowid();
             """;
 
-        cmd.Parameters.AddWithValue("id", threshold.Id);
         cmd.Parameters.AddWithValue("$user", threshold.UserId);
         cmd.Parameters.AddWithValue("$category", threshold.CategoryId);
         cmd.Parameters.AddWithValue("is_active", threshold.Active);
@@ -29,6 +28,43 @@ public partial class DatabaseManager
         cmd.Parameters.AddWithValue("$weekly", threshold.WeeklyLimitSec);
 
         return Convert.ToInt32(cmd.ExecuteScalar());
+    }
+
+    public int UpdateThreshold(ThresholdDto threshold)
+    {
+        if (_validator.VerifyTable(_connection.CreateCommand(), "thresholds") != 0)
+        {
+            throw new Exception("Database exception in thresholds table");
+        }
+
+        using var cmd = _connection.CreateCommand();
+        cmd.CommandText =
+            """
+            UPDATE thresholds
+            SET is_active = $is_active,
+                intervention_type = $intervention_type,
+                daily_limit_sec = $daily,
+                weekly_limit_sec = $weekly
+            WHERE user_id = $user AND category_id = $category;
+            """;
+
+        cmd.Parameters.AddWithValue("$user", threshold.UserId);
+        cmd.Parameters.AddWithValue("$category", threshold.CategoryId);
+        cmd.Parameters.AddWithValue("$is_active", threshold.Active);
+        cmd.Parameters.AddWithValue("$intervention_type", threshold.InterventionType);
+        cmd.Parameters.AddWithValue("$daily", threshold.DailyLimitSec);
+        cmd.Parameters.AddWithValue("$weekly", threshold.WeeklyLimitSec);
+
+        return cmd.ExecuteNonQuery();
+    }
+
+    public int UpsertThreshold(ThresholdDto threshold)
+    {
+        if (GetThreshold(threshold.UserId, threshold.CategoryId) != null)
+        {
+            return UpdateThreshold(threshold);
+        }
+        return InsertThreshold(threshold);
     }
 
     public ThresholdDto? GetThreshold(int userId, int categoryId)
@@ -78,5 +114,13 @@ public partial class DatabaseManager
                 WeeklyLimitSec = r.GetInt32(6),
             };
         }
+    }
+
+    public void DeleteThreshold(ThresholdDto threshold)
+    {
+        using var cmd = _connection.CreateCommand();
+        cmd.CommandText = "DELETE FROM thresholds WHERE threshold_id = $id;";
+        cmd.Parameters.AddWithValue("$id", threshold.Id);
+        cmd.ExecuteNonQuery();
     }
 }

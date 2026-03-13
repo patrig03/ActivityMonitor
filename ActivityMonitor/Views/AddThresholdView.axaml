@@ -13,35 +13,39 @@
     </StackPanel>
 
     <ScrollViewer IsVisible="{Binding IsScrollViewerVisible}">
-      <Border BorderBrush="Gray" BorderThickness="2" CornerRadius="8" 
+      <Border BorderBrush="Gray" BorderThickness="2" CornerRadius="8"
               Margin="10" Padding="10">
         <StackPanel Spacing="12">
-                
+
           <TextBlock Text="Category:" FontWeight="Bold"/>
-          <TextBox Background="White" Foreground="Black" Text="{Binding EditData.Category.Name}"/>
-                
+          <ComboBox Background="White"
+                    Foreground="Black"
+                    ItemsSource="{Binding Categories}"
+                    SelectedItem="{Binding EditData.Category}"
+                    DisplayMemberBinding="{Binding Name}"/>
+
           <TextBlock Text="Settings:" FontWeight="Bold" Margin="0,10,0,0"/>
-                
+
           <CheckBox Background="Black" Foreground="White" Content="Active" IsChecked="{Binding EditData.Threshold.Active}"/>
-          
+
           <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,5,0,0">
             <StackPanel Spacing="5">
               <TextBlock Text="Intervention Type:"/>
               <TextBox Background="White" Foreground="Black" Text="{Binding EditData.Threshold.InterventionType}"/>
             </StackPanel>
           </StackPanel>
-                
+
           <StackPanel Spacing="5">
             <TextBlock Text="Daily Limit:"/>
             <TextBox Background="White" Foreground="Black" Text="{Binding EditData.Threshold.DailyLimit}"/>
           </StackPanel>
-                
+
           <StackPanel Spacing="5">
             <TextBlock Text="Weekly Limit:"/>
             <TextBox Background="White" Foreground="Black" Text="{Binding EditData.Threshold.WeeklyLimit}"/>
           </StackPanel>
           <StackPanel Orientation="Horizontal" Spacing="5" Margin="0,10,0,0">
-            <Button Classes="button" Content="Save" Command="{Binding SaveCommand}" 
+            <Button Classes="button" Content="Save" Command="{Binding SaveCommand}"
                     CommandParameter="{Binding}"/>
           </StackPanel>
 

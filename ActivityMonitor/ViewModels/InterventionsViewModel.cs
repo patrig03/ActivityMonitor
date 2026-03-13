@@ -38,7 +38,7 @@ public class InterventionsViewModel : INotifyPropertyChanged
 {
     public ObservableCollection<ViewData> Data { get; set; }
     public ObservableCollection<Category> Categories { get; set; }
-
+    public ObservableCollection<string> InterventionTypes { get; set; }
     private ViewData _editData = new();
     public ViewData EditData
     {
@@ -75,6 +75,7 @@ public class InterventionsViewModel : INotifyPropertyChanged
         Manager = new(GetDatabasePath());
         Data = new();
         Categories = new();
+        InterventionTypes = new (){ "Notification", "SoftLock", "HardLock" };
         IsScrollViewerVisible = false;
 
         AddCommand = new RelayCommand(_ => AddThreshold());

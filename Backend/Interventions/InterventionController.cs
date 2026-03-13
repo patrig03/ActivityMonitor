@@ -1,3 +1,4 @@
+using Backend.Interventions.Models;
 using Backend.Interventions.NotifierStrategy;
 using Database.Manager;
 
@@ -21,16 +22,31 @@ public class InterventionController
 
             if (duration > t.DailyLimitSec)
             {
-                TriggerIntervention(t.InterventionType);
+                TriggerIntervention(t.InterventionType?? "");
+                var intervention = new Intervention
+                {
+                    UserId = t.UserId,
+                    CategoryId = t.Id,
+                    ThresholdId = t.Id,
+                    TriggeredAt = DateTime.Now
+                };
+                db.InsertIntervention(intervention.ToDto());
             }
         }
     }
     
-    private void TriggerIntervention(int interventionType)
+    private void TriggerIntervention(string interventionType)
     {
-        if (interventionType == 1)
+        switch (interventionType)
         {
-            _notifier.Notify("You have exceeded your daily limit.");
+            case "Notification":
+                _notifier.Notify("You have exceeded your daily limit.");
+                break;
+            case "SoftLock":
+                break;
+            case "HardLock":
+                break;
         }
+
     }
 }

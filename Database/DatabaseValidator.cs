@@ -66,7 +66,7 @@ public class DatabaseValidator : IDatabaseValidator
                                                user_id INTEGER,
                                                category_id INTEGER,
                                                is_active BOOLEAN,
-                                               intervention_type INTEGER,
+                                               intervention_type TEXT,
                                                daily_limit_sec INTEGER,
                                                weekly_limit_sec INTEGER,
                                                FOREIGN KEY (user_id) REFERENCES users(user_id),
@@ -78,12 +78,10 @@ public class DatabaseValidator : IDatabaseValidator
                                                   intervention_id INTEGER PRIMARY KEY,
                                                   user_id INTEGER,
                                                   category_id INTEGER,
-                                                  session_id INTEGER,
                                                   triggered_at DATETIME,
                                                   type TEXT,
                                                   FOREIGN KEY (user_id) REFERENCES users(user_id),
-                                                  FOREIGN KEY (category_id) REFERENCES categories(category_id),
-                                                  FOREIGN KEY (session_id) REFERENCES sessions(session_id)
+                                                  FOREIGN KEY (category_id) REFERENCES categories(category_id)
                                               );
                                               """;
 

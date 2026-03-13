@@ -29,7 +29,7 @@ public static class Program
             UserId = 1,
             CategoryId = 5,
             Active = true,
-            InterventionType = 1,
+            InterventionType = "Notification",
             DailyLimitSec = 20,
             WeeklyLimitSec = 100
         });

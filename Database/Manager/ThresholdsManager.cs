@@ -89,7 +89,7 @@ public partial class DatabaseManager
             UserId = reader.GetInt32(1),
             CategoryId = reader.GetInt32(2),
             Active = reader.GetBoolean(3),
-            InterventionType = reader.GetInt32(4),
+            InterventionType = reader.GetString(4),
             DailyLimitSec = reader.GetInt32(5),
             WeeklyLimitSec = reader.GetInt32(6),
         };
@@ -109,7 +109,7 @@ public partial class DatabaseManager
                 UserId = r.GetInt32(1),
                 CategoryId = r.GetInt32(2),
                 Active = r.GetBoolean(3),
-                InterventionType = r.GetInt32(4),
+                InterventionType = r.GetString(4),
                 DailyLimitSec = r.GetInt32(5),
                 WeeklyLimitSec = r.GetInt32(6),
             };

@@ -31,7 +31,10 @@
           <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,5,0,0">
             <StackPanel Spacing="5">
               <TextBlock Text="Intervention Type:"/>
-              <TextBox Background="White" Foreground="Black" Text="{Binding EditData.Threshold.InterventionType}"/>
+              <ComboBox Background="White"
+                        Foreground="Black"
+                        ItemsSource="{Binding InterventionTypes}"
+                        SelectedItem="{Binding EditData.Threshold.InterventionType}"/>
             </StackPanel>
           </StackPanel>
 

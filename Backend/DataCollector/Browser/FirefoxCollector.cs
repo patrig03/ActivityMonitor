@@ -131,7 +131,6 @@ public class FirefoxCollector : IBrowserDataCollector, IDisposable
             return new BrowserRecord
             {
                 Url = url,
-                Domain = new Uri(url).Host
             };
         }
         catch (UriFormatException)

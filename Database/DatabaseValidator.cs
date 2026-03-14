@@ -55,7 +55,6 @@ public class DatabaseValidator : IDatabaseValidator
                                                     user_id INTEGER,
                                                     app_id INTEGER,
                                                     url TEXT,
-                                                    title TEXT,
                                                     FOREIGN KEY (user_id) REFERENCES users(user_id),
                                                     FOREIGN KEY (app_id) REFERENCES applications(app_id)
                                                 );

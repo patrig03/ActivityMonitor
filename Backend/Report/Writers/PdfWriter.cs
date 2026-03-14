@@ -5,11 +5,11 @@ namespace Backend.Report.Writers;
 public class PdfWriter
 {
     private string OutputPath { get; set; }
-    PdfWriter(string outputPath)
+    public PdfWriter(string outputPath)
     {
         OutputPath = outputPath;
     }
-    public bool WriteToFile(ReportData data)
+    public bool WriteToFile(IEnumerable<ReportData> data)
     {
         throw new NotImplementedException();
     }

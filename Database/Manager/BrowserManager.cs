@@ -51,11 +51,26 @@ public partial class DatabaseManager
                 UserId = reader.GetInt32(1),
                 AppId = reader.GetInt32(2),
                 Url = reader.GetString(3),
-
             });
         }
-
         return activities;
     }
-    
+
+    public IEnumerable<BrowserActivityDto> GetAllBrowserActivity()
+    {
+        using var cmd = _connection.CreateCommand();
+        cmd.CommandText = "SELECT * FROM browser_activity";
+
+        using var r = cmd.ExecuteReader();
+        while (r.Read())
+        {
+            yield return new BrowserActivityDto
+            {
+                ActivityId = r.GetInt32(0),
+                UserId = r.GetInt32(1),
+                AppId = r.GetInt32(2),
+                Url = r.GetString(3),
+            };
+        }    
+    }
 }

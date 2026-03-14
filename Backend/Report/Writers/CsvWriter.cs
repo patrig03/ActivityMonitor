@@ -5,11 +5,11 @@ namespace Backend.Report.Writers;
 public class CsvWriter
 {
     private string OutputPath { get; set; }
-    CsvWriter(string outputPath)
+    public CsvWriter(string outputPath)
     {
         OutputPath = outputPath;
     }
-    public bool WriteToFile(ReportData data)
+    public bool WriteToFile(IEnumerable<ReportData> data)
     {
         throw new NotImplementedException();
     }

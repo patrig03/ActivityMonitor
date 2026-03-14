@@ -52,6 +52,7 @@ public interface IDatabaseManager : IDisposable
 
     void InsertBrowserActivity(BrowserActivityDto activity);
     IEnumerable<BrowserActivityDto> GetBrowserActivityForSession(int sessionId);
+    IEnumerable<BrowserActivityDto> GetAllBrowserActivity();
 
     /* -------------------- THRESHOLDS -------------------- */
 
@@ -68,7 +69,4 @@ public interface IDatabaseManager : IDisposable
     int InsertIntervention(InterventionDto intervention);
     IEnumerable<InterventionDto> GetInterventionsForUser(int userId);
 
-    /* -------------------- REPORTS -------------------- */
-
-    List<ReportDto> GetActivityReport();
 }

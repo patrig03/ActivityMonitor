@@ -53,7 +53,7 @@ public class DataCollectorController
 
         var sdto = db.GetSession(sessionId.Value);
         if (sdto == null) throw new Exception("Session not found");
-        session = new SessionRecord().FromDto(sdto);
+        session = SessionRecord.FromDto(sdto);
         if (previousRecord.Id == sessionId) 
         {
             session.EndTime = DateTime.Now;

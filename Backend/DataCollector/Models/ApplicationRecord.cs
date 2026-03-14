@@ -23,7 +23,7 @@ public class ApplicationRecord
         };
     }
 
-    public ApplicationRecord FromDto(ApplicationDto dto)
+    public static ApplicationRecord FromDto(ApplicationDto dto)
     {
         return new ApplicationRecord
         {

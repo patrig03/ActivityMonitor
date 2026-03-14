@@ -23,7 +23,7 @@ public class SessionRecord
         };
     }
 
-    public SessionRecord FromDto(SessionDto dto)
+    public static SessionRecord FromDto(SessionDto dto)
     {
         return new SessionRecord
         {

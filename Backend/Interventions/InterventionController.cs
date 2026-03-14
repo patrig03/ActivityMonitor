@@ -26,11 +26,14 @@ public class InterventionController
                 var intervention = new Intervention
                 {
                     UserId = t.UserId,
-                    CategoryId = t.Id,
+                    CategoryId = t.CategoryId,
                     ThresholdId = t.Id,
+                    Type = t.InterventionType?? "",
                     TriggeredAt = DateTime.Now
                 };
                 db.InsertIntervention(intervention.ToDto());
+                t.Active = false;
+                db.UpdateThreshold(t);
             }
         }
     }

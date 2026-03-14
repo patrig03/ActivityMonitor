@@ -2,51 +2,30 @@ using System;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Threading;
-using Avalonia.Threading;
-using Database.DTO;
+using Backend.Report;
+using Backend.Report.Models;
 using Database.Manager;
 
 namespace ActivityMonitor.ViewModels;
 
 public class ReportsViewModel
 {
-    public ObservableCollection<ReportDto> Reports { get; set; }
-    private DatabaseManager _manager { get; }
-    private static readonly string DbPath = GetDatabasePath();
+    public ObservableCollection<ReportData> Report { get; set; }
 
+    private ReportMaker _maker = new(new DatabaseManager(GetDatabasePath()));
+    
     private Timer? _timer;
     
     public ReportsViewModel()
     {
-        _manager = new (DbPath);
-        Reports = new ();
-
-        _timer = new Timer(_ =>
+        Report = new();
+        var reportData = _maker.MakeReportData();
+        
+        foreach (var d in reportData)
         {
-            var updatedItems = _manager.GetActivityReport();
-            
+            Report.Add(d);
+        }
 
-            Dispatcher.UIThread.Post(() =>
-            {
-                Reports.Clear();
-                string? lastCategoryName = null;
-
-                foreach (var app in updatedItems)
-                {
-                    if (app.CategoryName != lastCategoryName)
-                    {
-                        lastCategoryName = app.CategoryName;
-                    }
-                    else
-                    {
-                        app.CategoryName = string.Empty;
-                    }
-                    
-                    Reports.Add(app);
-                }
-            });
-
-        }, null, TimeSpan.Zero, TimeSpan.FromSeconds(10));
     }
     
     private static string GetDatabasePath()

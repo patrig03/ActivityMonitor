@@ -3,25 +3,142 @@
              xmlns:viewModels="clr-namespace:ActivityMonitor.ViewModels"
              x:Class="ActivityMonitor.Views.ReportsView"
              x:DataType="viewModels:ReportsViewModel">
-  
 
-  <ScrollViewer>
-    <ItemsControl ItemsSource="{Binding Reports}">
+  <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+    <ItemsControl ItemsSource="{Binding Report}">
       <ItemsControl.ItemTemplate>
         <DataTemplate>
-          <StackPanel Margin="10" Spacing="12">
+          <Border Margin="12"
+                  Padding="16"
+                  CornerRadius="10"
+                  BorderThickness="1">
+            <StackPanel Spacing="14" Background="Transparent">
 
-            <TextBlock Text="{Binding CategoryName}"
-                       Margin="0, 40, 0, 20"
-                       FontSize="18" FontWeight="Bold"
-                       IsVisible="{Binding CategoryName, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+              <StackPanel Spacing="4">
+                <TextBlock Text="{Binding Category.Name}"
+                           FontSize="20"
+                           FontWeight="Bold" />
+                <TextBlock Text="{Binding Category.Description}"
+                           Opacity="0.75"
+                           TextWrapping="Wrap" />
+              </StackPanel>
 
-            <TextBlock Text="{Binding ApplicationName}"
-                       FontSize="16" FontWeight="SemiBold"/>
+              
+              
+              <Expander Header="Applications"
+                        IsExpanded="True"
+                        Foreground="Black"
+                        Width="800">
 
-            <TextBlock Text="{Binding SessionDetails}"/>
+                <ItemsControl ItemsSource="{Binding Applications}">
 
-          </StackPanel>
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+
+                      <Expander Margin="0,4"
+                                Foreground="Black"
+                                Width="800">
+
+                        <Expander.Header>
+                          <DockPanel>
+                            <TextBlock Text="{Binding TotalDuration}"
+                                       DockPanel.Dock="Right"/>
+                            <TextBlock Text="{Binding ProcessName}"
+                                       FontWeight="Bold"
+                                       FontSize="16"/>
+                          </DockPanel>
+                        </Expander.Header>
+
+                        <!-- Windows -->
+                        <DataGrid ItemsSource="{Binding Windows}"
+                                  AutoGenerateColumns="False"
+                                  GridLinesVisibility="Horizontal"
+                                  HeadersVisibility="Column"
+                                  RowHeight="28">
+
+                          <DataGrid.Columns>
+
+                            <DataGridTextColumn Header="Window name"
+                                                Binding="{Binding WindowName}"
+                                                Width="*"/>
+
+                            <DataGridTextColumn Header="Time Spent"
+                                                Binding="{Binding TotalDuration}"
+                                                Width="*"/>
+
+                          </DataGrid.Columns>
+
+                        </DataGrid>
+
+                      </Expander>
+
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+
+                </ItemsControl>
+
+              </Expander>
+              
+
+              <Expander Header="Interventions"
+                        Foreground="Black"
+                        Width="800">
+
+                <DataGrid ItemsSource="{Binding Interventions}"
+                          AutoGenerateColumns="False"
+                          GridLinesVisibility="Horizontal"
+                          HeadersVisibility="Column"
+                          RowHeight="28">
+
+                  <DataGrid.Columns>
+
+                    <DataGridTextColumn Header="Id"
+                                        Binding="{Binding Id}"
+                                        Width="*"/>
+                    
+                    <DataGridTextColumn Header="Type"
+                                        Binding="{Binding Type}"
+                                        Width="*"/>
+                    
+                    <DataGridTextColumn Header="Triggered at"
+                                        Binding="{Binding TriggeredAt}"
+                                        Width="*"/>
+
+                  </DataGrid.Columns>
+
+                </DataGrid>
+              </Expander>
+              
+              <Expander Header="Browser Activity"
+                        Foreground="Black"
+                        Width="800">
+
+                <DataGrid ItemsSource="{Binding BrowserDetails}"
+                          AutoGenerateColumns="False"
+                          GridLinesVisibility="Horizontal"
+                          HeadersVisibility="Column"
+                          RowHeight="28">
+
+                  <DataGrid.Columns>
+
+                    <DataGridTextColumn Header="Id"
+                                        Binding="{Binding Id}"
+                                        Width="*"/>
+
+                    <DataGridTextColumn Header="Domain"
+                                        Binding="{Binding Domain}"
+                                        Width="*"/>
+                    
+                    <DataGridTextColumn Header="Url"
+                                        Binding="{Binding Url}"
+                                        Width="*"/>
+                  </DataGrid.Columns>
+
+                </DataGrid>
+              </Expander>
+
+            </StackPanel>
+          </Border>
         </DataTemplate>
       </ItemsControl.ItemTemplate>
     </ItemsControl>

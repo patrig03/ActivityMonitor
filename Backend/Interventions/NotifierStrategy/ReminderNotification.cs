@@ -16,6 +16,5 @@ public class ReminderNotification
         string output = process.StandardOutput.ReadToEnd();
 
         process.WaitForExit();
-        Console.WriteLine(output);
     }
 }

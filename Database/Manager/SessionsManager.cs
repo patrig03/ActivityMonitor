@@ -170,7 +170,7 @@ public partial class DatabaseManager
         var duration = 0;
         if (r.Read())
         {
-            duration =  r.GetInt32(0);
+            duration = r.GetInt32(0) ;
         }
         return duration;
     }

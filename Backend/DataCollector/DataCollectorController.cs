@@ -45,7 +45,7 @@ public class DataCollectorController
         if (sessionId == null)
         {
             session.StartTime = DateTime.Now;
-            session.EndTime = DateTime.Now;
+            session.EndTime = DateTime.Now + TimeSpan.FromSeconds(1);
             previousRecord = session;
             previousRecord.Id = db.InsertSession(session.ToDto());
             return;

@@ -174,10 +174,10 @@ public partial class DatabaseManager
             yield return new ApplicationDto
             {
                 AppId = r.GetInt32(0),
-                WindowTitle = r.IsDBNull(1) ? null : r.GetString(1),
-                ClassName = r.IsDBNull(2) ? null : r.GetString(2),
-                ProcessName = r.IsDBNull(3) ? null : r.GetString(3),
-                CategoryId = r.IsDBNull(5) ? null : r.GetInt32(5),
+                CategoryId = r.IsDBNull(1) ? null : r.GetInt32(1),
+                WindowTitle = r.IsDBNull(2) ? null : r.GetString(2),
+                ClassName = r.IsDBNull(3) ? null : r.GetString(3),
+                ProcessName = r.IsDBNull(4) ? null : r.GetString(4),
             };
         }
     }

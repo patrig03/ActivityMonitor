@@ -26,7 +26,6 @@ public class FirefoxCollector : IBrowserDataCollector, IDisposable
         try
         {
             listener.Start();
-            Console.WriteLine("HTTP listener started on http://127.0.0.1:8090/");
 
             await ListenForRequestsAsync(listener, cancellationToken);
         }

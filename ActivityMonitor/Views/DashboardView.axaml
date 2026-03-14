@@ -1,39 +1,16 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:views="clr-namespace:ActivityMonitor.Views"
+             xmlns:viewModels="clr-namespace:ActivityMonitor.ViewModels"
+             xmlns:lvc="using:LiveChartsCore.SkiaSharpView.Avalonia"
+             x:DataType="viewModels:DashboardViewModel"
              x:Class="ActivityMonitor.Views.DashboardView"
              Background="#101010"
-             Foreground="White"
-             x:CompileBindings="False">
-  
-  
+             Foreground="White">
 
- <!-- ========= MAIN DASHBOARD CONTENT ========= -->
-  <Grid RowDefinitions="Auto, Auto, *"
-        Margin="12">
-      
-    <Grid Grid.Column="1"
-          RowDefinitions="Auto, Auto, *"
-          Margin="0, 32, 0, 0">
-    
-      <Grid.Styles>
-        <Style Selector="Button.header-action">
-          <Setter Property="CornerRadius" Value="8"/>
-          <Setter Property="Padding" Value="16,10"/>
-          <Setter Property="FontWeight" Value="Medium"/>
-          <Setter Property="FontSize" Value="13"/>
-          <Setter Property="Background" Value="#17202D"/>
-          <Setter Property="Foreground" Value="#EAF1FF"/>
-          <Setter Property="BorderThickness" Value="0"/>
-        </Style>
-        <Style Selector="Button.header-action:pointerover">
-          <Setter Property="Background" Value="#1A2433"/>
-          <Setter Property="Foreground" Value="#FFFFFF"/>
-        </Style>
-      </Grid.Styles>
-    </Grid>
+  <Grid Margin="12" RowDefinitions="Auto,Auto,*,*,*">
 
-        <!-- HEADER -->
+    <!-- ================= HEADER ================= -->
     <DockPanel Margin="0,0,0,12">
       <!-- User Profile -->
       <Button CornerRadius="8"
@@ -68,43 +45,49 @@
                     Foreground="#AAB3C6"
                     VerticalAlignment="Center"/>
         </StackPanel>
-        <Button.Styles>
-          <Style Selector="Button:pointerover">
-            <Setter Property="Background" Value="#1A2230"/>
-          </Style>
-        </Button.Styles>
       </Button>
 
-      <!-- Notifications with Badge -->
-      <Button Classes="header-action"
-              CornerRadius="8"
-              Background="#212121"
-              Padding="16,10">
-        <StackPanel Orientation="Horizontal" Spacing="8">
+      <!-- Notifications -->
+      <Button Margin="8,0,0,0" CornerRadius="8" Background="#212121">
+        <StackPanel Orientation="Horizontal" Spacing="6">
           <PathIcon Data="M12,22C13.1,22 14,21.1 14,20H10C10,21.1 10.9,22 12,22ZM18,16V11C18,7.9 16.4,5.4 13.5,4.7V4C13.5,3.2 12.8,2.5 12,2.5C11.2,2.5 10.5,3.2 10.5,4V4.7C7.6,5.4 6,7.9 6,11V16L4,18V19H20V18L18,16Z"
-                    Width="18"
-                    Height="18"
-                    Foreground="White"/>
-          <TextBlock Text="Notifications"
-                     Foreground="White"
-                     VerticalAlignment="Center"/>
-                      
-          <!-- Notification Badge -->
+                    Width="18" Height="18" Foreground="White"/>
+          <TextBlock Text="Notifications" Foreground="White" VerticalAlignment="Center"/>
           <Border Background="#444444"
                   CornerRadius="10"
                   Padding="6,2"
-                  VerticalAlignment="Center"
-                  HorizontalAlignment="Center"
-                  Margin="4,0,0,0">
-            <TextBlock Text="3"
-                       Foreground="White"
-                       FontSize="10"
-                       FontWeight="Bold"/>
+                  VerticalAlignment="Center">
+            <TextBlock Text="3" Foreground="White" FontSize="10" FontWeight="Bold"/>
           </Border>
         </StackPanel>
       </Button>
     </DockPanel>
 
-    <views:QuickStatsBar Grid.Row="1"/>        
+    <!-- ================= QUICK STATS ================= -->
+    <views:QuickStatsBar Grid.Row="1" Margin="0,0,0,12"/>
+
+    <!-- ================= GRAPHS ================= -->
+    <StackPanel Grid.Row="2" Orientation="Vertical" Spacing="12" Margin="0,0,0,12">
+
+      <!-- Top Row: Window Usage & Process Pie side by side -->
+      <Grid ColumnDefinitions="*,*"
+            ColumnSpacing="12">
+
+        <!-- Window Usage -->
+        <lvc:CartesianChart Grid.Column="0"
+                            Series="{Binding WindowUsageSeries}"
+                            MinHeight="350"/>
+
+        <!-- Process Share Pie -->
+        <lvc:PieChart Grid.Column="1"
+                      Series="{Binding ProcessShareSeries}"
+                      MinHeight="350"/>
+      </Grid>
+
+      <!-- Bottom Row: Session Timeline full width -->
+      <lvc:CartesianChart Series="{Binding SessionTimelineSeries}"
+                          MinHeight="350"/>
+    </StackPanel>
+
   </Grid>
 </UserControl>

@@ -30,8 +30,11 @@ public class DataCollectorController
         if (app.CategoryId == 2)
         {
             var browserRecord = _browserCollector.QueryTabs();
-            browserRecord.BrowserId = appid;
-            db.InsertBrowserActivity(browserRecord.ToDto());
+            if (browserRecord != null)
+            {
+                browserRecord.BrowserId = appid;
+                db.InsertBrowserActivity(browserRecord.ToDto());
+            } 
         }
 
         var session = new SessionRecord

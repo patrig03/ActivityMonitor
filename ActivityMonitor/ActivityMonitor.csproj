@@ -21,6 +21,9 @@
             <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
         </PackageReference>
         <PackageReference Include="CommunityToolkit.Mvvm" />
+        <PackageReference Include="LiveChartsCore" />
+        <PackageReference Include="LiveChartsCore.SkiaSharpView" />
+        <PackageReference Include="LiveChartsCore.SkiaSharpView.Avalonia" />
     </ItemGroup>
 
     <ItemGroup>

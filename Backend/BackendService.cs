@@ -23,16 +23,6 @@ public static class Program
         
         DataCollectorController collector = new ();
         InterventionController intervener = new();
-
-        dbManager.InsertThreshold(new ThresholdDto
-        {
-            UserId = 1,
-            CategoryId = 5,
-            Active = true,
-            InterventionType = "Notification",
-            DailyLimitSec = 20,
-            WeeklyLimitSec = 100
-        });
         
         while (true)
         {

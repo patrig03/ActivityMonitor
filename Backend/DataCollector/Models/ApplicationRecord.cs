@@ -9,17 +9,26 @@ public class ApplicationRecord
     public string? ProcessName { get; set; }
     public string? WindowName { get; set; }
     public string? ClassName { get; set; }
-    
+    public int? PositionX { get; set; }
+    public int? PositionY { get; set; }
+    public int? Width { get; set; }
+    public int? Height { get; set; }
+    public int? WindowId { get; set; }
     
     public ApplicationDto ToDto()
     {
         return new ApplicationDto
         {
-            AppId = Id,
+            Id = Id,
             WindowTitle = WindowName,
             ClassName = ClassName,
             ProcessName = ProcessName,
-            CategoryId = CategoryId
+            CategoryId = CategoryId,
+            WindowId = WindowId,
+            PositionX = PositionX,
+            PositionY = PositionY,
+            Width = Width,
+            Height = Height,
         };
     }
 
@@ -27,11 +36,16 @@ public class ApplicationRecord
     {
         return new ApplicationRecord
         {
-            Id = dto.AppId,
+            Id = dto.Id,
             CategoryId = dto.CategoryId,
             ProcessName = dto.ProcessName,
             WindowName = dto.WindowTitle,
-            ClassName = dto.ClassName
+            ClassName = dto.ClassName,
+            WindowId = dto.WindowId,
+            PositionX = dto.PositionX,
+            PositionY = dto.PositionY,
+            Width = dto.Width,
+            Height = dto.Height,
         };
     }
 }

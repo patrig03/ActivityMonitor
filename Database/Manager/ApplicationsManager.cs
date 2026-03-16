@@ -21,8 +21,8 @@ public partial class DatabaseManager
         cmd.CommandText =
         """
         INSERT INTO applications
-        (name, class, process_name, category_id)
-        VALUES ($name, $class, $proc, $cat);
+        (name, class, process_name, category_id, window_id)
+        VALUES ($name, $class, $proc, $cat, $wid);
         SELECT last_insert_rowid();
         """;
 
@@ -30,6 +30,7 @@ public partial class DatabaseManager
         cmd.Parameters.AddWithValue("$class", (object?)a.ClassName ?? DBNull.Value);
         cmd.Parameters.AddWithValue("$proc", (object?)a.ProcessName ?? DBNull.Value);
         cmd.Parameters.AddWithValue("$cat", (object?)a.CategoryId ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("$wid", (object?)a.WindowId ?? DBNull.Value);
 
         return Convert.ToInt32(cmd.ExecuteScalar());
     }
@@ -64,8 +65,8 @@ public partial class DatabaseManager
         cmd.CommandText =
             """
             INSERT INTO applications
-            (name, class, process_name, category_id)
-            VALUES ($name, $class, $proc, $cat);
+            (name, class, process_name, category_id, window_id)
+            VALUES ($name, $class, $proc, $cat, $wid);
             SELECT last_insert_rowid();
             """;
 
@@ -74,11 +75,13 @@ public partial class DatabaseManager
         var classParam = cmd.CreateParameter(); classParam.ParameterName = "$class";
         var procParam  = cmd.CreateParameter(); procParam.ParameterName  = "$proc";
         var catParam   = cmd.CreateParameter(); catParam.ParameterName   = "$cat";
+        var widParam   = cmd.CreateParameter(); catParam.ParameterName   = "$wid";
 
         cmd.Parameters.Add(nameParam);
         cmd.Parameters.Add(classParam);
         cmd.Parameters.Add(procParam);
         cmd.Parameters.Add(catParam);
+        cmd.Parameters.Add(widParam);
 
         foreach (var a in apps)
         {
@@ -86,6 +89,7 @@ public partial class DatabaseManager
             classParam.Value = (object?)a.ClassName ?? DBNull.Value;
             procParam.Value  = (object?)a.ProcessName ?? DBNull.Value;
             catParam.Value   = (object?)a.CategoryId ?? DBNull.Value;
+            widParam.Value   = (object?)a.WindowId ?? DBNull.Value;
 
             yield return Convert.ToInt32(cmd.ExecuteScalar());
         }
@@ -105,11 +109,12 @@ public partial class DatabaseManager
 
         return new ApplicationDto
         {
-            AppId = r.GetInt32(0),
-            WindowTitle = r.GetString(1),
+            Id = r.GetInt32(0),
+            WindowTitle = r.IsDBNull(1) ? null : r.GetString(1),
             ClassName = r.IsDBNull(2) ? null : r.GetString(2),
             ProcessName = r.IsDBNull(3) ? null : r.GetString(3),
-            CategoryId = r.GetInt32(5),
+            CategoryId = r.IsDBNull(4) ? null : r.GetInt32(4),
+            WindowId = r.IsDBNull(5) ? null : r.GetInt32(5),
         };
     }
 
@@ -148,11 +153,12 @@ public partial class DatabaseManager
         
         using var updateCmd = _connection.CreateCommand();
         updateCmd.CommandText =
-            "UPDATE applications SET name = $name, process_name = $processName, class = $class, category_id = $cat WHERE app_id = $id";
+            "UPDATE applications SET name = $name, process_name = $processName, class = $class, category_id = $cat, window_id = $wid WHERE app_id = $id";
         updateCmd.Parameters.AddWithValue("$name", (object?)app.WindowTitle ?? DBNull.Value);
         updateCmd.Parameters.AddWithValue("$processName", (object?)app.ProcessName ?? DBNull.Value);
         updateCmd.Parameters.AddWithValue("$class", (object?)app.ClassName ?? DBNull.Value);
         updateCmd.Parameters.AddWithValue("$cat", (object?)app.CategoryId ?? DBNull.Value);
+        updateCmd.Parameters.AddWithValue("$wid", (object?)app.WindowId ?? DBNull.Value);
         updateCmd.Parameters.AddWithValue("$id", appId);
 
         updateCmd.ExecuteNonQuery();
@@ -173,11 +179,13 @@ public partial class DatabaseManager
         {
             yield return new ApplicationDto
             {
-                AppId = r.GetInt32(0),
+                Id = r.GetInt32(0),
                 CategoryId = r.IsDBNull(1) ? null : r.GetInt32(1),
                 WindowTitle = r.IsDBNull(2) ? null : r.GetString(2),
                 ClassName = r.IsDBNull(3) ? null : r.GetString(3),
                 ProcessName = r.IsDBNull(4) ? null : r.GetString(4),
+                WindowId = r.IsDBNull(5) ? null : r.GetInt32(5),
+
             };
         }
     }
@@ -191,11 +199,12 @@ public partial class DatabaseManager
         {
             yield return new ApplicationDto
             {
-                AppId = r.GetInt32(0),
+                Id = r.GetInt32(0),
                 WindowTitle = r.IsDBNull(1) ? null : r.GetString(1),
                 ClassName = r.IsDBNull(2) ? null : r.GetString(2),
                 ProcessName = r.IsDBNull(3) ? null : r.GetString(3),
-                CategoryId = r.IsDBNull(5) ? null : r.GetInt32(5),
+                CategoryId = r.IsDBNull(4) ? null : r.GetInt32(44),
+                WindowId = r.IsDBNull(5) ? null : r.GetInt32(5),
             };
         }
     }

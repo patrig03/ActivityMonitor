@@ -26,8 +26,8 @@ public static class Program
         
         while (true)
         {
-            collector.CheckActivity(dbManager);
-            intervener.VerifyThresholds(dbManager);
+            var app = collector.CheckActivity(dbManager);
+            intervener.VerifyThresholds(dbManager, app);
             Thread.Sleep(DeltaTime);
         }
     }

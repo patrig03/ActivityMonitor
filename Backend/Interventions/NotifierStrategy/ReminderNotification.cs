@@ -4,7 +4,7 @@ namespace Backend.Interventions.NotifierStrategy;
 
 public class ReminderNotification
 {
-    public void Notify(string message)
+    public string Notify(string message)
     {
         var process = new Process();
         process.StartInfo.FileName = "/home/patri/Projects/Notifier/cmake-build-release/Notifier";
@@ -13,8 +13,10 @@ public class ReminderNotification
         process.StartInfo.RedirectStandardOutput = true;
         process.Start();
         
-        string output = process.StandardOutput.ReadToEnd();
+        string response = process.StandardOutput.ReadToEnd();
 
         process.WaitForExit();
+        
+        return response;
     }
 }

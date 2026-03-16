@@ -35,6 +35,7 @@ public class DatabaseValidator : IDatabaseValidator
                                                  name TEXT,
                                                  class TEXT,
                                                  process_name TEXT,
+                                                 window_id INTEGER,
                                                  FOREIGN KEY (category_id) REFERENCES categories(category_id)
                                              );
                                              """;

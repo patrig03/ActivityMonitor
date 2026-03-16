@@ -1,3 +1,4 @@
+using Backend.DataCollector.Models;
 using Backend.Interventions.Models;
 using Backend.Interventions.NotifierStrategy;
 using Database.Manager;
@@ -6,11 +7,13 @@ namespace Backend.Interventions;
 
 public class InterventionController
 {
-    ReminderNotification _notifier = new ();
-    SoftLock _softLock = new ();
-    HardLock _hardLock = new ();
+    ReminderNotification _notifier;
+    SoftLock _softLock;
+    HardLock _hardLock;
+
+    private string _password = "zxcvb";
     
-    public void VerifyThresholds(IDatabaseManager db)
+    public void VerifyThresholds(IDatabaseManager db, ApplicationRecord lastRecord)
     {
         var thresholds = db.GetAllThresholds();
 
@@ -22,7 +25,7 @@ public class InterventionController
 
             if (duration > t.DailyLimitSec)
             {
-                TriggerIntervention(t.InterventionType?? "");
+                var response = TriggerIntervention(t.InterventionType ?? "", lastRecord.WindowId ?? 0);
                 var intervention = new Intervention
                 {
                     UserId = t.UserId,
@@ -33,23 +36,32 @@ public class InterventionController
                 };
                 db.InsertIntervention(intervention.ToDto());
                 t.Active = false;
+                if (response == "Snooze")
+                {
+                    t.DailyLimitSec += TimeSpan.FromMinutes(10).Seconds;
+                }
                 db.UpdateThreshold(t);
             }
         }
     }
     
-    private void TriggerIntervention(string interventionType)
+    private string TriggerIntervention(string interventionType, int windowId)
     {
         switch (interventionType)
         {
             case "Notification":
-                _notifier.Notify("You have exceeded your daily limit.");
-                break;
+                _notifier ??= new ();
+                var response = _notifier.Notify("You have exceeded your daily limit.");
+                return response;
             case "SoftLock":
+                _softLock ??= new ();
+                _softLock.Lock("You have exceeded your daily limit.", windowId, _password);
                 break;
             case "HardLock":
+                _hardLock ??= new ();
+                _hardLock.Lock("You have exceeded your daily limit.", windowId, 30);
                 break;
         }
-
+        return "";
     }
 }

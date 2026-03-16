@@ -7,8 +7,8 @@ public class HardLock
     public void Lock(string message, int windowId, int seconds)
     {
         var process = new Process();
-        process.StartInfo.FileName = "/home/patri/Projects/ActivityMonitor/Backend/NotifierBuild/build/cmake-build-release/Notifier";
-        process.StartInfo.Arguments = $"-s \"{message}\" \"{windowId}\" \"{seconds}\"";
+        process.StartInfo.FileName = "/home/patri/Projects/Notifier/cmake-build-release/Notifier";
+        process.StartInfo.Arguments = $"-h \"{message}\" \"{windowId}\" \"{seconds}\"";
         process.StartInfo.UseShellExecute = false;
         process.StartInfo.RedirectStandardOutput = true;
         process.Start();

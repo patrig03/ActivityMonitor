@@ -1,6 +1,7 @@
 using Backend.Classifier;
 using Backend.DataCollector.Application;
 using Backend.DataCollector.Browser;
+using Backend.DataCollector.Models;
 using Backend.Models;
 using Database.Manager;
 
@@ -14,7 +15,7 @@ public class DataCollectorController
     private readonly IBrowserDataCollector _browserCollector = new FirefoxCollector();
     private readonly IApplicationDataCollector _appCollector = new LinuxAppCollector();
     
-    public void CheckActivity(IDatabaseManager db)
+    public ApplicationRecord CheckActivity(IDatabaseManager db)
     {
         var app = _appCollector.GetActive();
         if (app == null) throw new Exception("No active window found");
@@ -47,7 +48,7 @@ public class DataCollectorController
             session.EndTime = DateTime.Now + TimeSpan.FromSeconds(1);
             _previousRecord = session;
             _previousRecord.Id = db.InsertSession(session.ToDto());
-            return;
+            return app;
         }
 
         var sdto = db.GetSession(sessionId.Value);
@@ -63,6 +64,6 @@ public class DataCollectorController
             _previousRecord = session;
             db.InsertSession(session.ToDto());
         }
-        
+        return app;
     }
 }

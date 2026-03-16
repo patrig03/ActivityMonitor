@@ -51,29 +51,29 @@ public class LinuxAppCollector : IApplicationDataCollector
         // wmctrl -lGpx output: <id> <desktop> <pid> <x> <y> <w> <h> <class> <host> <title>
         var parts = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);
         if (parts.Length < 8) return null;
-
+                
         var windowId   = parts[0];
-        var pidStr     = parts[2];
-        var wmClass    = parts[7];
-        var title      = string.Join(' ', parts.Skip(9));
-
-        if (!int.TryParse(pidStr, out var pid)) return null;
+        if (!int.TryParse(parts[2], out var pid)) return null;
 
         var xpropOutput = ExecuteCommand(XpropCmd, $"-id {windowId}");
         var state = GetXPropValue(xpropOutput, "_NET_WM_STATE");
-        var process = GetProcessName(pid);
 
         if (state == null) return null;
         if (!state.Contains("_NET_WM_STATE_FOCUSED")) return null;
-        if (process == null) return null;
         
         return new ApplicationRecord
         {
             Id = null,
             CategoryId = null,
-            ProcessName = process,
-            WindowName = title,
-            ClassName = wmClass
+            ProcessName = GetProcessName(pid),
+            WindowName = string.Join(' ', parts.Skip(9)),
+            ClassName = parts[7],
+            PositionX = int.Parse(parts[3]),
+            PositionY = int.Parse(parts[4]),
+            Width = int.Parse(parts[5]),
+            Height = int.Parse(parts[6]),
+            WindowId = Convert.ToInt32(parts[0], 16)
+            
         };
     }
 

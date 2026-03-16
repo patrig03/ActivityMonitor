@@ -1,7 +1,6 @@
 using Backend.DataCollector;
 using Backend.Interventions;
-using Backend.Interventions.NotifierStrategy;
-using Database.DTO;
+using Backend.Models;
 using Database.Manager;
 
 namespace Backend;
@@ -10,25 +9,26 @@ using System.Threading;
 
 public static class Program
 {
-    private static readonly TimeSpan DeltaTime = TimeSpan.FromSeconds(10);
-    private const string MutexName = "Global\\ActivityMonitorBackgroundService";
-    private static readonly string DbPath = GetDatabasePath();
-
     private static void Main()
     {
         if (!VerifyMutex()) { Console.WriteLine("Another instance is already running"); return; }
         
-        var dbManager = new DatabaseManager(DbPath);
+        var dbManager = new DatabaseManager(Settings.DbPath);
         dbManager.EnsureDatabase();
         
-        DataCollectorController collector = new ();
+        DataCollectorController collector = new();
         InterventionController intervener = new();
         
         while (true)
         {
             var app = collector.CheckActivity(dbManager);
             intervener.VerifyThresholds(dbManager, app);
-            Thread.Sleep(DeltaTime);
+            
+            var settings = dbManager.GetSettings(1);
+            if (settings == null) throw new Exception("settings not found");
+            var deltaTime = TimeSpan.FromSeconds(settings.DeltaTimeSeconds);
+
+            Thread.Sleep(deltaTime);
         }
     }
     
@@ -38,7 +38,7 @@ public static class Program
     /// <returns>returns true if only one instance is running</returns>
     private static bool VerifyMutex()
     {
-        using var mutex = new Mutex(true, MutexName, out var isNew);
+        using var mutex = new Mutex(true, Settings.MutexName, out var isNew);
         return isNew;
     }
     

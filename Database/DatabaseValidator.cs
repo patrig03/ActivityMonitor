@@ -17,7 +17,7 @@ public class DatabaseValidator : IDatabaseValidator
                                          CREATE TABLE IF NOT EXISTS settings (
                                              settings_id INTEGER PRIMARY KEY,
                                              user_id INTEGER,
-                                             focus_mode_enabled INTEGER,
+                                             refresh_time_seconds INTEGER,
                                              FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
                                          );
                                          """;
@@ -190,7 +190,11 @@ public class DatabaseValidator : IDatabaseValidator
                                         VALUES ("Default user", "", false, datetime('now'));
                                         SELECT last_insert_rowid();
                                         """;
-    
+    private const string SettingsDefault = """
+                                        INSERT INTO settings (user_id, refresh_time_seconds)
+                                        VALUES (1, 10);
+                                        SELECT last_insert_rowid();
+                                        """;
     public void EnsureDatabase(string dbPath)
     {
         Directory.CreateDirectory(Path.GetDirectoryName(dbPath)!);
@@ -213,6 +217,7 @@ public class DatabaseValidator : IDatabaseValidator
         
         PopulateTableDefaults(cmd, "categories");
         PopulateTableDefaults(cmd, "users");
+        PopulateTableDefaults(cmd, "settings");
     }
     private void CreateTable(SqliteCommand cmd, string tableName)
     {
@@ -348,6 +353,7 @@ public class DatabaseValidator : IDatabaseValidator
         {
             "categories" => CategoriesDefaultPopulation,
             "users" => UsersDefault,
+            "settings" => SettingsDefault,
             _ => throw new ArgumentOutOfRangeException(nameof(tableName), tableName, null)
         };
     }

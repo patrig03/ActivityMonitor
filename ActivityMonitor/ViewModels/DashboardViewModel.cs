@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Backend;
+using Backend.Models;
 using Backend.Report;
 using Backend.Report.Models;
 using Database.Manager;
@@ -54,7 +55,7 @@ public partial class DashboardViewModel : ObservableObject
             "Consider scheduling short breaks to maintain focus."
         };
     
-    private IDatabaseManager _db = new DatabaseManager(GetDatabasePath());
+    private IDatabaseManager _db = new DatabaseManager(Settings.DbPath);
     private ReportMaker _maker;
 
     public ISeries[] ProcessPie { get; set; }
@@ -232,13 +233,5 @@ public partial class DashboardViewModel : ObservableObject
                 Values = new[] { p.Duration.TotalMinutes }
             })
             .ToArray();
-    }
-    
-    private static string GetDatabasePath()
-    {
-        var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-        appDataPath = Path.Combine(appDataPath, "ActivityMonitor");
-        Directory.CreateDirectory(appDataPath);
-        return Path.Combine(appDataPath, "database.db");
     }
 }

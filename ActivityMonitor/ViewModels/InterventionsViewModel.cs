@@ -8,6 +8,7 @@ using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using Backend.Classifier.Models;
 using Backend.Interventions.Models;
+using Backend.Models;
 using Database.Manager;
 
 namespace ActivityMonitor.ViewModels;
@@ -72,7 +73,7 @@ public class InterventionsViewModel : INotifyPropertyChanged
 
     public InterventionsViewModel()
     {
-        Manager = new(GetDatabasePath());
+        Manager = new(Settings.DbPath);
         Data = new();
         Categories = new();
         InterventionTypes = new (){ "Notification", "SoftLock", "HardLock" };
@@ -162,13 +163,5 @@ public class InterventionsViewModel : INotifyPropertyChanged
 
             Data.Add(data);
         }
-    }
-
-    private static string GetDatabasePath()
-    {
-        var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-        appDataPath = Path.Combine(appDataPath, "ActivityMonitor");
-        Directory.CreateDirectory(appDataPath);
-        return Path.Combine(appDataPath, "database.db");
     }
 }

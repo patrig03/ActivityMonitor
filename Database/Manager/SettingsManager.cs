@@ -15,16 +15,14 @@ public partial class DatabaseManager
         cmd.CommandText =
             """
             INSERT INTO settings
-            (user_id, focus_mode_enabled, notification_type, theme)
-            VALUES ($user, $focus, $notif, $theme);
+            (user_id, refresh_time_seconds)
+            VALUES ($user, $time);
             SELECT last_insert_rowid();
             """;
 
         cmd.Parameters.AddWithValue("$user", s.UserId);
-        cmd.Parameters.AddWithValue("$focus", s.FocusModeEnabled ? 1 : 0);
-        cmd.Parameters.AddWithValue("$notif", s.NotificationType);
-        cmd.Parameters.AddWithValue("$theme", s.Theme);
-
+        cmd.Parameters.AddWithValue("time", s.DeltaTimeSeconds);
+        
         return Convert.ToInt32(cmd.ExecuteScalar());
     }
 
@@ -39,11 +37,9 @@ public partial class DatabaseManager
 
         return new SettingsDto
         {
-            SettingsId = r.GetInt32(0),
+            Id = r.GetInt32(0),
             UserId = r.GetInt32(1),
-            FocusModeEnabled = r.GetInt32(2) == 1,
-            NotificationType = r.IsDBNull(3) ? null : r.GetString(3),
-            Theme = r.IsDBNull(4) ? null : r.GetString(4)
+            DeltaTimeSeconds = r.GetInt32(2),
         };
     }
 }

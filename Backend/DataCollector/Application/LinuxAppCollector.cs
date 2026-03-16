@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Backend.DataCollector.Models;
 using Backend.Models;
 
@@ -5,8 +6,96 @@ namespace Backend.DataCollector.Application;
 
 public class LinuxAppCollector : IApplicationDataCollector
 {
-    public IEnumerable<ApplicationRecord> QueryApplications()
+    private const string WmctrlCmd  = "wmctrl";
+    private const string XpropCmd   = "xprop";
+    
+    public ApplicationRecord GetActive()
     {
-        throw new NotImplementedException();
+        var wmctrlResult = ExecuteCommand(WmctrlCmd, "-lGpx");
+        var app = ParseWindows(wmctrlResult);
+        if (app == null) throw new Exception("No active window found");
+        return app;
     }
+    private string ExecuteCommand(string file, string args)
+    {
+        using var process = new Process
+        {
+            StartInfo =
+            {
+                FileName           = file,
+                Arguments          = args,
+                RedirectStandardOutput = true,
+                UseShellExecute    = false,
+                CreateNoWindow     = true
+            }
+        };
+        process.Start();
+        var output = process.StandardOutput.ReadToEnd();
+        process.WaitForExit();
+        return output;
+    }
+
+    private ApplicationRecord? ParseWindows(string wmctrlResult)
+    {
+        var lines = wmctrlResult.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+
+        return lines
+            .Select(ParseWindowLine)
+            .Where(w => w != null!)
+            .ToArray()
+            .First();
+    }
+
+    private ApplicationRecord? ParseWindowLine(string line)
+    {
+        // wmctrl -lGpx output: <id> <desktop> <pid> <x> <y> <w> <h> <class> <host> <title>
+        var parts = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length < 8) return null;
+
+        var windowId   = parts[0];
+        var pidStr     = parts[2];
+        var wmClass    = parts[7];
+        var title      = string.Join(' ', parts.Skip(9));
+
+        if (!int.TryParse(pidStr, out var pid)) return null;
+
+        var xpropOutput = ExecuteCommand(XpropCmd, $"-id {windowId}");
+        var state = GetXPropValue(xpropOutput, "_NET_WM_STATE");
+        var process = GetProcessName(pid);
+
+        if (state == null) return null;
+        if (!state.Contains("_NET_WM_STATE_FOCUSED")) return null;
+        if (process == null) return null;
+        
+        return new ApplicationRecord
+        {
+            Id = null,
+            CategoryId = null,
+            ProcessName = process,
+            WindowName = title,
+            ClassName = wmClass
+        };
+    }
+
+    private string? GetXPropValue(string output, string key)
+    {
+        // Each line: <key> = <value>
+        var line = output
+            .Split('\n')
+            .FirstOrDefault(l => l.TrimStart().StartsWith(key));
+        return line?.Split('=')?.Last()?.Trim();
+    }
+
+    private string? GetProcessName(int pid)
+    {
+        try
+        {
+            return File.ReadAllText($"/proc/{pid}/comm").Trim();
+        }
+        catch
+        {
+            return null;
+        }
+    }
+    
 }

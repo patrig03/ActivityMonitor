@@ -5,5 +5,5 @@ namespace Backend.DataCollector.Application;
 
 public interface IApplicationDataCollector
 {
-    IEnumerable<ApplicationRecord> QueryApplications();
+    ApplicationRecord GetActive();
 }

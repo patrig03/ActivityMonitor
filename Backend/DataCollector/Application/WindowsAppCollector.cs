@@ -5,7 +5,7 @@ namespace Backend.DataCollector.Application;
 
 public class WindowsAppCollector : IApplicationDataCollector
 {
-    public IEnumerable<ApplicationRecord> QueryApplications()
+    public ApplicationRecord GetActive()
     {
         throw new NotImplementedException();
     }

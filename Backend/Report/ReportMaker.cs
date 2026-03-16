@@ -20,21 +20,19 @@ public class ReportMaker
         Manager = manager;
     }
 
-public IEnumerable<ReportData> MakeReportData()
-{
-    var categories = Manager.GetAllCategories();
+    public IEnumerable<ReportData> MakeReportData()
+    {
+        var categories = Manager.GetAllCategories();
 
-    var interventions = Manager.GetInterventionsForUser(1);
-    var browserRecords = Manager.GetAllBrowserActivity();
-    var thresholds = Manager.GetAllThresholds();
+        var interventions = Manager.GetInterventionsForUser(1);
+        var browserRecords = Manager.GetAllBrowserActivity();
+        var thresholds = Manager.GetAllThresholds();
 
-    var interventionsList = interventions.Select(Intervention.FromDto).ToList();
-    var browserDetailsList = browserRecords.Select(BrowserRecord.FromDto).ToList();
-    var thresholdsList = thresholds.Select(Threshold.FromDto).ToList();
+        var interventionsList = interventions.Select(Intervention.FromDto).ToList();
+        var browserDetailsList = browserRecords.Select(BrowserRecord.FromDto).ToList();
+        var thresholdsList = thresholds.Select(Threshold.FromDto).ToList();
 
-    return categories
-        .Select(category =>
-        {
+        return categories.Select(category => {
             var apps = Manager.GetApplicationsByCategory(category.CategoryId)
                 .Select(ApplicationRecord.FromDto)
                 .ToDictionary(a => a.Id);
@@ -98,7 +96,7 @@ public IEnumerable<ReportData> MakeReportData()
                 Thresholds = thresholdsList.Where(t => t.CategoryId == x.category.CategoryId)
             };
         });
-}
+    }
 
     public bool WriteCsvReport(string outputPath)
     {

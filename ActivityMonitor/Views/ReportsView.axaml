@@ -1,9 +1,13 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:viewModels="clr-namespace:ActivityMonitor.ViewModels"
+             xmlns:local="clr-namespace:ActivityMonitor.Converters"
              x:Class="ActivityMonitor.Views.ReportsView"
-             x:DataType="viewModels:ReportsViewModel">
+             x:DataType="viewModels:ReportsViewModel"
+             >
 
+  <UserControl.Resources> <local:IsCategoryTwoConverter x:Key="IsCategoryTwoConverter"/> </UserControl.Resources>
+  
   <ScrollViewer HorizontalScrollBarVisibility="Disabled">
     <ItemsControl ItemsSource="{Binding Report}">
       <ItemsControl.ItemTemplate>
@@ -109,9 +113,8 @@
                 </DataGrid>
               </Expander>
               
-              <Expander Header="Browser Activity"
-                        Foreground="Black"
-                        Width="800">
+              <Expander Header="Browser Activity" Foreground="Black" Width="800"  
+                        IsVisible="{Binding Category.Id, Converter={StaticResource IsCategoryTwoConverter}}">
 
                 <DataGrid ItemsSource="{Binding BrowserDetails}"
                           AutoGenerateColumns="False"
@@ -120,14 +123,6 @@
                           RowHeight="28">
 
                   <DataGrid.Columns>
-
-                    <DataGridTextColumn Header="Id"
-                                        Binding="{Binding Id}"
-                                        Width="*"/>
-
-                    <DataGridTextColumn Header="Domain"
-                                        Binding="{Binding Domain}"
-                                        Width="*"/>
                     
                     <DataGridTextColumn Header="Url"
                                         Binding="{Binding Url}"

@@ -30,7 +30,10 @@ public class DataCollectorController
             if (browserRecord != null)
             {
                 browserRecord.BrowserId = appid;
-                db.InsertBrowserActivity(browserRecord.ToDto());
+                if (db.IsInDb(browserRecord.ToDto()) == null)
+                {
+                    db.InsertBrowserActivity(browserRecord.ToDto());
+                }
             } 
         }
 

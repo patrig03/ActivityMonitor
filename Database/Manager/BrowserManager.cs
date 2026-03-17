@@ -4,7 +4,22 @@ namespace Database.Manager;
 
 public partial class DatabaseManager
 {
-    
+    public int? IsInDb(BrowserActivityDto b)
+    {
+        using var cmd = _connection.CreateCommand();
+        cmd.CommandText = "SELECT * FROM browser_activity WHERE user_id = $uid AND app_id = $aid AND url = $url";
+        cmd.Parameters.AddWithValue("$uid", b.UserId);
+        cmd.Parameters.AddWithValue("$aid", b.AppId);
+        cmd.Parameters.AddWithValue("$url", b.Url);
+
+        using var r = cmd.ExecuteReader();
+        if (r.Read())
+        {
+            return r.GetInt32(0);
+        }
+        return null;
+    }
+
     public void InsertBrowserActivity(BrowserActivityDto a)
     {
         if (_validator.VerifyTable(_connection.CreateCommand(), "browser_activity") != 0)
@@ -33,7 +48,7 @@ public partial class DatabaseManager
         using var cmd = _connection.CreateCommand();
         cmd.CommandText =
             """
-            SELECT activity_id, user_id, app_id, url, title
+            SELECT activity_id, user_id, app_id, url
             FROM browser_activity
             WHERE session_id = $sessionId;
             """;

@@ -53,6 +53,7 @@ public interface IDatabaseManager : IDisposable
     void InsertBrowserActivity(BrowserActivityDto activity);
     IEnumerable<BrowserActivityDto> GetBrowserActivityForSession(int sessionId);
     IEnumerable<BrowserActivityDto> GetAllBrowserActivity();
+    int? IsInDb(BrowserActivityDto b);
 
     /* -------------------- THRESHOLDS -------------------- */
 

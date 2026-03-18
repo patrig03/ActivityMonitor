@@ -1,17 +1,11 @@
 using Backend.DataCollector.Models;
 using Backend.Interventions.Models;
-using Backend.Interventions.NotifierStrategy;
 using Database.Manager;
 
 namespace Backend.Interventions;
 
 public class InterventionController
 {
-    private ReminderNotification? _notifier;
-    private SoftLock? _softLock;
-    private HardLock? _hardLock;
-
-
     public void VerifyThresholds(IDatabaseManager db, ApplicationRecord lastRecord)
     {
         var thresholds = db.GetAllThresholds();
@@ -31,12 +25,12 @@ public class InterventionController
                 }
                 else if (t.InterventionType == "SoftLock")
                 {
-                    response = HandleSoftLock("Type this message to unlock.", lastRecord.WindowId ?? 0, 
-                        "Type this message to unlock.");
+                    HandleSoftLock("Type this message to unlock", lastRecord.WindowId ?? 0, 
+                        "Type this message to unlock");
                 }
                 else if (t.InterventionType == "HardLock")
                 {
-                    response = HandleHardLock("Daily threshold exceeded.", lastRecord.WindowId ?? 0, 20);
+                    HandleHardLock("Threshold exceeded.", lastRecord.WindowId ?? 0, 20);
                 }
 
                 var intervention = new Intervention
@@ -74,46 +68,20 @@ public class InterventionController
         }
     }
 
-    private string TriggerIntervention(string interventionType, int windowId, string message, int timeout,
-        string password)
+    private string HandleNotification(string message, string[]? buttons = null)
     {
-        return interventionType switch
-        {
-            "Notification" => HandleNotification(message),
-            "SoftLock" => HandleSoftLock(message, windowId, password),
-            "HardLock" => HandleHardLock(message, windowId, timeout),
-            _ => ""
-        };
+        return Notifier.Notification(message, buttons ?? new[] { "Dismiss" });
+    }
+    
+    private void HandleSoftLock(string message, int windowId, string password)
+    {
+        if (windowId == 0) return;
+        Notifier.TypingLock(message, (ulong)windowId, password);
     }
 
-    /// <summary>
-    /// Handles a notification intervention. Returns the notifier's response.
-    /// </summary>
-    private string HandleNotification(string message)
+    private void HandleHardLock(string message, int windowId, int timeout)
     {
-        _notifier ??= new();
-        return _notifier.Notify(message);
-    }
-
-    /// <summary>
-    /// Locks the UI softly, using a password. Does not return anything.
-    /// </summary>
-    private string HandleSoftLock(string message, int windowId, string password)
-    {
-        if (windowId == 0) return "";
-        _softLock ??= new();
-        _softLock.Lock(message, windowId, password);
-        return "";
-    }
-
-    /// <summary>
-    /// Locks the UI hard for a specified timeout. Does not return anything.
-    /// </summary>
-    private string HandleHardLock(string message, int windowId, int timeout)
-    {
-        if (windowId == 0) return "";
-        _hardLock ??= new();
-        _hardLock.Lock(message, windowId, timeout);
-        return "";
+        if (windowId == 0) return;
+        Notifier.TimedLock(message, (ulong)windowId, timeout);
     }
 }

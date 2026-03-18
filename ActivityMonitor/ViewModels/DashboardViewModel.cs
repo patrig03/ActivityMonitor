@@ -77,42 +77,6 @@ public partial class DashboardViewModel : ObservableObject
         BuildProcessShareChart(report);
     }
     
-        
-    public ISeries[] ProcessSeries { get; set; }
-    public Axis[] XAxes { get; set; }
-
-    public void BuildProcessChart(IEnumerable<ProcessUsage> processes)
-    {
-        ProcessSeries =
-        [
-            new ColumnSeries<double>
-            {
-                Values = processes
-                    .Select(p => p.TotalDuration.TotalMinutes)
-                    .ToArray()
-            }
-        ];
-
-        XAxes =
-        [
-            new Axis
-            {
-                Labels = processes
-                    .Select(p => p.ProcessName)
-                    .ToArray(),
-                LabelsRotation = 20
-            }
-        ];
-        
-                
-        ProcessPie = processes
-            .Select(p => new PieSeries<double>
-            {
-                Values = new[] { p.TotalDuration.TotalMinutes },
-                Name = p.ProcessName
-            })
-            .ToArray();
-    }
     
     public ISeries[] ProcessUsageSeries { get; set; }
     public Axis[] ProcessXAxis { get; set; }

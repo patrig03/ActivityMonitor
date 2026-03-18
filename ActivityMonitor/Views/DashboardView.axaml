@@ -64,29 +64,41 @@
     </DockPanel>
 
     <!-- ================= QUICK STATS ================= -->
-    <views:QuickStatsBar Grid.Row="1" Margin="0,0,0,12"/>
+    <views:QuickStatsBar Grid.Row="1" Margin="0,0,0,24"/>
 
     <!-- ================= GRAPHS ================= -->
     <StackPanel Grid.Row="2" Orientation="Vertical" Spacing="12" Margin="0,0,0,12">
 
-      <!-- Top Row: Window Usage & Process Pie side by side -->
       <Grid ColumnDefinitions="*,*"
+            RowDefinitions="*,*"
             ColumnSpacing="12">
 
-        <!-- Window Usage -->
         <lvc:CartesianChart Grid.Column="0"
                             Series="{Binding WindowUsageSeries}"
                             MinHeight="350"/>
+        <TextBlock Grid.Column="0"
+                   Grid.Row="1" Margin="0,4,0,0"
+                   FontSize="14" Foreground="White"
+                   Text="Top 10 most-used windows by total active time." 
+                   TextAlignment="Center"/>
 
-        <!-- Process Share Pie -->
         <lvc:PieChart Grid.Column="1"
+                      Grid.Row="0" 
                       Series="{Binding ProcessShareSeries}"
                       MinHeight="350"/>
+        <TextBlock  Grid.Column="1" 
+                    Grid.Row="1" Margin="0,4,0,0"
+                    FontSize="14" Foreground="White"
+                    Text="CPU‑time distribution across running processes." 
+                    TextAlignment="Center"/>
       </Grid>
 
-      <!-- Bottom Row: Session Timeline full width -->
       <lvc:CartesianChart Series="{Binding SessionTimelineSeries}"
                           MinHeight="350"/>
+      <TextBlock Margin="0,4,0,0"
+                 FontSize="14" Foreground="White"
+                 Text="Duration of each user session in minutes over time."
+                 TextAlignment="Center"/>
     </StackPanel>
 
   </Grid>

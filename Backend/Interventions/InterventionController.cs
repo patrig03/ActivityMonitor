@@ -8,80 +8,58 @@ public class InterventionController
 {
     public void VerifyThresholds(IDatabaseManager db, ApplicationRecord lastRecord)
     {
-        var thresholds = db.GetAllThresholds();
+        var thresholds = db.GetAllThresholds().Select(t => Threshold.FromDto(t));
 
         foreach (var t in thresholds)
         {
             if (!t.Active) continue;
-
-            var duration = db.GetSessionDurationForCategory(t.CategoryId);
-
-            if (duration > t.DailyLimitSec)
-            {
-                var response = "";
-                if (t.InterventionType == "Notification")
-                {
-                    response = HandleNotification("Daily threshold exceeded.");
-                }
-                else if (t.InterventionType == "SoftLock")
-                {
-                    HandleSoftLock("Type this message to unlock", lastRecord.WindowId ?? 0, 
-                        "Type this message to unlock");
-                }
-                else if (t.InterventionType == "HardLock")
-                {
-                    HandleHardLock("Threshold exceeded.", lastRecord.WindowId ?? 0, 20);
-                }
-
-                var intervention = new Intervention
-                {
-                    UserId = t.UserId,
-                    CategoryId = t.CategoryId,
-                    ThresholdId = t.Id,
-                    Type = t.InterventionType ?? "",
-                    TriggeredAt = DateTime.Now
-                };
-                db.InsertIntervention(intervention.ToDto());
-                t.Active = false;
-                if (response == "Snooze")
-                {
-                    t.DailyLimitSec += TimeSpan.FromMinutes(1).Seconds;
-                }
-
-                db.UpdateThreshold(t);
-            }
-            else if (duration > t.WeeklyLimitSec)
-            {
-                HandleNotification("Weekly threshold exceeded.");
-                var intervention = new Intervention
-                {
-                    UserId = t.UserId,
-                    CategoryId = t.CategoryId,
-                    ThresholdId = t.Id,
-                    Type = "Notification",
-                    TriggeredAt = DateTime.Now
-                };
-                db.InsertIntervention(intervention.ToDto());
-                t.Active = false;
-                db.UpdateThreshold(t);
-            }
+            CheckThreshold(db, t, lastRecord); 
         }
     }
-
-    private string HandleNotification(string message, string[]? buttons = null)
-    {
-        return Notifier.Notification(message, buttons ?? new[] { "Dismiss" });
-    }
     
-    private void HandleSoftLock(string message, int windowId, string password)
+    private void CheckThreshold(IDatabaseManager db, Threshold t, ApplicationRecord lastRecord)
     {
-        if (windowId == 0) return;
-        Notifier.TypingLock(message, (ulong)windowId, password);
-    }
 
-    private void HandleHardLock(string message, int windowId, int timeout)
-    {
-        if (windowId == 0) return;
-        Notifier.TimedLock(message, (ulong)windowId, timeout);
+        var duration = db.GetSessionDurationForCategory(t.CategoryId);
+        if (!(TimeSpan.FromSeconds(duration) > t.Limit)){ return; }
+
+        bool snooze = false;
+        switch (t.InterventionType)
+        {
+            case "Notification":
+                var response = Notifier.Notification($"Daily limit exceeded for {lastRecord.ProcessName}", 
+                    new[] { "Dismiss", "Snooze"});
+                if (response == "Snooze")
+                {
+                    t.Limit += TimeSpan.FromMinutes(10);
+                    snooze = true;
+                }
+                else
+                {
+                    t.Active = false;
+                }
+                break;
+            case "TypingLock": 
+                if (lastRecord.WindowId == null || lastRecord.WindowId == 0) return;
+                Notifier.TypingLock("Type this message to unlock", (ulong)lastRecord.WindowId, "Type this message to unlock");
+                t.Active = false;
+                break;
+            case "TimerLock": 
+                if (lastRecord.WindowId == null || lastRecord.WindowId == 0) return;
+                Notifier.TimedLock($"Daily limit exceeded for {lastRecord.ProcessName}", (ulong)lastRecord.WindowId, 20);
+                t.Active = false;
+                break;
+        }
+        db.UpdateThreshold(t.ToDto());
+
+
+        var intervention = new Intervention
+        {
+            ThresholdId = t.Id,
+            Snoozed = snooze,
+            TriggeredAt = DateTime.Now,
+        };
+
+        db.InsertIntervention(intervention.ToDto());
     }
 }

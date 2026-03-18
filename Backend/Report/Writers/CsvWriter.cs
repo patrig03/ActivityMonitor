@@ -125,7 +125,6 @@ public class CsvWriter
             {
                 var intervention = interventions[i];
                 fields.Add(EscapeCsvField(intervention.Id.ToString()));
-                fields.Add(EscapeCsvField(intervention.Type));
                 fields.Add(EscapeCsvField(intervention.TriggeredAt.ToString("yyyy-MM-dd HH:mm:ss")));
             }
             else
@@ -142,8 +141,7 @@ public class CsvWriter
                 fields.Add(EscapeCsvField(threshold.Id.ToString()));
                 fields.Add(EscapeCsvField(threshold.Active.ToString()));
                 fields.Add(EscapeCsvField(threshold.InterventionType ?? ""));
-                fields.Add(EscapeCsvField(threshold.DailyLimit?.TotalMinutes.ToString("F2") ?? ""));
-                fields.Add(EscapeCsvField(threshold.WeeklyLimit?.TotalMinutes.ToString("F2") ?? ""));
+                fields.Add(EscapeCsvField(threshold.DailyLimit.TotalMinutes.ToString("F2")));
             }
             else
             {

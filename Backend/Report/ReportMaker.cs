@@ -91,7 +91,7 @@ public class ReportMaker
                 User = new User(),
                 Category = Category.FromDto(x.category),
                 Applications = processes,
-                Interventions = interventionsList.Where(i => i.CategoryId == x.category.CategoryId),
+                Interventions = interventionsList,
                 BrowserDetails = browserDetailsList,
                 Thresholds = thresholdsList.Where(t => t.CategoryId == x.category.CategoryId)
             };

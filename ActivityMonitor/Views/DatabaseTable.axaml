@@ -3,57 +3,12 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:viewModels="clr-namespace:ActivityMonitor.ViewModels"
-             xmlns:dto="clr-namespace:Database.DTO;assembly=Database"
              mc:Ignorable="d" 
              d:DesignWidth="800" 
              d:DesignHeight="450"
              x:Class="ActivityMonitor.Views.DatabaseTable"
              x:DataType="viewModels:DatabaseViewModel">
 
-    <UserControl.Styles>
-        <Style Selector="DataGrid">
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="GridLinesVisibility" Value="All"/>
-            <Setter Property="RowBackground" Value="#222222"/>
-            <Setter Property="HorizontalGridLinesBrush" Value="#30FFFFFF"/>
-            <Setter Property="VerticalGridLinesBrush" Value="#30FFFFFF"/>
-        </Style>
-        
-        <Style Selector="DataGridColumnHeader">
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Foreground" Value="#ffffff"/>
-            <Setter Property="BorderThickness" Value="0,0,0,2"/>
-            <Setter Property="BorderBrush" Value="#30FFFFFF"/>
-            <Setter Property="Padding" Value="12,8"/>
-            <Setter Property="FontSize" Value="16"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="HorizontalContentAlignment" Value="Center"/>
-        </Style>
-        
-        <Style Selector="DataGridColumnHeader.center">
-            <Setter Property="HorizontalContentAlignment" Value="Center"/>
-        </Style>
-        
-        <Style Selector="DataGridCell">
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Padding" Value="12,6"/>
-            <Setter Property="HorizontalContentAlignment" Value="Left"/>
-        </Style>
-        
-        <Style Selector="DataGridCell.center">
-            <Setter Property="HorizontalContentAlignment" Value="Center"/>
-        </Style>
-        
-        <Style Selector="DataGridCell:pointerover">
-            <Setter Property="Background" Value="#1A3A6DA0"/>
-        </Style>
-        
-        <Style Selector="DataGridRow:selected">
-            <Setter Property="Background" Value="#2A3A6DA0"/>
-        </Style>
-    </UserControl.Styles>
 
     <DataGrid ItemsSource="{Binding WindowCategories}"
               AutoGenerateColumns="False"

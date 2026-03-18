@@ -20,10 +20,8 @@ public partial class DatabaseManager
         SELECT last_insert_rowid();
         """;
 
-        cmd.Parameters.AddWithValue("$user", intervention.UserId);
-        cmd.Parameters.AddWithValue("$category", intervention.CategoryId);
+
         cmd.Parameters.AddWithValue("$triggered", intervention.TriggeredAt);
-        cmd.Parameters.AddWithValue("$type", intervention.Type);
 
         return Convert.ToInt32(cmd.ExecuteScalar());
     }
@@ -47,11 +45,8 @@ public partial class DatabaseManager
         {
             list.Add(new InterventionDto
             {
-                InterventionId = reader.GetInt32(0),
-                UserId = reader.GetInt32(1),
-                CategoryId = reader.GetInt32(2),
+
                 TriggeredAt = reader.GetDateTime(3),
-                Type = reader.GetString(4),
             });
         }
 

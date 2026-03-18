@@ -352,7 +352,6 @@ public class PdfWriter
         foreach (var intervention in interventionList)
         {
             AddTableCell(table, intervention.Id.ToString(), alternate);
-            AddTableCell(table, intervention.Type ?? "N/A", alternate);
             AddTableCell(table, intervention.ThresholdId.ToString(), alternate);
             AddTableCell(table, intervention.TriggeredAt.ToString("yyyy-MM-dd HH:mm"), alternate);
 
@@ -392,12 +391,11 @@ public class PdfWriter
             AddTableCell(table, threshold.Id.ToString(), alternate);
             AddTableCell(table, threshold.Active ? "Yes" : "No", alternate);
             AddTableCell(table, threshold.InterventionType ?? "N/A", alternate);
-            AddTableCell(table, threshold.DailyLimit.HasValue ? FormatTimeSpan(threshold.DailyLimit.Value) : "Not set", alternate);
-            AddTableCell(table, threshold.WeeklyLimit.HasValue ? FormatTimeSpan(threshold.WeeklyLimit.Value) : "Not set", alternate);
+            AddTableCell(table, FormatTimeSpan(threshold.DailyLimit), alternate);
             
             // Status column
             var status = threshold.Active ? "Active" : "Inactive";
-            if (threshold.Active && (threshold.DailyLimit.HasValue || threshold.WeeklyLimit.HasValue))
+            if (threshold.Active)
             {
                 status = "Active with limits";
             }

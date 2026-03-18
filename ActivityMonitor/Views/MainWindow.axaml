@@ -7,11 +7,11 @@
         mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="1000"
         MinWidth="1200"
         MinHeight="1000"
+        Background="#101010"
+        Foreground="White"
         Width="1000"
         Height="800"
         x:Class="ActivityMonitor.Views.MainWindow"
-        Background="#101010"
-        Foreground="White"
         Icon="/Assets/avalonia-logo.ico"
         Title="ActivityMonitor"
         x:CompileBindings="False">
@@ -19,6 +19,10 @@
   <Window.Resources>
     <views:ActiveViewTemplateSelector x:Key="ActiveViewSelector"/>
   </Window.Resources>
+  
+  <Window.Styles>
+    <StyleInclude Source="/Views/DarkModeStyle.axaml"/>
+  </Window.Styles>
 
   <Grid ColumnDefinitions="Auto *" RowDefinitions="*">
     <views:Navbar Grid.Column="0" Margin="0, 0, 4, 0"/>

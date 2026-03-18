@@ -3,10 +3,11 @@
              xmlns:viewModels="clr-namespace:ActivityMonitor.ViewModels"
              xmlns:local="clr-namespace:ActivityMonitor.Converters"
              x:Class="ActivityMonitor.Views.ReportsView"
-             x:DataType="viewModels:ReportsViewModel"
-             >
+             x:DataType="viewModels:ReportsViewModel">
 
-  <UserControl.Resources> <local:IsCategoryTwoConverter x:Key="IsCategoryTwoConverter"/> </UserControl.Resources>
+  <UserControl.Resources>
+     <local:IsCategoryTwoConverter x:Key="IsCategoryTwoConverter"/>
+  </UserControl.Resources>
   
   <ScrollViewer HorizontalScrollBarVisibility="Disabled">
     <ItemsControl ItemsSource="{Binding Report}">
@@ -99,11 +100,7 @@
                     <DataGridTextColumn Header="Id"
                                         Binding="{Binding Id}"
                                         Width="*"/>
-                    
-                    <DataGridTextColumn Header="Type"
-                                        Binding="{Binding Type}"
-                                        Width="*"/>
-                    
+
                     <DataGridTextColumn Header="Triggered at"
                                         Binding="{Binding TriggeredAt}"
                                         Width="*"/>

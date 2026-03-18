@@ -36,9 +36,9 @@ public partial class Navbar : UserControl
         
         foreach (var btn in _navButtons)
         {
-            btn.Classes.Remove("nav-button--active");
+            btn.Classes.Remove("button--active");
         }
-        clicked.Classes.Add("nav-button--active");
+        clicked.Classes.Add("button--active");
 
         main.CurrentView = clicked.Content?.ToString() switch
         {

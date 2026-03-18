@@ -11,62 +11,11 @@
              x:DataType="viewModels:InterventionsViewModel">
 
   
-  <UserControl.Resources>
-    <ControlTheme x:Key="NavButtonTheme" TargetType="Button">
-      <Setter Property="CornerRadius" Value="8"/>
-      <Setter Property="Padding" Value="12,10"/>
-      <Setter Property="HorizontalAlignment" Value="Stretch"/>
-      <Setter Property="FontWeight" Value="Medium"/>
-      <Setter Property="Foreground" Value="White"/>
-      <Setter Property="Background" Value="#333333"/>
-      <Setter Property="BorderBrush" Value="Transparent"/>
-      <Setter Property="BorderThickness" Value="2"/>
 
-      <Setter Property="Template">
-        <ControlTemplate TargetType="Button">
-          <Border Name="PART_Border"
-                  CornerRadius="{TemplateBinding CornerRadius}"
-                  Background="{TemplateBinding Background}"
-                  BorderBrush="{TemplateBinding BorderBrush}"
-                  BorderThickness="{TemplateBinding BorderThickness}">
-            <ContentPresenter Name="PART_ContentPresenter"
-                              Margin="{TemplateBinding Padding}"
-                              HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
-                              VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
-                              Content="{TemplateBinding Content}"
-                              ContentTemplate="{TemplateBinding ContentTemplate}"
-                              RecognizesAccessKey="True"/>
-          </Border>
-        </ControlTemplate>
-      </Setter>
-    </ControlTheme>
-  </UserControl.Resources>
 
   <UserControl.Styles>
     <!-- Base theme applied via Theme=... -->
-    <Style Selector="Button.button">
-      <Setter Property="Theme" Value="{StaticResource NavButtonTheme}"/>
-            
-    </Style>
 
-    <Style Selector="Button.button:pointerover">
-      <Setter Property="Background" Value="#222222"/>
-      <Setter Property="BorderBrush" Value="#2A2A2A"/>
-      <Setter Property="Foreground" Value="#EAF1FF"/>
-    </Style>
-
-    <Style Selector="Button.button:pressed">
-      <Setter Property="Background" Value="#151515"/>
-      <Setter Property="BorderBrush" Value="#3A3A3A"/>
-      <Setter Property="Foreground" Value="#FFFFFF"/>
-    </Style>
-
-    <Style Selector="Button.button.button--active">
-      <Setter Property="Background" Value="#555555"/>
-      <Setter Property="BorderBrush" Value="#6A6A6A"/>
-      <Setter Property="Foreground" Value="#FFFFFF"/>
-      <Setter Property="FontWeight" Value="SemiBold"/>
-    </Style>
   </UserControl.Styles>
 
   <Grid ColumnDefinitions="*" RowDefinitions="Auto *">

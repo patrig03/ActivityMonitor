@@ -15,8 +15,8 @@ public partial class DatabaseManager
         using var cmd = _connection.CreateCommand();
         cmd.CommandText =
             """
-            INSERT INTO thresholds (user_id, category_id, is_active, intervention_type, daily_limit_sec, weekly_limit_sec)
-            VALUES ($user, $category, $is_active, $intervention_type, $daily, $weekly);
+            INSERT INTO thresholds (user_id, category_id, is_active, intervention_type, daily_limit_sec)
+            VALUES ($user, $category, $is_active, $intervention_type, $daily);
             SELECT last_insert_rowid();
             """;
 
@@ -25,7 +25,6 @@ public partial class DatabaseManager
         cmd.Parameters.AddWithValue("is_active", threshold.Active);
         cmd.Parameters.AddWithValue("intervention_type", threshold.InterventionType);
         cmd.Parameters.AddWithValue("$daily", threshold.DailyLimitSec);
-        cmd.Parameters.AddWithValue("$weekly", threshold.WeeklyLimitSec);
 
         return Convert.ToInt32(cmd.ExecuteScalar());
     }
@@ -53,7 +52,6 @@ public partial class DatabaseManager
         cmd.Parameters.AddWithValue("$is_active", threshold.Active);
         cmd.Parameters.AddWithValue("$intervention_type", threshold.InterventionType);
         cmd.Parameters.AddWithValue("$daily", threshold.DailyLimitSec);
-        cmd.Parameters.AddWithValue("$weekly", threshold.WeeklyLimitSec);
 
         return cmd.ExecuteNonQuery();
     }
@@ -91,7 +89,6 @@ public partial class DatabaseManager
             Active = reader.GetBoolean(3),
             InterventionType = reader.GetString(4),
             DailyLimitSec = reader.GetInt32(5),
-            WeeklyLimitSec = reader.GetInt32(6),
         };
     }
 
@@ -111,7 +108,6 @@ public partial class DatabaseManager
                 Active = r.GetBoolean(3),
                 InterventionType = r.GetString(4),
                 DailyLimitSec = r.GetInt32(5),
-                WeeklyLimitSec = r.GetInt32(6),
             };
         }
     }

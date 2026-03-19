@@ -36,7 +36,7 @@
     <Setter Property="Background" Value="Transparent"/>
     <Setter Property="BorderThickness" Value="1"/>
     <Setter Property="GridLinesVisibility" Value="All"/>
-    <Setter Property="RowBackground" Value="{StaticResource BrushBgSecondary}"/>
+    <Setter Property="RowBackground" Value="Transparent"/>
     <Setter Property="HorizontalGridLinesBrush" Value="#40FFFFFF"/>
     <Setter Property="VerticalGridLinesBrush" Value="#40FFFFFF"/>
   </Style>

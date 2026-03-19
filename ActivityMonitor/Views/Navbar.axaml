@@ -47,6 +47,10 @@
                 Click="Button_OnClick"
                 Classes="nav-button"/>
 
+        <Button Content="Browser"
+                Click="Button_OnClick"
+                Classes="nav-button"/>
+
         <Button Content="Interventions"
                 Click="Button_OnClick"
                 Classes="nav-button"/>

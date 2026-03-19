@@ -4,7 +4,6 @@ namespace Database.Manager;
 
 public partial class DatabaseManager
 {
-    
     public int InsertIntervention(InterventionDto intervention)
     {
         if (_validator.VerifyTable(_connection.CreateCommand(), "interventions") != 0)
@@ -15,13 +14,14 @@ public partial class DatabaseManager
         using var cmd = _connection.CreateCommand();
         cmd.CommandText =
         """
-        INSERT INTO interventions (user_id, category_id, triggered_at, type)
-        VALUES ($user, $category, $triggered, $type);
+        INSERT INTO interventions (threshold_id, triggered_at, snoozed)
+        VALUES ($threshold_id, $triggered, $snoozed);
         SELECT last_insert_rowid();
         """;
 
-
+        cmd.Parameters.AddWithValue("$threshold_id", intervention.ThresholdId);
         cmd.Parameters.AddWithValue("$triggered", intervention.TriggeredAt);
+        cmd.Parameters.AddWithValue("$snoozed", intervention.Snoozed);
 
         return Convert.ToInt32(cmd.ExecuteScalar());
     }
@@ -31,9 +31,11 @@ public partial class DatabaseManager
         using var cmd = _connection.CreateCommand();
         cmd.CommandText =
         """
-        SELECT intervention_id, user_id, category_id, triggered_at, type
-        FROM interventions
-        WHERE user_id = $user;
+        SELECT i.intervention_id, i.threshold_id, i.snoozed, i.triggered_at
+        FROM interventions i
+        LEFT JOIN thresholds t ON t.threshold_id = i.threshold_id
+        WHERE t.user_id = $user
+        ORDER BY i.triggered_at DESC;
         """;
 
         cmd.Parameters.AddWithValue("$user", userId);
@@ -45,12 +47,13 @@ public partial class DatabaseManager
         {
             list.Add(new InterventionDto
             {
-
+                Id = reader.GetInt32(0),
+                ThresholdId = reader.IsDBNull(1) ? 0 : reader.GetInt32(1),
+                Snoozed = !reader.IsDBNull(2) && reader.GetBoolean(2),
                 TriggeredAt = reader.GetDateTime(3),
             });
         }
 
         return list;
     }
-
 }

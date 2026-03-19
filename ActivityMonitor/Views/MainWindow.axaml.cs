@@ -5,7 +5,7 @@ namespace ActivityMonitor.Views;
 
 public partial class MainWindow : Window
 {
-    public enum ActiveView { Dashboard, Reports, Interventions, Settings }
+    public enum ActiveView { Dashboard, Reports, Browser, Interventions, Settings }
 
     // A styled (dependency) property so bindings get notified.
     public static readonly StyledProperty<ActiveView> CurrentViewProperty =

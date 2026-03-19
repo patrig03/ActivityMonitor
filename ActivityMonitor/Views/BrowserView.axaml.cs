@@ -3,11 +3,11 @@ using Avalonia.Controls;
 
 namespace ActivityMonitor.Views;
 
-public partial class InterventionsView : UserControl
+public partial class BrowserView : UserControl
 {
-    public InterventionsView()
+    public BrowserView()
     {
         InitializeComponent();
-        DataContext = new InterventionsViewModel();
+        DataContext = new BrowserViewModel();
     }
 }

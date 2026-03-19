@@ -7,14 +7,6 @@
              x:Class="ActivityMonitor.Views.DashboardView"
              Foreground="White">
 
-  <!-- <UserControl.Background> -->
-  <!--   <LinearGradientBrush StartPoint="0,0" EndPoint="1,1"> -->
-  <!--     <GradientStop Color="#0A1020" Offset="0"/> -->
-  <!--     <GradientStop Color="#111A2E" Offset="0.5"/> -->
-  <!--     <GradientStop Color="#0F172A" Offset="1"/> -->
-  <!--   </LinearGradientBrush> -->
-  <!-- </UserControl.Background> -->
-
   <UserControl.Resources>
     <DataTemplate x:Key="InsightTemplate" DataType="viewModels:DashboardInsight">
       <Border Width="260"

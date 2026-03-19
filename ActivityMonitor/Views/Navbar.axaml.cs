@@ -44,6 +44,7 @@ public partial class Navbar : UserControl
         {
             "Dashboard"         => MainWindow.ActiveView.Dashboard,
             "Reports"           => MainWindow.ActiveView.Reports,
+            "Browser"           => MainWindow.ActiveView.Browser,
             "Interventions"     => MainWindow.ActiveView.Interventions,
             "Settings"          => MainWindow.ActiveView.Settings,
             _                   => throw new Exception("Invalid navbar button clicked!")

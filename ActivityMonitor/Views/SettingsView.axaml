@@ -175,7 +175,7 @@
                   </Border>
                 </StackPanel>
 
-                <StackPanel Spacing="8">
+                <StackPanel Grid.Column="1" Spacing="8">
                   <TextBlock Text="Service mutex" Foreground="#10233D" FontWeight="SemiBold"/>
                   <TextBox Text="{Binding ServiceMutexName}"
                            IsReadOnly="True"

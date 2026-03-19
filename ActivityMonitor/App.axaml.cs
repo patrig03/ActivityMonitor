@@ -26,6 +26,16 @@ public partial class App : Application
             DataType = typeof(ReportsViewModel),
             Content = typeof(ReportsView)
         });
+        DataTemplates.Add(new DataTemplate
+        {
+            DataType = typeof(BrowserViewModel),
+            Content = typeof(BrowserView)
+        });
+        DataTemplates.Add(new DataTemplate
+        {
+            DataType = typeof(InterventionsViewModel),
+            Content = typeof(InterventionsView)
+        });
         DataTemplates.Add(new DataTemplate{
             DataType = typeof(SettingsViewModel), 
             Content = typeof(SettingsView)

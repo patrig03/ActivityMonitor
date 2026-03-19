@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using Avalonia.Data.Converters;
 
 namespace ActivityMonitor.Converters
@@ -14,5 +15,23 @@ namespace ActivityMonitor.Converters
 
         public object? ConvertBack(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture) =>
             throw new NotImplementedException();
+    }
+    public class EqualsConverter : IValueConverter
+    {
+        public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+        {
+            if (value is null || parameter is null)
+            {
+                return false;
+            }
+
+            return string.Equals(
+                value.ToString(),
+                parameter.ToString(),
+                StringComparison.OrdinalIgnoreCase);
+        }
+
+        public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+            => throw new NotImplementedException();
     }
 }

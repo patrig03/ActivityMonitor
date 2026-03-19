@@ -65,12 +65,17 @@ public class DatabaseValidator : IDatabaseValidator
                                                threshold_id INTEGER PRIMARY KEY,
                                                user_id INTEGER,
                                                category_id INTEGER,
+                                               app_id INTEGER,
                                                is_active BOOLEAN,
+                                               target_type TEXT DEFAULT 'Category',
                                                intervention_type TEXT,
+                                               duration_type TEXT DEFAULT 'Daily',
                                                daily_limit_sec INTEGER,
+                                               session_limit_sec INTEGER DEFAULT 0,
                                                weekly_limit_sec INTEGER,
                                                FOREIGN KEY (user_id) REFERENCES users(user_id),
-                                               FOREIGN KEY (category_id) REFERENCES categories(category_id)
+                                               FOREIGN KEY (category_id) REFERENCES categories(category_id),
+                                               FOREIGN KEY (app_id) REFERENCES applications(app_id)
                                            );
                                            """;
     private const string InterventionsTable = """
@@ -214,6 +219,7 @@ public class DatabaseValidator : IDatabaseValidator
         CreateTable(cmd, "browser_activity");
         CreateTable(cmd, "thresholds");
         CreateTable(cmd, "interventions");
+        EnsureThresholdSchema(cmd);
         
         PopulateTableDefaults(cmd, "categories");
         PopulateTableDefaults(cmd, "users");
@@ -235,6 +241,42 @@ public class DatabaseValidator : IDatabaseValidator
         
         var code = GetPopulationsCode(tableName);
         cmd.CommandText = code;
+        cmd.ExecuteNonQuery();
+    }
+
+    private void EnsureThresholdSchema(SqliteCommand cmd)
+    {
+        EnsureColumn(cmd, "thresholds", "app_id", "INTEGER");
+        EnsureColumn(cmd, "thresholds", "target_type", "TEXT DEFAULT 'Category'");
+        EnsureColumn(cmd, "thresholds", "duration_type", "TEXT DEFAULT 'Daily'");
+        EnsureColumn(cmd, "thresholds", "session_limit_sec", "INTEGER DEFAULT 0");
+    }
+
+    private static void EnsureColumn(SqliteCommand cmd, string tableName, string columnName, string definition)
+    {
+        cmd.CommandText = $"PRAGMA table_info({tableName});";
+
+        var exists = false;
+        using (var reader = cmd.ExecuteReader())
+        {
+            while (reader.Read())
+            {
+                if (!string.Equals(reader.GetString(1), columnName, StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                exists = true;
+                break;
+            }
+        }
+
+        if (exists)
+        {
+            return;
+        }
+
+        cmd.CommandText = $"ALTER TABLE {tableName} ADD COLUMN {columnName} {definition};";
         cmd.ExecuteNonQuery();
     }
     

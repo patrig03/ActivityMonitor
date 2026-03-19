@@ -3,51 +3,177 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:viewModels="clr-namespace:ActivityMonitor.ViewModels"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             xmlns:converters="clr-namespace:ActivityMonitor.Converters"
+             mc:Ignorable="d"
+             d:DesignWidth="800"
+             d:DesignHeight="450"
              x:Class="ActivityMonitor.Views.AddThresholdView"
              x:DataType="viewModels:InterventionsViewModel">
 
+  <UserControl.Resources>
+    <converters:EqualsConverter x:Key="EqualsConverter"/>
+  </UserControl.Resources>
+
   <DockPanel>
-    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="10" Spacing="10">
-      <Button Classes="button" Content="Add New" Command="{Binding AddCommand}"/>
-    </StackPanel>
+    <Border DockPanel.Dock="Top"
+            Margin="10,10,10,0"
+            Padding="14"
+            BorderBrush="#2C2C2C"
+            BorderThickness="1"
+            CornerRadius="10"
+            Background="#161616">
+      <Grid ColumnDefinitions="*,Auto"
+            ColumnSpacing="12">
+        <StackPanel Spacing="4">
+          <TextBlock Text="Threshold rules"
+                     FontSize="18"
+                     FontWeight="SemiBold"/>
+          <TextBlock Text="Create a limit and choose which intervention should trigger when it is exceeded."
+                     Foreground="#BDBDBD"
+                     TextWrapping="Wrap"/>
+        </StackPanel>
+
+        <Button Grid.Column="1"
+                Classes="nav-button"
+                Content="Add threshold"
+                VerticalAlignment="Center"
+                Command="{Binding AddCommand}"/>
+      </Grid>
+    </Border>
 
     <ScrollViewer IsVisible="{Binding IsScrollViewerVisible}">
-      <Border BorderBrush="Gray" BorderThickness="2" CornerRadius="8"
-              Margin="10" Padding="10">
-        <StackPanel Spacing="12">
-
-          <TextBlock Text="Category:" FontWeight="Bold"/>
-          <ComboBox Background="White"
-                    Foreground="Black"
-                    ItemsSource="{Binding Categories}"
-                    SelectedItem="{Binding EditData.Category}"
-                    DisplayMemberBinding="{Binding Name}"/>
-
-          <TextBlock Text="Settings:" FontWeight="Bold" Margin="0,10,0,0"/>
-
-          <CheckBox Background="Black" Foreground="White" Content="Active" IsChecked="{Binding EditData.Threshold.Active}"/>
-
-          <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,5,0,0">
-            <StackPanel Spacing="5">
-              <TextBlock Text="Intervention Type:"/>
-              <ComboBox Background="White"
-                        Foreground="Black"
-                        ItemsSource="{Binding InterventionTypes}"
-                        SelectedItem="{Binding EditData.Threshold.InterventionType}"/>
+      <Border Margin="10"
+              Padding="16"
+              BorderBrush="#3A3A3A"
+              BorderThickness="1"
+              CornerRadius="12"
+              Background="#111111">
+        <StackPanel Spacing="16">
+          <Grid ColumnDefinitions="*,Auto"
+                ColumnSpacing="12">
+            <StackPanel Spacing="4">
+              <TextBlock Text="{Binding ThresholdFormTitle}"
+                         FontSize="20"
+                         FontWeight="SemiBold"/>
+              <TextBlock Text="Choose what to monitor, how long it is allowed, and what should happen next."
+                         Foreground="#BDBDBD"
+                         TextWrapping="Wrap"/>
             </StackPanel>
-          </StackPanel>
 
-          <StackPanel Spacing="5">
-            <TextBlock Text="Daily Limit:"/>
-            <TextBox Background="White" Foreground="Black" Text="{Binding EditData.Threshold.DailyLimit}"/>
-          </StackPanel>
+            <Button Grid.Column="1"
+                    Classes="nav-button"
+                    Content="Cancel"
+                    VerticalAlignment="Top"
+                    Command="{Binding CancelCommand}"/>
+          </Grid>
 
-          <StackPanel Orientation="Horizontal" Spacing="5" Margin="0,10,0,0">
-            <Button Classes="button" Content="Save" Command="{Binding SaveCommand}"
-                    CommandParameter="{Binding}"/>
-          </StackPanel>
+          <Border Padding="14"
+                  BorderBrush="#252525"
+                  BorderThickness="1"
+                  CornerRadius="10"
+                  Background="#181818">
+            <StackPanel Spacing="12">
+              <TextBlock Text="Target"
+                         FontSize="16"
+                         FontWeight="SemiBold"/>
 
+              <StackPanel Spacing="6">
+                <TextBlock Text="Target type"/>
+                <ComboBox ItemsSource="{Binding TargetTypes}"
+                          SelectedItem="{Binding EditData.Threshold.TargetType}"/>
+              </StackPanel>
+
+              <StackPanel Spacing="6"
+                          IsVisible="{Binding EditData.Threshold.TargetType, Converter={StaticResource EqualsConverter}, ConverterParameter=Category}">
+                <TextBlock Text="Category"/>
+                <ComboBox ItemsSource="{Binding Categories}"
+                          SelectedValue="{Binding EditData.Threshold.CategoryId}"
+                          SelectedValueBinding="{Binding Id}"
+                          DisplayMemberBinding="{Binding Name}"/>
+              </StackPanel>
+
+              <StackPanel Spacing="6"
+                          IsVisible="{Binding EditData.Threshold.TargetType, Converter={StaticResource EqualsConverter}, ConverterParameter=App}">
+                <TextBlock Text="Application"/>
+                <ComboBox ItemsSource="{Binding Apps}"
+                          SelectedValue="{Binding EditData.Threshold.AppId}"
+                          SelectedValueBinding="{Binding Id}"
+                          DisplayMemberBinding="{Binding ProcessName}"/>
+              </StackPanel>
+            </StackPanel>
+          </Border>
+
+          <Border Padding="14"
+                  BorderBrush="#252525"
+                  BorderThickness="1"
+                  CornerRadius="10"
+                  Background="#181818">
+            <StackPanel Spacing="12">
+              <TextBlock Text="Rule"
+                         FontSize="16"
+                         FontWeight="SemiBold"/>
+
+              <CheckBox Content="Threshold is active"
+                        IsChecked="{Binding EditData.Threshold.Active}"/>
+
+              <StackPanel Spacing="6">
+                <TextBlock Text="Limit type"/>
+                <ComboBox ItemsSource="{Binding LimitTypes}"
+                          SelectedItem="{Binding EditData.Threshold.LimitType}"/>
+              </StackPanel>
+
+              <StackPanel Spacing="6"
+                          IsVisible="{Binding EditData.Threshold.LimitType, Converter={StaticResource EqualsConverter}, ConverterParameter=Daily}">
+                <TextBlock Text="Daily limit (hh:mm:ss)"/>
+                <TextBox Text="{Binding EditData.Threshold.DailyLimit}"/>
+              </StackPanel>
+
+              <StackPanel Spacing="6"
+                          IsVisible="{Binding EditData.Threshold.LimitType, Converter={StaticResource EqualsConverter}, ConverterParameter=Session}">
+                <TextBlock Text="Session limit (hh:mm:ss)"/>
+                <TextBox Text="{Binding EditData.Threshold.SessionLimit}"/>
+              </StackPanel>
+            </StackPanel>
+          </Border>
+
+          <Border Padding="14"
+                  BorderBrush="#252525"
+                  BorderThickness="1"
+                  CornerRadius="10"
+                  Background="#181818">
+            <StackPanel Spacing="12">
+              <TextBlock Text="Intervention"
+                         FontSize="16"
+                         FontWeight="SemiBold"/>
+
+              <StackPanel Spacing="6">
+                <TextBlock Text="Intervention type"/>
+                <ComboBox ItemsSource="{Binding InterventionTypes}"
+                          SelectedItem="{Binding EditData.Threshold.InterventionType}"/>
+              </StackPanel>
+
+              <TextBlock Text="Typing lock currently uses the default unlock phrase."
+                         Foreground="#BDBDBD"
+                         TextWrapping="Wrap"
+                         IsVisible="{Binding EditData.Threshold.InterventionType, Converter={StaticResource EqualsConverter}, ConverterParameter=TypingLock}"/>
+
+              <TextBlock Text="Timed lock currently uses the default lock duration."
+                         Foreground="#BDBDBD"
+                         TextWrapping="Wrap"
+                         IsVisible="{Binding EditData.Threshold.InterventionType, Converter={StaticResource EqualsConverter}, ConverterParameter=TimedLock}"/>
+            </StackPanel>
+          </Border>
+
+          <StackPanel Orientation="Horizontal"
+                      HorizontalAlignment="Right"
+                      Spacing="8">
+            <Button Classes="nav-button"
+                    Content="Cancel"
+                    Command="{Binding CancelCommand}"/>
+            <Button Classes="nav-button"
+                    Content="Save threshold"
+                    Command="{Binding SaveCommand}"/>
+          </StackPanel>
         </StackPanel>
       </Border>
     </ScrollViewer>

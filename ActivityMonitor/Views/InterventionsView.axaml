@@ -11,13 +11,6 @@
              x:DataType="viewModels:InterventionsViewModel">
 
   
-
-
-  <UserControl.Styles>
-    <!-- Base theme applied via Theme=... -->
-
-  </UserControl.Styles>
-
   <Grid ColumnDefinitions="*" RowDefinitions="Auto *">
     <views:AddThresholdView Grid.Row="0"/>
     <views:CurrentThresholdsView Grid.Row="1"/>

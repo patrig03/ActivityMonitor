@@ -110,10 +110,10 @@ public partial class DatabaseManager
         return new ApplicationDto
         {
             Id = r.GetInt32(0),
-            WindowTitle = r.IsDBNull(1) ? null : r.GetString(1),
-            ClassName = r.IsDBNull(2) ? null : r.GetString(2),
-            ProcessName = r.IsDBNull(3) ? null : r.GetString(3),
-            CategoryId = r.IsDBNull(4) ? null : r.GetInt32(4),
+            CategoryId = r.IsDBNull(1) ? null : r.GetInt32(1),
+            WindowTitle = r.IsDBNull(2) ? null : r.GetString(2),
+            ClassName = r.IsDBNull(3) ? null : r.GetString(3),
+            ProcessName = r.IsDBNull(4) ? null : r.GetString(4),
             WindowId = r.IsDBNull(5) ? null : r.GetInt32(5),
         };
     }
@@ -200,10 +200,10 @@ public partial class DatabaseManager
             yield return new ApplicationDto
             {
                 Id = r.GetInt32(0),
-                WindowTitle = r.IsDBNull(1) ? null : r.GetString(1),
-                ClassName = r.IsDBNull(2) ? null : r.GetString(2),
-                ProcessName = r.IsDBNull(3) ? null : r.GetString(3),
-                CategoryId = r.IsDBNull(4) ? null : r.GetInt32(44),
+                CategoryId = r.IsDBNull(1) ? null : r.GetInt32(1),
+                WindowTitle = r.IsDBNull(2) ? null : r.GetString(2),
+                ClassName = r.IsDBNull(3) ? null : r.GetString(3),
+                ProcessName = r.IsDBNull(4) ? null : r.GetString(4),
                 WindowId = r.IsDBNull(5) ? null : r.GetInt32(5),
             };
         }

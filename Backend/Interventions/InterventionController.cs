@@ -26,7 +26,7 @@ public class InterventionController
         bool snooze = false;
         switch (t.InterventionType)
         {
-            case "Notification":
+            case Threshold.NotificationInterventionType:
                 var response = Notifier.Notification($"Daily limit exceeded for {lastRecord.ProcessName}", 
                     new[] { "Dismiss", "Snooze"});
                 if (response == "Snooze")
@@ -39,12 +39,13 @@ public class InterventionController
                     t.Active = false;
                 }
                 break;
-            case "TypingLock": 
+            case Threshold.TypingLockInterventionType: 
                 if (lastRecord.WindowId == null || lastRecord.WindowId == 0) return;
                 Notifier.TypingLock("Type this message to unlock", (ulong)lastRecord.WindowId, "Type this message to unlock");
                 t.Active = false;
                 break;
-            case "TimerLock": 
+            case Threshold.TimedLockInterventionType:
+            case "TimerLock":
                 if (lastRecord.WindowId == null || lastRecord.WindowId == 0) return;
                 Notifier.TimedLock($"Daily limit exceeded for {lastRecord.ProcessName}", (ulong)lastRecord.WindowId, 20);
                 t.Active = false;

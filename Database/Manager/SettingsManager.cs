@@ -21,9 +21,32 @@ public partial class DatabaseManager
             """;
 
         cmd.Parameters.AddWithValue("$user", s.UserId);
-        cmd.Parameters.AddWithValue("time", s.DeltaTimeSeconds);
+        cmd.Parameters.AddWithValue("$time", s.DeltaTimeSeconds);
         
         return Convert.ToInt32(cmd.ExecuteScalar());
+    }
+
+    public int UpdateSettings(SettingsDto s)
+    {
+        if (_validator.VerifyTable(_connection.CreateCommand(), "settings") != 0)
+        {
+            throw new Exception("Database exception in settings table");
+        }
+
+        using var cmd = _connection.CreateCommand();
+        cmd.CommandText =
+            """
+            UPDATE settings
+            SET user_id = $user,
+                refresh_time_seconds = $time
+            WHERE settings_id = $id;
+            """;
+
+        cmd.Parameters.AddWithValue("$id", s.Id);
+        cmd.Parameters.AddWithValue("$user", s.UserId);
+        cmd.Parameters.AddWithValue("$time", s.DeltaTimeSeconds);
+
+        return cmd.ExecuteNonQuery();
     }
 
     public SettingsDto? GetSettings(int userId)

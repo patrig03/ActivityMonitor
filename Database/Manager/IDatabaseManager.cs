@@ -17,6 +17,7 @@ public interface IDatabaseManager : IDisposable
     /* -------------------- SETTINGS -------------------- */
 
     int InsertSettings(SettingsDto settings);
+    int UpdateSettings(SettingsDto settings);
     SettingsDto? GetSettings(int userId);
 
     /* -------------------- CATEGORIES -------------------- */

@@ -1,7 +1,4 @@
-using ActivityMonitor.ViewModels;
-using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
 
 namespace ActivityMonitor.Views;
 

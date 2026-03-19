@@ -5,101 +5,353 @@
              xmlns:lvc="using:LiveChartsCore.SkiaSharpView.Avalonia"
              x:DataType="viewModels:DashboardViewModel"
              x:Class="ActivityMonitor.Views.DashboardView"
-             Background="#101010"
              Foreground="White">
 
-  <Grid Margin="12" RowDefinitions="Auto,Auto,*,*,*">
+  <!-- <UserControl.Background> -->
+  <!--   <LinearGradientBrush StartPoint="0,0" EndPoint="1,1"> -->
+  <!--     <GradientStop Color="#0A1020" Offset="0"/> -->
+  <!--     <GradientStop Color="#111A2E" Offset="0.5"/> -->
+  <!--     <GradientStop Color="#0F172A" Offset="1"/> -->
+  <!--   </LinearGradientBrush> -->
+  <!-- </UserControl.Background> -->
 
-    <!-- ================= HEADER ================= -->
-    <DockPanel Margin="0,0,0,12">
-      <!-- User Profile -->
-      <Button CornerRadius="8"
-              Background="#212121"
-              Padding="4"
-              BorderThickness="0"
-              DockPanel.Dock="Right">
-        <StackPanel Orientation="Horizontal" Spacing="8">
-          <Border CornerRadius="6"
-                  Background="#212121"
-                  Width="36"
-                  Height="36"
-                  VerticalAlignment="Center">
-            <TextBlock Text="JD"
-                       Foreground="White"
-                       FontWeight="Bold"
-                       HorizontalAlignment="Center"
-                       VerticalAlignment="Center"/>
-          </Border>
-          <StackPanel VerticalAlignment="Center" Spacing="2">
-            <TextBlock Text="John Doe"
-                       Foreground="#EAF1FF"
-                       FontWeight="Medium"
-                       FontSize="13"/>
-            <TextBlock Text="Admin"
-                       Foreground="#7C879C"
-                       FontSize="11"/>
+  <UserControl.Resources>
+    <DataTemplate x:Key="InsightTemplate" DataType="viewModels:DashboardInsight">
+      <Border Width="260"
+              Margin="0,0,14,14"
+              CornerRadius="20"
+              Padding="18"
+              Background="#111B2D"
+              BorderBrush="#24324A"
+              BorderThickness="1">
+        <StackPanel Spacing="8">
+          <TextBlock Text="{Binding Title}" FontSize="15" FontWeight="SemiBold" Foreground="#F7FAFF"/>
+          <TextBlock Text="{Binding Detail}" Foreground="#8EA0C3" TextWrapping="Wrap"/>
+        </StackPanel>
+      </Border>
+    </DataTemplate>
+
+    <DataTemplate x:Key="BreakdownTemplate" DataType="viewModels:DashboardBreakdownItem">
+      <Border Margin="0,0,0,10"
+              CornerRadius="16"
+              Padding="14"
+              Background="#111B2D"
+              BorderBrush="#24324A"
+              BorderThickness="1">
+        <Grid ColumnDefinitions="*,Auto">
+          <StackPanel Spacing="4">
+            <TextBlock Text="{Binding Label}" FontSize="14" FontWeight="SemiBold" Foreground="#F7FAFF"/>
+            <TextBlock Text="{Binding Secondary}" Foreground="#8EA0C3" TextWrapping="Wrap"/>
           </StackPanel>
-          <PathIcon Data="M7,10L12,15L17,10H7Z"
-                    Width="16"
-                    Height="16"
-                    Foreground="#AAB3C6"
-                    VerticalAlignment="Center"/>
-        </StackPanel>
-      </Button>
+          <TextBlock Grid.Column="1"
+                     Text="{Binding Duration}"
+                     Foreground="#7DD3FC"
+                     FontSize="18"
+                     FontWeight="Bold"
+                     VerticalAlignment="Center"/>
+        </Grid>
+      </Border>
+    </DataTemplate>
 
-      <!-- Notifications -->
-      <Button Margin="8,0,0,0" CornerRadius="8" Background="#212121">
-        <StackPanel Orientation="Horizontal" Spacing="6">
-          <PathIcon Data="M12,22C13.1,22 14,21.1 14,20H10C10,21.1 10.9,22 12,22ZM18,16V11C18,7.9 16.4,5.4 13.5,4.7V4C13.5,3.2 12.8,2.5 12,2.5C11.2,2.5 10.5,3.2 10.5,4V4.7C7.6,5.4 6,7.9 6,11V16L4,18V19H20V18L18,16Z"
-                    Width="18" Height="18" Foreground="White"/>
-          <TextBlock Text="Notifications" Foreground="White" VerticalAlignment="Center"/>
-          <Border Background="#444444"
-                  CornerRadius="10"
-                  Padding="6,2"
-                  VerticalAlignment="Center">
-            <TextBlock Text="3" Foreground="White" FontSize="10" FontWeight="Bold"/>
+    <DataTemplate x:Key="ThresholdTemplate" DataType="viewModels:DashboardThresholdState">
+      <Border Margin="0,0,0,10"
+              CornerRadius="16"
+              Padding="14"
+              Background="#111B2D"
+              BorderBrush="#24324A"
+              BorderThickness="1">
+        <StackPanel Spacing="8">
+          <Grid ColumnDefinitions="*,Auto">
+            <TextBlock Text="{Binding TargetName}" FontSize="14" FontWeight="SemiBold" Foreground="#F7FAFF"/>
+            <Border Grid.Column="1"
+                    Background="#1E2A40"
+                    CornerRadius="999"
+                    Padding="10,4">
+              <TextBlock Text="{Binding StateLabel}" Foreground="#C7D6F6" FontSize="11" FontWeight="SemiBold"/>
+            </Border>
+          </Grid>
+          <ProgressBar Minimum="0"
+                       Maximum="100"
+                       Value="{Binding ProgressValue}"
+                       Height="8"/>
+          <TextBlock Text="{Binding UsageSummary}" Foreground="#F7FAFF" FontWeight="SemiBold"/>
+          <TextBlock Text="{Binding LimitSummary}" Foreground="#8EA0C3"/>
+        </StackPanel>
+      </Border>
+    </DataTemplate>
+
+    <DataTemplate x:Key="DomainTemplate" DataType="viewModels:DashboardDomainItem">
+      <Border Margin="0,0,0,10"
+              CornerRadius="16"
+              Padding="14"
+              Background="#111B2D"
+              BorderBrush="#24324A"
+              BorderThickness="1">
+        <Grid ColumnDefinitions="*,Auto">
+          <StackPanel Spacing="4">
+            <TextBlock Text="{Binding Domain}" FontSize="14" FontWeight="SemiBold" Foreground="#F7FAFF"/>
+            <TextBlock Text="{Binding Share}" Foreground="#8EA0C3"/>
+          </StackPanel>
+          <TextBlock Grid.Column="1"
+                     Text="{Binding Visits}"
+                     Foreground="#8BFFB1"
+                     FontWeight="Bold"
+                     VerticalAlignment="Center"/>
+        </Grid>
+      </Border>
+    </DataTemplate>
+
+    <DataTemplate x:Key="InterventionTemplate" DataType="viewModels:DashboardInterventionItem">
+      <Border Margin="0,0,0,10"
+              CornerRadius="16"
+              Padding="14"
+              Background="#111B2D"
+              BorderBrush="#24324A"
+              BorderThickness="1">
+        <StackPanel Spacing="6">
+          <Grid ColumnDefinitions="*,Auto">
+            <TextBlock Text="{Binding TargetName}" FontSize="14" FontWeight="SemiBold" Foreground="#F7FAFF"/>
+            <TextBlock Grid.Column="1" Text="{Binding TriggeredAt}" Foreground="#8EA0C3"/>
+          </Grid>
+          <TextBlock Text="{Binding Status}" Foreground="#FBBF24" FontWeight="SemiBold"/>
+          <TextBlock Text="{Binding Detail}" Foreground="#8EA0C3" TextWrapping="Wrap"/>
+        </StackPanel>
+      </Border>
+    </DataTemplate>
+  </UserControl.Resources>
+
+  <ScrollViewer VerticalScrollBarVisibility="Auto">
+    <StackPanel Margin="18" Spacing="18">
+
+      <Border CornerRadius="28"
+              Padding="24"
+              Background="#10192A"
+              BorderBrush="#24324A"
+              BorderThickness="1">
+        <Grid ColumnDefinitions="*,320" ColumnSpacing="18">
+
+          <StackPanel Spacing="10">
+            <TextBlock Text="Dashboard" FontSize="30" FontWeight="Bold" Foreground="#F7FAFF"/>
+            <TextBlock Text="{Binding DashboardSubtitle}" Foreground="#8EA0C3" FontSize="14" TextWrapping="Wrap"/>
+
+            <WrapPanel Orientation="Horizontal">
+              <Border Margin="0,10,10,0"
+                      Background="#17233A"
+                      CornerRadius="999"
+                      Padding="12,6">
+                <TextBlock Text="{Binding MonitoringCadence}" Foreground="#D6E4FF" FontWeight="SemiBold"/>
+              </Border>
+              <Border Margin="0,10,10,0"
+                      Background="#17233A"
+                      CornerRadius="999"
+                      Padding="12,6">
+                <TextBlock Text="{Binding SnapshotSummary}" Foreground="#D6E4FF" FontWeight="SemiBold"/>
+              </Border>
+              <Border Margin="0,10,0,0"
+                      Background="#17233A"
+                      CornerRadius="999"
+                      Padding="12,6">
+                <TextBlock Text="{Binding LastRefreshLabel}" Foreground="#D6E4FF" FontWeight="SemiBold"/>
+              </Border>
+            </WrapPanel>
+          </StackPanel>
+
+          <Border Grid.Column="1"
+                  CornerRadius="22"
+                  Padding="18"
+                  Background="#17233A"
+                  BorderBrush="#30415D"
+                  BorderThickness="1">
+            <StackPanel Spacing="14">
+              <StackPanel Orientation="Horizontal" Spacing="12">
+                <Border Width="56"
+                        Height="56"
+                        CornerRadius="18"
+                        Background="#223250">
+                  <TextBlock Text="{Binding ProfileInitials}"
+                             HorizontalAlignment="Center"
+                             VerticalAlignment="Center"
+                             FontWeight="Bold"
+                             FontSize="20"
+                             Foreground="#F7FAFF"/>
+                </Border>
+                <StackPanel Spacing="2" VerticalAlignment="Center">
+                  <TextBlock Text="{Binding DisplayName}" FontSize="16" FontWeight="SemiBold" Foreground="#F7FAFF"/>
+                  <TextBlock Text="Primary monitoring profile" Foreground="#8EA0C3"/>
+                </StackPanel>
+              </StackPanel>
+
+              <Grid ColumnDefinitions="*,Auto">
+                <StackPanel Spacing="4">
+                  <TextBlock Text="Attention queue" Foreground="#8EA0C3"/>
+                  <TextBlock Text="Threshold pressure and recent alerts" Foreground="#F7FAFF" FontWeight="SemiBold"/>
+                </StackPanel>
+                <Border Grid.Column="1"
+                        Background="#223250"
+                        CornerRadius="999"
+                        Padding="12,6"
+                        VerticalAlignment="Center">
+                  <TextBlock Text="{Binding AttentionBadge}" Foreground="#F7FAFF" FontWeight="Bold"/>
+                </Border>
+              </Grid>
+
+              <Button Command="{Binding RefreshCommand}"
+                      Background="#7DD3FC"
+                      Foreground="#08111F"
+                      BorderThickness="0"
+                      CornerRadius="14"
+                      Padding="16,12"
+                      HorizontalAlignment="Stretch">
+                <TextBlock Text="Refresh dashboard" FontWeight="Bold" HorizontalAlignment="Center"/>
+              </Button>
+            </StackPanel>
           </Border>
+
+        </Grid>
+      </Border>
+
+      <views:QuickStatsBar/>
+
+      <Border CornerRadius="24"
+              Padding="20"
+              Background="#10192A"
+              BorderBrush="#24324A"
+              BorderThickness="1">
+        <StackPanel Spacing="14">
+          <TextBlock Text="What stands out" FontSize="20" FontWeight="Bold" Foreground="#F7FAFF"/>
+          <ItemsControl ItemsSource="{Binding Insights}" ItemTemplate="{StaticResource InsightTemplate}">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <WrapPanel Orientation="Horizontal"/>
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+          </ItemsControl>
         </StackPanel>
-      </Button>
-    </DockPanel>
+      </Border>
 
-    <!-- ================= QUICK STATS ================= -->
-    <views:QuickStatsBar Grid.Row="1" Margin="0,0,0,24"/>
+      <Grid ColumnDefinitions="*,*" ColumnSpacing="18">
 
-    <!-- ================= GRAPHS ================= -->
-    <StackPanel Grid.Row="2" Orientation="Vertical" Spacing="12" Margin="0,0,0,12">
+        <Border CornerRadius="24"
+                Padding="18"
+                Background="#10192A"
+                BorderBrush="#24324A"
+                BorderThickness="1">
+          <StackPanel Spacing="12">
+            <TextBlock Text="Category momentum" FontSize="18" FontWeight="Bold" Foreground="#F7FAFF"/>
+            <TextBlock Text="Top categories by tracked hours." Foreground="#8EA0C3"/>
+            <lvc:CartesianChart Series="{Binding CategoryUsageSeries}"
+                                XAxes="{Binding CategoryXAxis}"
+                                MinHeight="280"/>
+          </StackPanel>
+        </Border>
 
-      <Grid ColumnDefinitions="*,*"
-            RowDefinitions="*,*"
-            ColumnSpacing="12">
+        <Border Grid.Column="1"
+                CornerRadius="24"
+                Padding="18"
+                Background="#10192A"
+                BorderBrush="#24324A"
+                BorderThickness="1">
+          <StackPanel Spacing="12">
+            <TextBlock Text="Process share" FontSize="18" FontWeight="Bold" Foreground="#F7FAFF"/>
+            <TextBlock Text="Where tracked time concentrates across processes." Foreground="#8EA0C3"/>
+            <lvc:PieChart Series="{Binding ProcessShareSeries}"
+                          MinHeight="280"/>
+          </StackPanel>
+        </Border>
 
-        <lvc:CartesianChart Grid.Column="0"
-                            Series="{Binding WindowUsageSeries}"
-                            MinHeight="350"/>
-        <TextBlock Grid.Column="0"
-                   Grid.Row="1" Margin="0,4,0,0"
-                   FontSize="14" Foreground="White"
-                   Text="Top 10 most-used windows by total active time." 
-                   TextAlignment="Center"/>
-
-        <lvc:PieChart Grid.Column="1"
-                      Grid.Row="0" 
-                      Series="{Binding ProcessShareSeries}"
-                      MinHeight="350"/>
-        <TextBlock  Grid.Column="1" 
-                    Grid.Row="1" Margin="0,4,0,0"
-                    FontSize="14" Foreground="White"
-                    Text="CPU‑time distribution across running processes." 
-                    TextAlignment="Center"/>
       </Grid>
 
-      <lvc:CartesianChart Series="{Binding SessionTimelineSeries}"
-                          MinHeight="350"/>
-      <TextBlock Margin="0,4,0,0"
-                 FontSize="14" Foreground="White"
-                 Text="Duration of each user session in minutes over time."
-                 TextAlignment="Center"/>
-    </StackPanel>
+      <Grid ColumnDefinitions="*,*" ColumnSpacing="18">
 
-  </Grid>
+        <Border CornerRadius="24"
+                Padding="18"
+                Background="#10192A"
+                BorderBrush="#24324A"
+                BorderThickness="1">
+          <StackPanel Spacing="12">
+            <TextBlock Text="Window activity" FontSize="18" FontWeight="Bold" Foreground="#F7FAFF"/>
+            <TextBlock Text="Windows with the highest total active time." Foreground="#8EA0C3"/>
+            <lvc:CartesianChart Series="{Binding WindowUsageSeries}"
+                                XAxes="{Binding WindowXAxis}"
+                                MinHeight="300"/>
+          </StackPanel>
+        </Border>
+
+        <Border Grid.Column="1"
+                CornerRadius="24"
+                Padding="18"
+                Background="#10192A"
+                BorderBrush="#24324A"
+                BorderThickness="1">
+          <StackPanel Spacing="12">
+            <TextBlock Text="Recent session timeline" FontSize="18" FontWeight="Bold" Foreground="#F7FAFF"/>
+            <TextBlock Text="Latest session durations in minutes." Foreground="#8EA0C3"/>
+            <lvc:CartesianChart Series="{Binding SessionTimelineSeries}"
+                                XAxes="{Binding SessionTimelineXAxis}"
+                                MinHeight="300"/>
+          </StackPanel>
+        </Border>
+
+      </Grid>
+
+      <Grid ColumnDefinitions="*,*" ColumnSpacing="18">
+
+        <Border CornerRadius="24"
+                Padding="18"
+                Background="#10192A"
+                BorderBrush="#24324A"
+                BorderThickness="1">
+          <StackPanel Spacing="12">
+            <TextBlock Text="Category breakdown" FontSize="18" FontWeight="Bold" Foreground="#F7FAFF"/>
+            <TextBlock Text="Fast scan of the categories driving today's workload." Foreground="#8EA0C3"/>
+            <ItemsControl ItemsSource="{Binding CategoryBreakdown}" ItemTemplate="{StaticResource BreakdownTemplate}"/>
+          </StackPanel>
+        </Border>
+
+        <Border Grid.Column="1"
+                CornerRadius="24"
+                Padding="18"
+                Background="#10192A"
+                BorderBrush="#24324A"
+                BorderThickness="1">
+          <StackPanel Spacing="12">
+            <TextBlock Text="Threshold watch" FontSize="18" FontWeight="Bold" Foreground="#F7FAFF"/>
+            <TextBlock Text="Current pressure against the most relevant limits." Foreground="#8EA0C3"/>
+            <ItemsControl ItemsSource="{Binding ThresholdStatuses}" ItemTemplate="{StaticResource ThresholdTemplate}"/>
+          </StackPanel>
+        </Border>
+
+      </Grid>
+
+      <Grid ColumnDefinitions="*,*" ColumnSpacing="18">
+
+        <Border CornerRadius="24"
+                Padding="18"
+                Background="#10192A"
+                BorderBrush="#24324A"
+                BorderThickness="1">
+          <StackPanel Spacing="12">
+            <TextBlock Text="Top browser domains" FontSize="18" FontWeight="Bold" Foreground="#F7FAFF"/>
+            <TextBlock Text="Most common domains in captured browser activity." Foreground="#8EA0C3"/>
+            <ItemsControl ItemsSource="{Binding TopDomains}" ItemTemplate="{StaticResource DomainTemplate}"/>
+          </StackPanel>
+        </Border>
+
+        <Border Grid.Column="1"
+                CornerRadius="24"
+                Padding="18"
+                Background="#10192A"
+                BorderBrush="#24324A"
+                BorderThickness="1">
+          <StackPanel Spacing="12">
+            <TextBlock Text="Recent interventions" FontSize="18" FontWeight="Bold" Foreground="#F7FAFF"/>
+            <TextBlock Text="Latest threshold events and their configured action type." Foreground="#8EA0C3"/>
+            <ItemsControl ItemsSource="{Binding RecentInterventions}" ItemTemplate="{StaticResource InterventionTemplate}"/>
+          </StackPanel>
+        </Border>
+
+      </Grid>
+
+    </StackPanel>
+  </ScrollViewer>
 </UserControl>

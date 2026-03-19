@@ -4,60 +4,98 @@
              x:DataType="viewModels:DashboardViewModel"
              x:Class="ActivityMonitor.Views.QuickStatsBar">
 
-  <Border
-    Background="#212121"
-    CornerRadius="10"
-    Padding="16"
-    Margin="0,0,0,0">
-      <StackPanel Orientation="Horizontal"
-                  HorizontalAlignment="Center"
-                  Spacing="32">
-          
-        <StackPanel Spacing="4" HorizontalAlignment="Center">
-          <TextBlock Text="Total Sessions"
-                     Foreground="#7C879C"
-                     FontSize="12"/>
-          <TextBlock Text="{Binding TotalSessions}"
-                     Foreground="#EAF1FF"
-                     FontSize="24"
-                     FontWeight="Bold"/>
+  <Border CornerRadius="24"
+          Padding="20"
+          Background="#111828"
+          BorderBrush="#263146"
+          BorderThickness="1">
+    <WrapPanel Orientation="Horizontal"
+               HorizontalAlignment="Stretch">
+
+      <Border Width="210"
+              Margin="0,0,14,14"
+              CornerRadius="18"
+              Background="#172033"
+              BorderBrush="#2B3953"
+              BorderThickness="1"
+              Padding="16">
+        <StackPanel Spacing="6">
+          <TextBlock Text="Tracked time" Foreground="#8EA0C3" FontSize="12"/>
+          <TextBlock Text="{Binding TotalUsage}" Foreground="#F4F7FF" FontSize="24" FontWeight="Bold"/>
+          <TextBlock Text="Active time across all captured categories." Foreground="#7386A8" TextWrapping="Wrap"/>
         </StackPanel>
-        
-        <Separator Background="#1E2530" Width="1" Height="40" VerticalAlignment="Center"/>
-        
-        <StackPanel Spacing="4" HorizontalAlignment="Center">
-          <TextBlock Text="Focus Time"
-                     Foreground="#7C879C"
-                     FontSize="12"/>
-          <TextBlock Text="{Binding TotalUsage}"
-                     Foreground="#6DFF9C"
-                     FontSize="24"
-                     FontWeight="Bold"/>
+      </Border>
+
+      <Border Width="210"
+              Margin="0,0,14,14"
+              CornerRadius="18"
+              Background="#172033"
+              BorderBrush="#2B3953"
+              BorderThickness="1"
+              Padding="16">
+        <StackPanel Spacing="6">
+          <TextBlock Text="Sessions" Foreground="#8EA0C3" FontSize="12"/>
+          <TextBlock Text="{Binding TotalSessions}" Foreground="#F4F7FF" FontSize="24" FontWeight="Bold"/>
+          <TextBlock Text="Distinct app sessions captured for the current report window." Foreground="#7386A8" TextWrapping="Wrap"/>
         </StackPanel>
-        
-        <Separator Background="#1E2530" Width="1" Height="40" VerticalAlignment="Center"/>
-        
-        <StackPanel Spacing="4" HorizontalAlignment="Center">
-          <TextBlock Text="Productivity"
-                     Foreground="#7C879C"
-                     FontSize="12"/>
-          <TextBlock Text="{Binding FocusScore}"
-                     Foreground="#FFB347"
-                     FontSize="24"
-                     FontWeight="Bold"/>
+      </Border>
+
+      <Border Width="210"
+              Margin="0,0,14,14"
+              CornerRadius="18"
+              Background="#172033"
+              BorderBrush="#2B3953"
+              BorderThickness="1"
+              Padding="16">
+        <StackPanel Spacing="6">
+          <TextBlock Text="Average session" Foreground="#8EA0C3" FontSize="12"/>
+          <TextBlock Text="{Binding AverageSession}" Foreground="#F4F7FF" FontSize="24" FontWeight="Bold"/>
+          <TextBlock Text="Useful for spotting long stretches without a context break." Foreground="#7386A8" TextWrapping="Wrap"/>
         </StackPanel>
-        
-        <Separator Background="#1E2530" Width="1" Height="40" VerticalAlignment="Center"/>
-        
-        <StackPanel Spacing="4" HorizontalAlignment="Center">
-          <TextBlock Text="Top application"
-                     Foreground="#7C879C"
-                     FontSize="12"/>
-          <TextBlock Text="{Binding TopApplication}"
-                     Foreground="#4DA6FF"
-                     FontSize="24"
-                     FontWeight="Bold"/>
+      </Border>
+
+      <Border Width="210"
+              Margin="0,0,14,14"
+              CornerRadius="18"
+              Background="#172033"
+              BorderBrush="#2B3953"
+              BorderThickness="1"
+              Padding="16">
+        <StackPanel Spacing="6">
+          <TextBlock Text="Focus score" Foreground="#8EA0C3" FontSize="12"/>
+          <TextBlock Text="{Binding FocusScore}" Foreground="#8BFFB1" FontSize="24" FontWeight="Bold"/>
+          <TextBlock Text="Share of time spent in work-oriented categories." Foreground="#7386A8" TextWrapping="Wrap"/>
         </StackPanel>
-      </StackPanel>
+      </Border>
+
+      <Border Width="210"
+              Margin="0,0,14,14"
+              CornerRadius="18"
+              Background="#172033"
+              BorderBrush="#2B3953"
+              BorderThickness="1"
+              Padding="16">
+        <StackPanel Spacing="6">
+          <TextBlock Text="Top application" Foreground="#8EA0C3" FontSize="12"/>
+          <TextBlock Text="{Binding TopApplication}" Foreground="#7DD3FC" FontSize="24" FontWeight="Bold" TextWrapping="Wrap"/>
+          <TextBlock Text="The process consuming the most tracked activity time." Foreground="#7386A8" TextWrapping="Wrap"/>
+        </StackPanel>
+      </Border>
+
+      <Border Width="210"
+              Margin="0,0,0,14"
+              CornerRadius="18"
+              Background="#172033"
+              BorderBrush="#2B3953"
+              BorderThickness="1"
+              Padding="16">
+        <StackPanel Spacing="6">
+          <TextBlock Text="Intervention pulse" Foreground="#8EA0C3" FontSize="12"/>
+          <TextBlock Text="{Binding InterventionPulse}" Foreground="#FBBF24" FontSize="24" FontWeight="Bold" TextWrapping="Wrap"/>
+          <TextBlock Text="Recent threshold activity, useful for tuning your limits." Foreground="#7386A8" TextWrapping="Wrap"/>
+        </StackPanel>
+      </Border>
+
+    </WrapPanel>
   </Border>
 </UserControl>

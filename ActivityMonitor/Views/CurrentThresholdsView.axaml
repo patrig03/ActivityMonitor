@@ -9,7 +9,7 @@
 
   
   
-  <DataGrid ItemsSource="{Binding Data}"
+  <DataGrid ItemsSource="{Binding ThresholdRows}"
             AutoGenerateColumns="False"
             IsReadOnly="True"
             SelectionMode="Single"
@@ -25,8 +25,13 @@
                           Width="Auto"
                           CanUserSort="True"/>
                           
-      <DataGridTextColumn Header="CategoryId"
-                          Binding="{Binding Threshold.CategoryId}"
+      <DataGridTextColumn Header="Target"
+                          Binding="{Binding TargetName}"
+                          Width="2*"
+                          CanUserSort="True"/>
+
+      <DataGridTextColumn Header="Target Type"
+                          Binding="{Binding Threshold.TargetType}"
                           Width="Auto"
                           CanUserSort="True"/>
                           
@@ -36,41 +41,41 @@
                           CanUserSort="True">
       </DataGridTextColumn>
     
-      <DataGridTextColumn Header="InterventionType"
+      <DataGridTextColumn Header="Intervention"
                           Binding="{Binding Threshold.InterventionType}"
                           Width="Auto"
                           CanUserSort="True">
       </DataGridTextColumn>
       
-      <DataGridTextColumn Header="DailyLimit"
-                          Binding="{Binding Threshold.DailyLimit}"
+      <DataGridTextColumn Header="Limit"
+                          Binding="{Binding LimitSummary}"
                           Width="Auto"
                           CanUserSort="True">
       </DataGridTextColumn>
       
-
-      <DataGridTemplateColumn Header=""
-                              Width="Auto">
-        <DataGridTemplateColumn.CellTemplate>
-          <DataTemplate>
-            <Button Classes="button" 
-                    Content="Edit"
-                    Command="{ReflectionBinding DataContext.EditRowCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                    CommandParameter="{Binding}" />
-          </DataTemplate>
-        </DataGridTemplateColumn.CellTemplate>
-      </DataGridTemplateColumn>
-      <DataGridTemplateColumn Header=""
-                              Width="Auto">
-        <DataGridTemplateColumn.CellTemplate>
-          <DataTemplate>
-            <Button Classes="button" 
-                    Content="Delete" 
-                    Command="{Binding $parent[DataGrid].((viewModels:InterventionsViewModel)DataContext).DeleteCommand}" 
-                    CommandParameter="{Binding}"/>
-          </DataTemplate>
-        </DataGridTemplateColumn.CellTemplate>
-      </DataGridTemplateColumn>
+      <!-- -->
+      <!-- <DataGridTemplateColumn Header="" -->
+      <!--                         Width="Auto"> -->
+      <!--   <DataGridTemplateColumn.CellTemplate> -->
+      <!--     <DataTemplate> -->
+      <!--       <Button Classes="nav-button" -->
+      <!--               Content="Edit" -->
+      <!--               Command="{ReflectionBinding DataContext.EditRowCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" -->
+      <!--               CommandParameter="{Binding}" /> -->
+      <!--     </DataTemplate> -->
+      <!--   </DataGridTemplateColumn.CellTemplate> -->
+      <!-- </DataGridTemplateColumn> -->
+      <!-- <DataGridTemplateColumn Header="" -->
+      <!--                         Width="Auto"> -->
+      <!--   <DataGridTemplateColumn.CellTemplate> -->
+      <!--     <DataTemplate> -->
+      <!--       <Button Classes="nav-button" -->
+      <!--               Content="Delete" -->
+      <!--               Command="{Binding $parent[DataGrid].((viewModels:InterventionsViewModel)DataContext).DeleteCommand}" -->
+      <!--               CommandParameter="{Binding}"/> -->
+      <!--     </DataTemplate> -->
+      <!--   </DataGridTemplateColumn.CellTemplate> -->
+      <!-- </DataGridTemplateColumn> -->
     </DataGrid.Columns>
   </DataGrid>
 </UserControl>

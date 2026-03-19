@@ -81,12 +81,11 @@ public class DatabaseValidator : IDatabaseValidator
     private const string InterventionsTable = """
                                               CREATE TABLE IF NOT EXISTS interventions (
                                                   intervention_id INTEGER PRIMARY KEY,
-                                                  user_id INTEGER,
-                                                  category_id INTEGER,
+                                                  threshold_id INTEGER,
                                                   triggered_at DATETIME,
                                                   type TEXT,
-                                                  FOREIGN KEY (user_id) REFERENCES users(user_id),
-                                                  FOREIGN KEY (category_id) REFERENCES categories(category_id)
+                                                  snoozed BOOLEAN DEFAULT FALSE,
+                                                  FOREIGN KEY (threshold_id) REFERENCES thresholds(threshold_id)
                                               );
                                               """;
 
@@ -220,6 +219,7 @@ public class DatabaseValidator : IDatabaseValidator
         CreateTable(cmd, "thresholds");
         CreateTable(cmd, "interventions");
         EnsureThresholdSchema(cmd);
+        EnsureInterventionsSchema(cmd);
         
         PopulateTableDefaults(cmd, "categories");
         PopulateTableDefaults(cmd, "users");
@@ -278,6 +278,12 @@ public class DatabaseValidator : IDatabaseValidator
 
         cmd.CommandText = $"ALTER TABLE {tableName} ADD COLUMN {columnName} {definition};";
         cmd.ExecuteNonQuery();
+    }
+
+    private void EnsureInterventionsSchema(SqliteCommand cmd)
+    {
+        EnsureColumn(cmd, "interventions", "threshold_id", "INTEGER");
+        EnsureColumn(cmd, "interventions", "snoozed", "BOOLEAN DEFAULT FALSE");
     }
     
     /// Verifies that the table contains all expected columns and no extra columns are present

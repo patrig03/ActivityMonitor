@@ -12,7 +12,7 @@ namespace ActivityMonitor.ViewModels;
 
 public class BrowserViewModel : ViewModelBase
 {
-    private readonly IDatabaseManager _db = new DatabaseManager(Settings.DbPath);
+    private readonly IDatabaseManager _db = new DatabaseManager(Settings.DatabaseConnectionString);
 
     private string _browserStatus = "Loading browser activity";
     private string _totalEvents = "0";
@@ -143,7 +143,7 @@ public class BrowserViewModel : ViewModelBase
         TopDomain = domainGroups.FirstOrDefault()?.Key ?? "No browser records";
         BrowserStatus = records.Count == 0
             ? "No browser activity has been stored yet."
-            : $"Loaded {records.Count} browser activity records from the local database.";
+            : $"Loaded {records.Count} browser activity records from MySQL.";
     }
 
     private static string? TryGetDomain(string url)

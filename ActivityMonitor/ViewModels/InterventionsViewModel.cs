@@ -109,7 +109,7 @@ public partial class InterventionsViewModel : ViewModelBase
 
     public InterventionsViewModel()
     {
-        _manager = new DatabaseManager(Settings.DbPath);
+        _manager = new DatabaseManager(Settings.DatabaseConnectionString);
 
         InterventionTypes.Add(Threshold.NotificationInterventionType);
         InterventionTypes.Add(Threshold.TypingLockInterventionType);

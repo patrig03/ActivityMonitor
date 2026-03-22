@@ -9,9 +9,9 @@
     </PropertyGroup>
     
     <ItemGroup>
-        <PackageVersion Include="Microsoft.Data.Sqlite" Version="10.0.2" />
-        <PackageReference Include="Microsoft.Data.Sqlite" />
-        <PackageReference Include="SQLite" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" />
+        <PackageReference Include="MySqlConnector" />
+        <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" />
     </ItemGroup>
     
 </Project>

@@ -36,7 +36,7 @@ public partial class DashboardViewModel : ObservableObject
         "scientific"
     ];
 
-    private readonly IDatabaseManager _db = new DatabaseManager(Settings.DbPath);
+    private readonly IDatabaseManager _db = new DatabaseManager(Settings.DatabaseConnectionString);
     private readonly ReportMaker _maker;
 
     private string _displayName = "Default user";

@@ -50,7 +50,7 @@
                   BorderThickness="1">
             <StackPanel Spacing="12">
               <TextBlock Text="Maintenance" Foreground="#9AA8C1"/>
-              <TextBlock Text="Refresh guardrails and intervention history from the local database." Foreground="#F7FAFF" FontWeight="SemiBold" TextWrapping="Wrap"/>
+              <TextBlock Text="Refresh guardrails and intervention history from the MySQL database." Foreground="#F7FAFF" FontWeight="SemiBold" TextWrapping="Wrap"/>
               <Button Command="{Binding RefreshCommand}"
                       Background="#8BD3A7"
                       Foreground="#062A16"

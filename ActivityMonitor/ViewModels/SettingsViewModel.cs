@@ -12,7 +12,7 @@ public class SettingsViewModel : ObservableObject
     private const int DefaultUserId = 1;
     private const int DefaultIntervalSeconds = 10;
 
-    private readonly IDatabaseManager _db = new DatabaseManager(Settings.DbPath);
+    private readonly IDatabaseManager _db = new DatabaseManager(Settings.DatabaseConnectionString);
     private Settings _settings = new();
     private bool _isLoading;
 
@@ -21,8 +21,8 @@ public class SettingsViewModel : ObservableObject
     private string _validationMessage = "Balanced cadence for most desktops.";
     private string _intervalProfile = "Balanced monitoring";
     private string _intervalImpact = "360 samples/hour | ~8,640 samples/day";
-    private string _databasePath = Settings.DbPath;
-    private string _databaseStatus = "Database available";
+    private string _databasePath = Settings.DatabaseEndpoint;
+    private string _databaseStatus = "MySQL endpoint configured";
     private string _serviceMutexName = Settings.MutexName;
     private string _thresholdCoverage = "--";
     private string _activityCoverage = "--";
@@ -160,12 +160,10 @@ public class SettingsViewModel : ObservableObject
         _settings = dto == null ? new Settings() : Settings.FromDto(dto);
 
         RefreshIntervalSeconds = Math.Max(1, (int)_settings.DeltaTime.TotalSeconds).ToString();
-        DatabasePath = Settings.DbPath;
-        DatabaseStatus = System.IO.File.Exists(Settings.DbPath)
-            ? "Local database detected"
-            : "Database file will be created on first write";
+        DatabasePath = Settings.DatabaseEndpoint;
+        DatabaseStatus = "MySQL schema will be created automatically when the connection succeeds";
         ServiceMutexName = Settings.MutexName;
-        LastSavedLabel = dto == null ? "Using defaults" : "Loaded from local storage";
+        LastSavedLabel = dto == null ? "Using defaults" : "Loaded from MySQL";
         SaveStatus = "Settings loaded";
 
         RefreshDiagnostics();
@@ -195,7 +193,7 @@ public class SettingsViewModel : ObservableObject
         }
 
         SaveStatus = $"Saved at {DateTime.Now:HH:mm}";
-        LastSavedLabel = "Persisted in local settings table";
+        LastSavedLabel = "Persisted in MySQL settings table";
         RefreshDiagnostics();
     }
 
@@ -264,7 +262,7 @@ public class SettingsViewModel : ObservableObject
         ThresholdCoverage = $"{activeThresholds} active thresholds across {thresholds.Count} configured guardrails";
         ActivityCoverage = $"{applications} tracked applications, {trackedSessions} captured sessions, {categories} categories available";
         InterventionCoverage = $"{interventions} interventions recorded for the current user";
-        BrowserCoverage = $"{browserEvents} browser events stored in the local activity log";
+        BrowserCoverage = $"{browserEvents} browser events stored in MySQL";
     }
 
     private bool TryParseInterval(out int seconds, out string error)

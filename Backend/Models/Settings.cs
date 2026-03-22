@@ -1,4 +1,5 @@
 using Database.DTO;
+using Database.Configuration;
 
 namespace Backend.Models;
 
@@ -10,14 +11,18 @@ public class Settings
 
     public static string MutexName { get => "Global\\ActivityMonitorBackgroundService"; }
 
-    public static string DbPath
+    public static string DatabaseConnectionString => DatabaseConnectionFactory.BuildConnectionString();
+
+    public static string DatabaseEndpoint => DatabaseConnectionFactory.GetDisplayName();
+
+    public static string DataDirectory
     {
         get
         {
             var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
             appDataPath = Path.Combine(appDataPath, "ActivityMonitor");
             Directory.CreateDirectory(appDataPath);
-            return Path.Combine(appDataPath, "database.db");
+            return appDataPath;
         }
     }
 

@@ -38,12 +38,15 @@ public class LinuxAppCollector : IApplicationDataCollector
     private ApplicationRecord? ParseWindows(string wmctrlResult)
     {
         var lines = wmctrlResult.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+        if (lines.Length == 0) return null;
 
-        return lines
+        var array = lines
             .Select(ParseWindowLine)
             .Where(w => w != null!)
-            .ToArray()
-            .First();
+            .ToArray();
+        
+        if (array.Length == 0) return null;
+        return array.First();
     }
 
     private ApplicationRecord? ParseWindowLine(string line)

@@ -13,7 +13,7 @@ public static class Program
     {
         if (!VerifyMutex()) { Console.WriteLine("Another instance is already running"); return; }
         
-        var dbManager = new DatabaseManager(Settings.DbPath);
+        var dbManager = new DatabaseManager(Settings.DatabaseConnectionString);
         dbManager.EnsureDatabase();
         
         DataCollectorController collector = new();
@@ -32,21 +32,10 @@ public static class Program
         }
     }
     
-    /// <summary>
-    /// makes sure that only one instance of the program is running at a time
-    /// </summary>
-    /// <returns>returns true if only one instance is running</returns>
     private static bool VerifyMutex()
     {
         using var mutex = new Mutex(true, Settings.MutexName, out var isNew);
         return isNew;
     }
     
-    private static string GetDatabasePath()
-    {
-        var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-        appDataPath = Path.Combine(appDataPath, "ActivityMonitor");
-        Directory.CreateDirectory(appDataPath);
-        return Path.Combine(appDataPath, "database.db");
-    }
 }

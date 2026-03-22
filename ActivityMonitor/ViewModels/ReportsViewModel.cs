@@ -13,7 +13,7 @@ namespace ActivityMonitor.ViewModels;
 
 public class ReportsViewModel : ViewModelBase
 {
-    private readonly ReportMaker _maker = new(new DatabaseManager(Settings.DbPath));
+    private readonly ReportMaker _maker = new(new DatabaseManager(Settings.DatabaseConnectionString));
 
     private string _reportStatus = "Preparing activity report";
     private string _lastGenerated = "Not generated yet";
@@ -167,7 +167,7 @@ public class ReportsViewModel : ViewModelBase
         LastGenerated = $"Generated {DateTime.Now:HH:mm}";
         ReportStatus = reportData.Count == 0
             ? "No reportable activity yet. Leave the monitor running to capture sessions first."
-            : $"Loaded {reportData.Count} category reports from local activity data.";
+            : $"Loaded {reportData.Count} category reports from MySQL activity data.";
     }
 
     private void ExportCsv()
@@ -210,8 +210,7 @@ public class ReportsViewModel : ViewModelBase
 
     private static string BuildExportDirectory()
     {
-        var baseDirectory = Path.GetDirectoryName(Settings.DbPath) ?? AppContext.BaseDirectory;
-        return Path.Combine(baseDirectory, "reports");
+        return Path.Combine(Settings.DataDirectory, "reports");
     }
 
     private static string EnsureTrailingSeparator(string path)

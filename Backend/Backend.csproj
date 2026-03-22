@@ -10,8 +10,6 @@
 
     <ItemGroup>
       <PackageReference Include="iTextSharp" />
-      <PackageReference Include="Microsoft.Data.Sqlite" />
-      <PackageReference Include="SQLite" />
     </ItemGroup>
 
     <ItemGroup>

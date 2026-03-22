@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading;
 using Avalonia.Threading;
+using Backend.Models;
 using Database.DTO;
 using Database.Manager;
 
@@ -22,14 +23,13 @@ public class WindowCategoryDto
 public class DatabaseViewModel
 {
     public ObservableCollection<WindowCategoryDto> WindowCategories { get; }
-    private const string DbPath = "../../../../Backend/bin/Debug/net9.0/data/database.db";
-    private DatabaseManager _manager { get; }
+    private IDatabaseManager _manager { get; }
 
     private Timer? _timer;
 
     public DatabaseViewModel()
     {
-        _manager = new (DbPath);
+        _manager = new DatabaseManager(Settings.DatabaseConnectionString);
         WindowCategories = new ();
 
         _timer = new Timer(_ =>
@@ -45,8 +45,8 @@ public class DatabaseViewModel
                 
                     WindowCategories.Add(new WindowCategoryDto
                     {
-                        WmClass = app.ClassName,
-                        Title = app.WindowTitle,
+                        WmClass = app.ClassName ?? string.Empty,
+                        Title = app.WindowTitle ?? string.Empty,
                     });
                 }
             });

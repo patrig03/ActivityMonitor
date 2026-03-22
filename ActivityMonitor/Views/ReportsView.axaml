@@ -104,7 +104,7 @@
         <Grid ColumnDefinitions="*,340" ColumnSpacing="18">
           <StackPanel Spacing="10">
             <TextBlock Text="Reports" FontSize="30" FontWeight="Bold" Foreground="#F7FAFF"/>
-            <TextBlock Text="Review category-level workload summaries and generate exportable snapshots from the local activity database."
+            <TextBlock Text="Review category-level workload summaries and generate exportable snapshots from the MySQL activity database."
                        Foreground="#8EA0C3"
                        TextWrapping="Wrap"/>
             <WrapPanel Orientation="Horizontal">

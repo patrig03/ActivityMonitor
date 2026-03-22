@@ -41,7 +41,7 @@
         <!-- Mark the current item as active via a class -->
         <Button Content="Dashboard"
                 Click="Button_OnClick"
-                Classes="nav-button button--active"/>
+                Classes="nav-button"/>
 
         <Button Content="Reports"
                 Click="Button_OnClick"

@@ -53,7 +53,8 @@ public partial class InterventionsViewModel
         foreach (var app in _manager.GetAllApplications()
                      .Select(ApplicationRecord.FromDto)
                      .Where(a => a.Id.HasValue && !string.IsNullOrWhiteSpace(a.ProcessName))
-                     .OrderBy(a => a.ProcessName))
+                     .OrderBy(a => a.ProcessName)
+                     .DistinctBy(a => a.ProcessName))
         {
             Apps.Add(app);
         }

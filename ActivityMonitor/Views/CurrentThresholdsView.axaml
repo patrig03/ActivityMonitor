@@ -6,6 +6,7 @@
              mc:Ignorable="d"
              d:DesignWidth="800"
              d:DesignHeight="450"
+             x:Name="Root"
              x:Class="ActivityMonitor.Views.CurrentThresholdsView"
              x:DataType="viewModels:InterventionsViewModel">
 
@@ -20,18 +21,18 @@
             MinHeight="260">
     <DataGrid.Columns>
       <DataGridTextColumn Header="Id" Binding="{Binding Threshold.Id}" Width="Auto"/>
-      <DataGridTextColumn Header="Target" Binding="{Binding TargetName}" Width="2*"/>
-      <DataGridTextColumn Header="Target Type" Binding="{Binding Threshold.TargetType}" Width="Auto"/>
-      <DataGridTextColumn Header="Active" Binding="{Binding Threshold.Active}" Width="Auto"/>
-      <DataGridTextColumn Header="Intervention" Binding="{Binding Threshold.InterventionType}" Width="Auto"/>
-      <DataGridTextColumn Header="Limit" Binding="{Binding LimitSummary}" Width="Auto"/>
+      <DataGridTextColumn Header="Tinta" Binding="{Binding TargetName}" Width="2*"/>
+      <DataGridTextColumn Header="Tip tinta" Binding="{Binding Threshold.TargetType}" Width="Auto"/>
+      <DataGridTextColumn Header="Activ" Binding="{Binding Threshold.Active}" Width="Auto"/>
+      <DataGridTextColumn Header="Interventie" Binding="{Binding Threshold.InterventionType}" Width="Auto"/>
+      <DataGridTextColumn Header="Limita" Binding="{Binding LimitSummary}" Width="Auto"/>
 
       <DataGridTemplateColumn Header="" Width="Auto">
         <DataGridTemplateColumn.CellTemplate>
           <DataTemplate>
-            <Button Content="Edit"
+            <Button Content="Editeaza"
                     Classes="nav-button"
-                    Command="{Binding  RelativeSource={RelativeSource AncestorType=UserControl}}"
+                    Command="{Binding #Root.DataContext.EditRowCommand}"
                     CommandParameter="{Binding}"
                     Background="#D9E5F5"
                     Foreground="#112039"
@@ -45,9 +46,9 @@
       <DataGridTemplateColumn Header="" Width="Auto">
         <DataGridTemplateColumn.CellTemplate>
           <DataTemplate>
-            <Button Content="Delete"
+            <Button Content="Sterge"
                     Classes="nav-button"
-                    Command="{Binding  RelativeSource={RelativeSource AncestorType=UserControl}}"
+                    Command="{Binding #Root.DataContext.DeleteCommand}"
                     CommandParameter="{Binding}"
                     Background="#F4CA7A"
                     Foreground="#452B00"

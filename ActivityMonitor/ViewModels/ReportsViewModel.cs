@@ -15,8 +15,8 @@ public class ReportsViewModel : ViewModelBase
 {
     private readonly ReportMaker _maker = new(new DatabaseManager(Settings.DatabaseConnectionString));
 
-    private string _reportStatus = "Preparing activity report";
-    private string _lastGenerated = "Not generated yet";
+    private string _reportStatus = "Se pregateste raportul de activitate";
+    private string _lastGenerated = "Nu a fost generat inca";
     private string _exportDirectory = BuildExportDirectory();
     private string _categoryCount = "0";
     private string _totalTrackedTime = "--";
@@ -110,9 +110,9 @@ public class ReportsViewModel : ViewModelBase
                 .Take(4)
                 .Select(app => new ReportProcessSummary
                 {
-                    ProcessName = string.IsNullOrWhiteSpace(app.ProcessName) ? "Unknown process" : app.ProcessName,
+                    ProcessName = string.IsNullOrWhiteSpace(app.ProcessName) ? "Proces necunoscut" : app.ProcessName,
                     Duration = FormatDuration(app.TotalDuration),
-                    WindowCount = $"{app.Windows.Count()} windows"
+                    WindowCount = $"{app.Windows.Count()} ferestre"
                 })
                 .ToList();
 
@@ -142,18 +142,18 @@ public class ReportsViewModel : ViewModelBase
             {
                 CategoryName = report.Category.Name,
                 Description = string.IsNullOrWhiteSpace(report.Category.Description)
-                    ? "No category description available."
+                    ? "Nu exista descriere pentru categorie."
                     : report.Category.Description!,
                 TotalDuration = FormatDuration(categoryDuration),
-                ApplicationCount = $"{report.Applications.Count()} tracked processes",
-                WindowCount = $"{report.Applications.Sum(app => app.Windows.Count())} captured windows",
-                ThresholdCount = $"{report.Thresholds.Count()} linked thresholds",
-                InterventionCount = $"{interventionsForCategory.Count} related interventions",
+                ApplicationCount = $"{report.Applications.Count()} procese monitorizate",
+                WindowCount = $"{report.Applications.Sum(app => app.Windows.Count())} ferestre capturate",
+                ThresholdCount = $"{report.Thresholds.Count()} praguri asociate",
+                InterventionCount = $"{interventionsForCategory.Count} interventii asociate",
                 BrowserActivityCount = report.Category.Id == 2
-                    ? $"{browserEventCount} browser records"
-                    : "Browser details tracked separately",
+                    ? $"{browserEventCount} inregistrari browser"
+                    : "Detaliile browserului sunt monitorizate separat",
                 TopProcesses = new ObservableCollection<ReportProcessSummary>(topProcesses),
-                Highlight = topProcesses.FirstOrDefault()?.ProcessName ?? "No process activity"
+                Highlight = topProcesses.FirstOrDefault()?.ProcessName ?? "Nu exista activitate de proces"
             });
         }
 
@@ -164,10 +164,10 @@ public class ReportsViewModel : ViewModelBase
         ApplicationCount = uniqueProcesses.Count.ToString();
         InterventionCount = uniqueInterventions.Count.ToString();
         BrowserEventCount = browserEventCount.ToString();
-        LastGenerated = $"Generated {DateTime.Now:HH:mm}";
+        LastGenerated = $"Generat la {DateTime.Now:HH:mm}";
         ReportStatus = reportData.Count == 0
-            ? "No reportable activity yet. Leave the monitor running to capture sessions first."
-            : $"Loaded {reportData.Count} category reports from MySQL activity data.";
+            ? "Nu exista inca activitate raportabila. Lasa monitorul sa ruleze pentru a captura mai intai sesiuni."
+            : $"Au fost incarcate {reportData.Count} rapoarte de categorie din datele de activitate MySQL.";
     }
 
     private void ExportCsv()
@@ -175,8 +175,8 @@ public class ReportsViewModel : ViewModelBase
         Directory.CreateDirectory(ExportDirectory);
         var success = _maker.WriteCsvReport(EnsureTrailingSeparator(ExportDirectory));
         ReportStatus = success
-            ? $"CSV report written to {Path.Combine(ExportDirectory, "report.csv")}"
-            : "CSV export failed.";
+            ? $"Raportul CSV a fost scris in {Path.Combine(ExportDirectory, "report.csv")}"
+            : "Exportul CSV a esuat.";
     }
 
     private void ExportPdf()
@@ -184,8 +184,8 @@ public class ReportsViewModel : ViewModelBase
         Directory.CreateDirectory(ExportDirectory);
         var success = _maker.WritePdfReport(EnsureTrailingSeparator(ExportDirectory));
         ReportStatus = success
-            ? $"PDF report written to {Path.Combine(ExportDirectory, "report.pdf")}"
-            : "PDF export failed.";
+            ? $"Raportul PDF a fost scris in {Path.Combine(ExportDirectory, "report.pdf")}"
+            : "Exportul PDF a esuat.";
     }
 
     private static TimeSpan GetCategoryDuration(ReportData report)

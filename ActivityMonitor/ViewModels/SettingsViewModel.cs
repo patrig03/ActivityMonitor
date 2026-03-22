@@ -17,19 +17,19 @@ public class SettingsViewModel : ObservableObject
     private bool _isLoading;
 
     private string _refreshIntervalSeconds = DefaultIntervalSeconds.ToString();
-    private string _saveStatus = "Loading settings...";
-    private string _validationMessage = "Balanced cadence for most desktops.";
-    private string _intervalProfile = "Balanced monitoring";
-    private string _intervalImpact = "360 samples/hour | ~8,640 samples/day";
+    private string _saveStatus = "Se incarca setarile...";
+    private string _validationMessage = "Cadenta echilibrata pentru majoritatea desktopurilor.";
+    private string _intervalProfile = "Monitorizare echilibrata";
+    private string _intervalImpact = "360 esantioane/ora | ~8,640 esantioane/zi";
     private string _databasePath = Settings.DatabaseEndpoint;
-    private string _databaseStatus = "MySQL endpoint configured";
+    private string _databaseStatus = "Endpoint MySQL configurat";
     private string _serviceMutexName = Settings.MutexName;
     private string _thresholdCoverage = "--";
     private string _activityCoverage = "--";
     private string _interventionCoverage = "--";
     private string _browserCoverage = "--";
     private string _monitoringSummary = "--";
-    private string _lastSavedLabel = "Not saved yet";
+    private string _lastSavedLabel = "Nu a fost salvat inca";
 
     public SettingsViewModel()
     {
@@ -69,7 +69,7 @@ public class SettingsViewModel : ObservableObject
 
             if (!_isLoading)
             {
-                SaveStatus = "Unsaved changes";
+                SaveStatus = "Modificari nesalvate";
             }
         }
     }
@@ -161,10 +161,10 @@ public class SettingsViewModel : ObservableObject
 
         RefreshIntervalSeconds = Math.Max(1, (int)_settings.DeltaTime.TotalSeconds).ToString();
         DatabasePath = Settings.DatabaseEndpoint;
-        DatabaseStatus = "MySQL schema will be created automatically when the connection succeeds";
+        DatabaseStatus = "Schema MySQL va fi creata automat cand conexiunea reuseste";
         ServiceMutexName = Settings.MutexName;
-        LastSavedLabel = dto == null ? "Using defaults" : "Loaded from MySQL";
-        SaveStatus = "Settings loaded";
+        LastSavedLabel = dto == null ? "Se folosesc valorile implicite" : "Incarcate din MySQL";
+        SaveStatus = "Setari incarcate";
 
         RefreshDiagnostics();
 
@@ -192,15 +192,15 @@ public class SettingsViewModel : ObservableObject
             _settings.Id = _db.InsertSettings(_settings.ToDto());
         }
 
-        SaveStatus = $"Saved at {DateTime.Now:HH:mm}";
-        LastSavedLabel = "Persisted in MySQL settings table";
+        SaveStatus = $"Salvat la {DateTime.Now:HH:mm}";
+        LastSavedLabel = "Persistate in tabelul MySQL de setari";
         RefreshDiagnostics();
     }
 
     private void ResetToDefaults()
     {
         RefreshIntervalSeconds = DefaultIntervalSeconds.ToString();
-        ValidationMessage = "Default cadence restored. Save to persist it.";
+        ValidationMessage = "Cadenta implicita a fost restaurata. Salveaza pentru a o pastra.";
     }
 
     private void ApplyPreset(int seconds)
@@ -213,9 +213,9 @@ public class SettingsViewModel : ObservableObject
         if (!TryParseInterval(out var seconds, out var error))
         {
             ValidationMessage = error;
-            IntervalProfile = "Invalid value";
-            IntervalImpact = "Enter a whole number of seconds between 1 and 600.";
-            MonitoringSummary = "Sampling summary unavailable";
+            IntervalProfile = "Valoare invalida";
+            IntervalImpact = "Introdu un numar intreg de secunde intre 1 si 600.";
+            MonitoringSummary = "Rezumatul esantionarii nu este disponibil";
             return;
         }
 
@@ -224,27 +224,27 @@ public class SettingsViewModel : ObservableObject
 
         if (seconds <= 5)
         {
-            IntervalProfile = "High precision monitoring";
-            ValidationMessage = "Fast capture for short task switches and strict session limits.";
+            IntervalProfile = "Monitorizare cu precizie ridicata";
+            ValidationMessage = "Captura rapida pentru schimbari scurte de activitate si limite stricte de sesiune.";
         }
         else if (seconds <= 15)
         {
-            IntervalProfile = "Balanced monitoring";
-            ValidationMessage = "Good tradeoff between responsiveness and storage churn.";
+            IntervalProfile = "Monitorizare echilibrata";
+            ValidationMessage = "Compromis bun intre reactie rapida si volum de stocare.";
         }
         else if (seconds <= 60)
         {
-            IntervalProfile = "Low overhead monitoring";
-            ValidationMessage = "Lower write volume, but short sessions may look less precise.";
+            IntervalProfile = "Monitorizare cu consum redus";
+            ValidationMessage = "Volum mai mic de scrieri, dar sesiunile scurte pot parea mai putin precise.";
         }
         else
         {
-            IntervalProfile = "Coarse monitoring";
-            ValidationMessage = "Suitable only if you want broad trends rather than tight interventions.";
+            IntervalProfile = "Monitorizare grosiera";
+            ValidationMessage = "Potrivita doar daca vrei tendinte generale, nu interventii stricte.";
         }
 
-        IntervalImpact = $"{samplesPerHour:0} samples/hour | ~{samplesPerDay:0} samples/day";
-        MonitoringSummary = $"Current interval: {seconds}s | intervention checks evaluate on the same cadence.";
+        IntervalImpact = $"{samplesPerHour:0} esantioane/ora | ~{samplesPerDay:0} esantioane/zi";
+        MonitoringSummary = $"Interval curent: {seconds}s | verificarile de interventie ruleaza in acelasi ritm.";
     }
 
     private void RefreshDiagnostics()
@@ -259,23 +259,23 @@ public class SettingsViewModel : ObservableObject
         var interventions = _db.GetInterventionsForUser(DefaultUserId).Count();
         var trackedSessions = _db.GetSessionsForUser(DefaultUserId).Count();
 
-        ThresholdCoverage = $"{activeThresholds} active thresholds across {thresholds.Count} configured guardrails";
-        ActivityCoverage = $"{applications} tracked applications, {trackedSessions} captured sessions, {categories} categories available";
-        InterventionCoverage = $"{interventions} interventions recorded for the current user";
-        BrowserCoverage = $"{browserEvents} browser events stored in MySQL";
+        ThresholdCoverage = $"{activeThresholds} praguri active din {thresholds.Count} limite configurate";
+        ActivityCoverage = $"{applications} aplicatii monitorizate, {trackedSessions} sesiuni capturate, {categories} categorii disponibile";
+        InterventionCoverage = $"{interventions} interventii inregistrate pentru utilizatorul curent";
+        BrowserCoverage = $"{browserEvents} evenimente browser stocate in MySQL";
     }
 
     private bool TryParseInterval(out int seconds, out string error)
     {
         if (!int.TryParse(RefreshIntervalSeconds, out seconds))
         {
-            error = "Refresh interval must be a whole number of seconds.";
+            error = "Intervalul de reimprospatare trebuie sa fie un numar intreg de secunde.";
             return false;
         }
 
         if (seconds < 1 || seconds > 600)
         {
-            error = "Refresh interval must stay between 1 and 600 seconds.";
+            error = "Intervalul de reimprospatare trebuie sa fie intre 1 si 600 de secunde.";
             return false;
         }
 

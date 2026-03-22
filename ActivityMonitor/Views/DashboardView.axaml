@@ -169,14 +169,14 @@
                 </Border>
                 <StackPanel Spacing="2" VerticalAlignment="Center">
                   <TextBlock Text="{Binding DisplayName}" FontSize="16" FontWeight="SemiBold" Foreground="#F7FAFF"/>
-                  <TextBlock Text="Primary monitoring profile" Foreground="#8EA0C3"/>
+                  <TextBlock Text="Profil principal de monitorizare" Foreground="#8EA0C3"/>
                 </StackPanel>
               </StackPanel>
 
               <Grid ColumnDefinitions="*,Auto">
                 <StackPanel Spacing="4">
-                  <TextBlock Text="Attention queue" Foreground="#8EA0C3"/>
-                  <TextBlock Text="Threshold pressure and recent alerts" Foreground="#F7FAFF" FontWeight="SemiBold"/>
+                  <TextBlock Text="Coada de atentie" Foreground="#8EA0C3"/>
+                  <TextBlock Text="Presiune pe praguri si alerte recente" Foreground="#F7FAFF" FontWeight="SemiBold"/>
                 </StackPanel>
                 <Border Grid.Column="1"
                         Background="#223250"
@@ -194,7 +194,7 @@
                       CornerRadius="14"
                       Padding="16,12"
                       HorizontalAlignment="Stretch">
-                <TextBlock Text="Refresh dashboard" FontWeight="Bold" HorizontalAlignment="Center"/>
+                <TextBlock Text="Reincarca Dashboardul" FontWeight="Bold" HorizontalAlignment="Center"/>
               </Button>
             </StackPanel>
           </Border>
@@ -210,7 +210,7 @@
               BorderBrush="#24324A"
               BorderThickness="1">
         <StackPanel Spacing="14">
-          <TextBlock Text="What stands out" FontSize="20" FontWeight="Bold" Foreground="#F7FAFF"/>
+          <TextBlock Text="Ce iese in evidenta" FontSize="20" FontWeight="Bold" Foreground="#F7FAFF"/>
           <ItemsControl ItemsSource="{Binding Insights}" ItemTemplate="{StaticResource InsightTemplate}">
             <ItemsControl.ItemsPanel>
               <ItemsPanelTemplate>
@@ -229,8 +229,8 @@
                 BorderBrush="#24324A"
                 BorderThickness="1">
           <StackPanel Spacing="12">
-            <TextBlock Text="Category momentum" FontSize="18" FontWeight="Bold" Foreground="#F7FAFF"/>
-            <TextBlock Text="Top categories by tracked hours." Foreground="#8EA0C3"/>
+            <TextBlock Text="Dinamica categoriilor" FontSize="18" FontWeight="Bold" Foreground="#F7FAFF"/>
+            <TextBlock Text="Categorii principale dupa ore monitorizate." Foreground="#8EA0C3"/>
             <lvc:CartesianChart Series="{Binding CategoryUsageSeries}"
                                 XAxes="{Binding CategoryXAxis}"
                                 MinHeight="280"/>
@@ -244,8 +244,8 @@
                 BorderBrush="#24324A"
                 BorderThickness="1">
           <StackPanel Spacing="12">
-            <TextBlock Text="Process share" FontSize="18" FontWeight="Bold" Foreground="#F7FAFF"/>
-            <TextBlock Text="Where tracked time concentrates across processes." Foreground="#8EA0C3"/>
+            <TextBlock Text="Pondere procese" FontSize="18" FontWeight="Bold" Foreground="#F7FAFF"/>
+            <TextBlock Text="Unde se concentreaza timpul monitorizat intre procese." Foreground="#8EA0C3"/>
             <lvc:PieChart Series="{Binding ProcessShareSeries}"
                           MinHeight="280"/>
           </StackPanel>
@@ -261,8 +261,8 @@
                 BorderBrush="#24324A"
                 BorderThickness="1">
           <StackPanel Spacing="12">
-            <TextBlock Text="Window activity" FontSize="18" FontWeight="Bold" Foreground="#F7FAFF"/>
-            <TextBlock Text="Windows with the highest total active time." Foreground="#8EA0C3"/>
+            <TextBlock Text="Activitate ferestre" FontSize="18" FontWeight="Bold" Foreground="#F7FAFF"/>
+            <TextBlock Text="Ferestrele cu cel mai mare timp total activ." Foreground="#8EA0C3"/>
             <lvc:CartesianChart Series="{Binding WindowUsageSeries}"
                                 XAxes="{Binding WindowXAxis}"
                                 MinHeight="300"/>
@@ -276,8 +276,8 @@
                 BorderBrush="#24324A"
                 BorderThickness="1">
           <StackPanel Spacing="12">
-            <TextBlock Text="Recent session timeline" FontSize="18" FontWeight="Bold" Foreground="#F7FAFF"/>
-            <TextBlock Text="Latest session durations in minutes." Foreground="#8EA0C3"/>
+            <TextBlock Text="Cronologie sesiuni recente" FontSize="18" FontWeight="Bold" Foreground="#F7FAFF"/>
+            <TextBlock Text="Duratele ultimelor sesiuni in minute." Foreground="#8EA0C3"/>
             <lvc:CartesianChart Series="{Binding SessionTimelineSeries}"
                                 XAxes="{Binding SessionTimelineXAxis}"
                                 MinHeight="300"/>
@@ -294,8 +294,8 @@
                 BorderBrush="#24324A"
                 BorderThickness="1">
           <StackPanel Spacing="12">
-            <TextBlock Text="Category breakdown" FontSize="18" FontWeight="Bold" Foreground="#F7FAFF"/>
-            <TextBlock Text="Fast scan of the categories driving today's workload." Foreground="#8EA0C3"/>
+            <TextBlock Text="Defalcare categorii" FontSize="18" FontWeight="Bold" Foreground="#F7FAFF"/>
+            <TextBlock Text="Privire rapida asupra categoriilor care conduc volumul de lucru de azi." Foreground="#8EA0C3"/>
             <ItemsControl ItemsSource="{Binding CategoryBreakdown}" ItemTemplate="{StaticResource BreakdownTemplate}"/>
           </StackPanel>
         </Border>
@@ -307,8 +307,8 @@
                 BorderBrush="#24324A"
                 BorderThickness="1">
           <StackPanel Spacing="12">
-            <TextBlock Text="Threshold watch" FontSize="18" FontWeight="Bold" Foreground="#F7FAFF"/>
-            <TextBlock Text="Current pressure against the most relevant limits." Foreground="#8EA0C3"/>
+            <TextBlock Text="Monitorizare praguri" FontSize="18" FontWeight="Bold" Foreground="#F7FAFF"/>
+            <TextBlock Text="Presiunea curenta fata de cele mai relevante limite." Foreground="#8EA0C3"/>
             <ItemsControl ItemsSource="{Binding ThresholdStatuses}" ItemTemplate="{StaticResource ThresholdTemplate}"/>
           </StackPanel>
         </Border>
@@ -323,8 +323,8 @@
                 BorderBrush="#24324A"
                 BorderThickness="1">
           <StackPanel Spacing="12">
-            <TextBlock Text="Top browser domains" FontSize="18" FontWeight="Bold" Foreground="#F7FAFF"/>
-            <TextBlock Text="Most common domains in captured browser activity." Foreground="#8EA0C3"/>
+            <TextBlock Text="Domenii browser principale" FontSize="18" FontWeight="Bold" Foreground="#F7FAFF"/>
+            <TextBlock Text="Cele mai comune domenii din activitatea browser capturata." Foreground="#8EA0C3"/>
             <ItemsControl ItemsSource="{Binding TopDomains}" ItemTemplate="{StaticResource DomainTemplate}"/>
           </StackPanel>
         </Border>
@@ -336,8 +336,8 @@
                 BorderBrush="#24324A"
                 BorderThickness="1">
           <StackPanel Spacing="12">
-            <TextBlock Text="Recent interventions" FontSize="18" FontWeight="Bold" Foreground="#F7FAFF"/>
-            <TextBlock Text="Latest threshold events and their configured action type." Foreground="#8EA0C3"/>
+            <TextBlock Text="Interventii recente" FontSize="18" FontWeight="Bold" Foreground="#F7FAFF"/>
+            <TextBlock Text="Cele mai noi evenimente de prag si tipul lor configurat de actiune." Foreground="#8EA0C3"/>
             <ItemsControl ItemsSource="{Binding RecentInterventions}" ItemTemplate="{StaticResource InterventionTemplate}"/>
           </StackPanel>
         </Border>

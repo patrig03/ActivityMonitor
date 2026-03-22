@@ -22,14 +22,14 @@
             BorderThickness="1">
       <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
         <StackPanel Spacing="4">
-          <TextBlock Text="Threshold rules" FontSize="20" FontWeight="Bold" Foreground="#F7FAFF"/>
-          <TextBlock Text="Create a guardrail for a category or app, decide how long it is allowed, and choose what should happen when the limit is crossed."
+          <TextBlock Text="Reguli de prag" FontSize="20" FontWeight="Bold" Foreground="#F7FAFF"/>
+          <TextBlock Text="Creeaza o limita pentru o categorie sau aplicatie, decide cat timp este permis si alege ce se intampla cand limita este depasita."
                      Foreground="#9AA8C1"
                      TextWrapping="Wrap"/>
         </StackPanel>
 
         <Button Grid.Column="1"
-                Content="Add threshold"
+                Content="Adauga prag"
                 VerticalAlignment="Center"
                 Command="{Binding AddCommand}"
                 Background="#8BD3A7"
@@ -50,13 +50,13 @@
         <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
           <StackPanel Spacing="4">
             <TextBlock Text="{Binding ThresholdFormTitle}" FontSize="22" FontWeight="Bold" Foreground="#F7FAFF"/>
-            <TextBlock Text="Tune the target, limit type, and intervention before saving the rule."
+            <TextBlock Text="Ajusteaza tinta, tipul limitei si interventia inainte sa salvezi regula."
                        Foreground="#9AA8C1"
                        TextWrapping="Wrap"/>
           </StackPanel>
 
           <Button Grid.Column="1"
-                  Content="Cancel"
+                  Content="Anuleaza"
                   VerticalAlignment="Top"
                   Command="{Binding CancelCommand}"
                   Background="#D9E5F5"
@@ -73,17 +73,17 @@
                   BorderBrush="#31415C"
                   BorderThickness="1">
             <StackPanel Spacing="12">
-              <TextBlock Text="Target" FontSize="16" FontWeight="SemiBold" Foreground="#F7FAFF"/>
+              <TextBlock Text="Tinta" FontSize="16" FontWeight="SemiBold" Foreground="#F7FAFF"/>
 
               <StackPanel Spacing="6">
-                <TextBlock Text="Target type" Foreground="#D8E4F8"/>
+                <TextBlock Text="Tip tinta" Foreground="#D8E4F8"/>
                 <ComboBox ItemsSource="{Binding TargetTypes}"
                           SelectedItem="{Binding EditData.Threshold.TargetType}"/>
               </StackPanel>
 
               <StackPanel Spacing="6"
                           IsVisible="{Binding EditData.Threshold.TargetType, Converter={StaticResource EqualsConverter}, ConverterParameter=Category}">
-                <TextBlock Text="Category" Foreground="#D8E4F8"/>
+                <TextBlock Text="Categorie" Foreground="#D8E4F8"/>
                 <ComboBox ItemsSource="{Binding Categories}"
                           SelectedValue="{Binding EditData.Threshold.CategoryId}"
                           SelectedValueBinding="{Binding Id}"
@@ -92,7 +92,7 @@
 
               <StackPanel Spacing="6"
                           IsVisible="{Binding EditData.Threshold.TargetType, Converter={StaticResource EqualsConverter}, ConverterParameter=App}">
-                <TextBlock Text="Application" Foreground="#D8E4F8"/>
+                <TextBlock Text="Aplicatie" Foreground="#D8E4F8"/>
                 <ComboBox ItemsSource="{Binding Apps}"
                           SelectedValue="{Binding EditData.Threshold.AppId}"
                           SelectedValueBinding="{Binding Id}"
@@ -108,26 +108,26 @@
                   BorderBrush="#31415C"
                   BorderThickness="1">
             <StackPanel Spacing="12">
-              <TextBlock Text="Rule" FontSize="16" FontWeight="SemiBold" Foreground="#F7FAFF"/>
+              <TextBlock Text="Regula" FontSize="16" FontWeight="SemiBold" Foreground="#F7FAFF"/>
 
-              <CheckBox Content="Threshold is active"
+              <CheckBox Content="Pragul este activ"
                         IsChecked="{Binding EditData.Threshold.Active}"/>
 
               <StackPanel Spacing="6">
-                <TextBlock Text="Limit type" Foreground="#D8E4F8"/>
+                <TextBlock Text="Tip limita" Foreground="#D8E4F8"/>
                 <ComboBox ItemsSource="{Binding LimitTypes}"
                           SelectedItem="{Binding EditData.Threshold.LimitType}"/>
               </StackPanel>
 
               <StackPanel Spacing="6"
                           IsVisible="{Binding EditData.Threshold.LimitType, Converter={StaticResource EqualsConverter}, ConverterParameter=Daily}">
-                <TextBlock Text="Daily limit (hh:mm:ss)" Foreground="#D8E4F8"/>
+                <TextBlock Text="Limita zilnica (hh:mm:ss)" Foreground="#D8E4F8"/>
                 <TextBox Text="{Binding EditData.Threshold.DailyLimit}"/>
               </StackPanel>
 
               <StackPanel Spacing="6"
                           IsVisible="{Binding EditData.Threshold.LimitType, Converter={StaticResource EqualsConverter}, ConverterParameter=Session}">
-                <TextBlock Text="Session limit (hh:mm:ss)" Foreground="#D8E4F8"/>
+                <TextBlock Text="Limita sesiune (hh:mm:ss)" Foreground="#D8E4F8"/>
                 <TextBox Text="{Binding EditData.Threshold.SessionLimit}"/>
               </StackPanel>
             </StackPanel>
@@ -140,20 +140,20 @@
                 BorderBrush="#31415C"
                 BorderThickness="1">
           <StackPanel Spacing="12">
-            <TextBlock Text="Intervention" FontSize="16" FontWeight="SemiBold" Foreground="#F7FAFF"/>
+            <TextBlock Text="Interventie" FontSize="16" FontWeight="SemiBold" Foreground="#F7FAFF"/>
 
             <StackPanel Spacing="6">
-              <TextBlock Text="Intervention type" Foreground="#D8E4F8"/>
+              <TextBlock Text="Tip interventie" Foreground="#D8E4F8"/>
               <ComboBox ItemsSource="{Binding InterventionTypes}"
                         SelectedItem="{Binding EditData.Threshold.InterventionType}"/>
             </StackPanel>
 
-            <TextBlock Text="Typing lock currently uses the default unlock phrase."
+            <TextBlock Text="Blocarea tastarii foloseste in prezent expresia implicita de deblocare."
                        Foreground="#9AA8C1"
                        TextWrapping="Wrap"
                        IsVisible="{Binding EditData.Threshold.InterventionType, Converter={StaticResource EqualsConverter}, ConverterParameter=TypingLock}"/>
 
-            <TextBlock Text="Timed lock currently uses the default lock duration."
+            <TextBlock Text="Blocarea temporizata foloseste in prezent durata implicita de blocare."
                        Foreground="#9AA8C1"
                        TextWrapping="Wrap"
                        IsVisible="{Binding EditData.Threshold.InterventionType, Converter={StaticResource EqualsConverter}, ConverterParameter=TimedLock}"/>
@@ -163,14 +163,14 @@
         <StackPanel Orientation="Horizontal"
                     HorizontalAlignment="Right"
                     Spacing="8">
-          <Button Content="Cancel"
+          <Button Content="Anuleaza"
                   Command="{Binding CancelCommand}"
                   Background="#D9E5F5"
                   Foreground="#112039"
                   BorderThickness="0"
                   CornerRadius="14"
                   Padding="16,12"/>
-          <Button Content="Save threshold"
+          <Button Content="Salveaza pragul"
                   Command="{Binding SaveCommand}"
                   Background="#8BD3A7"
                   Foreground="#062A16"

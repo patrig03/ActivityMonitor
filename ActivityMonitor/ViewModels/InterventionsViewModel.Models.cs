@@ -33,7 +33,7 @@ public class ThresholdRow
 
     public string TargetName =>
         Threshold.TargetType == Threshold.AppTargetType
-            ? App?.ProcessName ?? $"App {Threshold.AppId}"
+            ? App?.ProcessName ?? $"Aplicatia {Threshold.AppId}"
             : Category.Name;
 
     public string LimitSummary => $"{Threshold.LimitType}: {Threshold.Limit:hh\\:mm\\:ss}";

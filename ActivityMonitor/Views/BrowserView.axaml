@@ -58,8 +58,8 @@
               BorderThickness="1">
         <Grid ColumnDefinitions="*,300" ColumnSpacing="18">
           <StackPanel Spacing="10">
-            <TextBlock Text="Browser Activity" FontSize="30" FontWeight="Bold" Foreground="#10233D"/>
-            <TextBlock Text="Inspect captured URLs, domain concentration, and which tracked browser processes are generating the most records."
+            <TextBlock Text="Activitate browser" FontSize="30" FontWeight="Bold" Foreground="#10233D"/>
+            <TextBlock Text="Inspecteaza URL-urile capturate, concentrarea pe domenii si procesele de browser monitorizate care genereaza cele mai multe inregistrari."
                        Foreground="#52657F"
                        TextWrapping="Wrap"/>
             <Border Background="#EDF4FB"
@@ -80,7 +80,7 @@
                   Padding="18,14"
                   VerticalAlignment="Center"
                   HorizontalAlignment="Stretch">
-            <TextBlock Text="Refresh browser data" HorizontalAlignment="Center" FontWeight="Bold"/>
+            <TextBlock Text="Reincarca datele browserului" HorizontalAlignment="Center" FontWeight="Bold"/>
           </Button>
         </Grid>
       </Border>
@@ -88,30 +88,30 @@
       <WrapPanel Orientation="Horizontal">
         <Border Width="220" Margin="0,0,14,14" Padding="18" CornerRadius="20" Background="#FFFFFF" BorderBrush="#D7E2F0" BorderThickness="1">
           <StackPanel Spacing="6">
-            <TextBlock Text="Browser records" Foreground="#5A6D86"/>
+            <TextBlock Text="Inregistrari browser" Foreground="#5A6D86"/>
             <TextBlock Text="{Binding TotalEvents}" Foreground="#10233D" FontSize="26" FontWeight="Bold"/>
-            <TextBlock Text="Total captured URL entries" Foreground="#7A889A"/>
+            <TextBlock Text="Total intrari URL capturate" Foreground="#7A889A"/>
           </StackPanel>
         </Border>
         <Border Width="220" Margin="0,0,14,14" Padding="18" CornerRadius="20" Background="#FFFFFF" BorderBrush="#D7E2F0" BorderThickness="1">
           <StackPanel Spacing="6">
-            <TextBlock Text="Unique domains" Foreground="#5A6D86"/>
+            <TextBlock Text="Domenii unice" Foreground="#5A6D86"/>
             <TextBlock Text="{Binding UniqueDomains}" Foreground="#10233D" FontSize="26" FontWeight="Bold"/>
-            <TextBlock Text="Distinct hosts in the capture set" Foreground="#7A889A"/>
+            <TextBlock Text="Gazde distincte in setul capturat" Foreground="#7A889A"/>
           </StackPanel>
         </Border>
         <Border Width="220" Margin="0,0,14,14" Padding="18" CornerRadius="20" Background="#FFFFFF" BorderBrush="#D7E2F0" BorderThickness="1">
           <StackPanel Spacing="6">
-            <TextBlock Text="Tracked browser apps" Foreground="#5A6D86"/>
+            <TextBlock Text="Aplicatii browser monitorizate" Foreground="#5A6D86"/>
             <TextBlock Text="{Binding TrackedBrowsers}" Foreground="#10233D" FontSize="26" FontWeight="Bold"/>
-            <TextBlock Text="Distinct application ids producing browser records" Foreground="#7A889A" TextWrapping="Wrap"/>
+            <TextBlock Text="Id-uri distincte de aplicatii care produc inregistrari browser" Foreground="#7A889A" TextWrapping="Wrap"/>
           </StackPanel>
         </Border>
         <Border Width="260" Margin="0,0,0,14" Padding="18" CornerRadius="20" Background="#FFFFFF" BorderBrush="#D7E2F0" BorderThickness="1">
           <StackPanel Spacing="6">
-            <TextBlock Text="Top domain" Foreground="#5A6D86"/>
+            <TextBlock Text="Domeniu principal" Foreground="#5A6D86"/>
             <TextBlock Text="{Binding TopDomain}" Foreground="#10233D" FontSize="26" FontWeight="Bold" TextWrapping="Wrap"/>
-            <TextBlock Text="The most frequent host in the current browser dataset" Foreground="#7A889A" TextWrapping="Wrap"/>
+            <TextBlock Text="Cea mai frecventa gazda din setul curent de date browser" Foreground="#7A889A" TextWrapping="Wrap"/>
           </StackPanel>
         </Border>
       </WrapPanel>
@@ -123,8 +123,8 @@
                 BorderBrush="#D7E2F0"
                 BorderThickness="1">
           <StackPanel Spacing="12">
-            <TextBlock Text="Top domains" FontSize="20" FontWeight="Bold" Foreground="#10233D"/>
-            <TextBlock Text="Which hosts appear most often in the current capture set." Foreground="#52657F"/>
+            <TextBlock Text="Domenii principale" FontSize="20" FontWeight="Bold" Foreground="#10233D"/>
+            <TextBlock Text="Ce gazde apar cel mai des in setul curent de capturi." Foreground="#52657F"/>
             <ItemsControl ItemsSource="{Binding TopDomains}" ItemTemplate="{StaticResource DomainTemplate}"/>
           </StackPanel>
         </Border>
@@ -136,8 +136,8 @@
                 BorderBrush="#D7E2F0"
                 BorderThickness="1">
           <StackPanel Spacing="12">
-            <TextBlock Text="Browser processes" FontSize="20" FontWeight="Bold" Foreground="#10233D"/>
-            <TextBlock Text="Tracked apps that are generating URL records." Foreground="#52657F"/>
+            <TextBlock Text="Procese browser" FontSize="20" FontWeight="Bold" Foreground="#10233D"/>
+            <TextBlock Text="Aplicatii monitorizate care genereaza inregistrari URL." Foreground="#52657F"/>
             <ItemsControl ItemsSource="{Binding BrowserApps}" ItemTemplate="{StaticResource BrowserAppTemplate}"/>
           </StackPanel>
         </Border>
@@ -149,8 +149,8 @@
               BorderBrush="#D7E2F0"
               BorderThickness="1">
         <StackPanel Spacing="14">
-          <TextBlock Text="Recent captured URLs" FontSize="20" FontWeight="Bold" Foreground="#10233D"/>
-          <TextBlock Text="Ordered by newest activity id first."
+          <TextBlock Text="URL-uri capturate recent" FontSize="20" FontWeight="Bold" Foreground="#10233D"/>
+          <TextBlock Text="Ordonate dupa cel mai nou id de activitate."
                      Foreground="#52657F"
                      TextWrapping="Wrap"/>
           <DataGrid ItemsSource="{Binding RecentActivity}"
@@ -163,11 +163,11 @@
                     MinHeight="320">
             <DataGrid.Columns>
               <DataGridTextColumn Foreground="Black" Header="Id" Binding="{Binding ActivityId}" Width="Auto"/>
-              <DataGridTextColumn Foreground="Black" Header="Domain" Binding="{Binding Domain}" Width="1.5*"/>
+              <DataGridTextColumn Foreground="Black" Header="Domeniu" Binding="{Binding Domain}" Width="1.5*"/>
               <DataGridTextColumn Foreground="Black" Header="URL" Binding="{Binding Url}" Width="*"/>
-              <DataGridTextColumn Foreground="Black" Header="Process" Binding="{Binding BrowserProcess}" Width="1.5*"/>
-              <DataGridTextColumn Foreground="Black" Header="Category" Binding="{Binding CategoryName}" Width="1.5*"/>
-              <DataGridTextColumn Foreground="Black" Header="User" Binding="{Binding UserId}" Width="Auto"/>
+              <DataGridTextColumn Foreground="Black" Header="Proces" Binding="{Binding BrowserProcess}" Width="1.5*"/>
+              <DataGridTextColumn Foreground="Black" Header="Categorie" Binding="{Binding CategoryName}" Width="1.5*"/>
+              <DataGridTextColumn Foreground="Black" Header="Utilizator" Binding="{Binding UserId}" Width="Auto"/>
             </DataGrid.Columns>
           </DataGrid>
         </StackPanel>

@@ -14,11 +14,11 @@ public class BrowserViewModel : ViewModelBase
 {
     private readonly IDatabaseManager _db = new DatabaseManager(Settings.DatabaseConnectionString);
 
-    private string _browserStatus = "Loading browser activity";
+    private string _browserStatus = "Se incarca activitatea browserului";
     private string _totalEvents = "0";
     private string _uniqueDomains = "0";
     private string _trackedBrowsers = "0";
-    private string _topDomain = "No browser records";
+    private string _topDomain = "Nu exista inregistrari browser";
 
     public BrowserViewModel()
     {
@@ -93,8 +93,8 @@ public class BrowserViewModel : ViewModelBase
             TopDomains.Add(new BrowserDomainSummary
             {
                 Domain = group.Key,
-                RecordCount = $"{group.Count()} records",
-                Share = records.Count == 0 ? "0%" : $"{Math.Round(group.Count() / (double)records.Count * 100d):0}% of browser activity",
+                RecordCount = $"{group.Count()} inregistrari",
+                Share = records.Count == 0 ? "0%" : $"{Math.Round(group.Count() / (double)records.Count * 100d):0}% din activitatea browserului",
                 SampleUrl = firstRecord.Url
             });
         }
@@ -108,13 +108,13 @@ public class BrowserViewModel : ViewModelBase
             apps.TryGetValue(group.Key, out var app);
             var categoryName = app?.CategoryId is int categoryId && categories.TryGetValue(categoryId, out var category)
                 ? category.Name
-                : "Unclassified";
+                : "Neclasificat";
 
             BrowserApps.Add(new BrowserAppSummary
             {
-                ProcessName = app?.ProcessName ?? app?.WindowName ?? $"App {group.Key}",
+                ProcessName = app?.ProcessName ?? app?.WindowName ?? $"Aplicatia {group.Key}",
                 CategoryName = categoryName,
-                RecordCount = $"{group.Count()} captured URLs"
+                RecordCount = $"{group.Count()} URL-uri capturate"
             });
         }
 
@@ -124,26 +124,26 @@ public class BrowserViewModel : ViewModelBase
             apps.TryGetValue(record.BrowserId, out var app);
             var categoryName = app?.CategoryId is int categoryId && categories.TryGetValue(categoryId, out var category)
                 ? category.Name
-                : "Unclassified";
+                : "Neclasificat";
 
             RecentActivity.Add(new BrowserActivityRow
             {
                 ActivityId = record.Id,
-                Domain = TryGetDomain(record.Url) ?? "Invalid URL",
+                Domain = TryGetDomain(record.Url) ?? "URL invalid",
                 Url = record.Url,
-                BrowserProcess = app?.ProcessName ?? app?.WindowName ?? $"App {record.BrowserId}",
+                BrowserProcess = app?.ProcessName ?? app?.WindowName ?? $"Aplicatia {record.BrowserId}",
                 CategoryName = categoryName,
-                UserId = "User 1"
+                UserId = "Utilizator 1"
             });
         }
 
         TotalEvents = records.Count.ToString();
         UniqueDomains = domainGroups.Count.ToString();
         TrackedBrowsers = records.Select(record => record.BrowserId).Distinct().Count().ToString();
-        TopDomain = domainGroups.FirstOrDefault()?.Key ?? "No browser records";
+        TopDomain = domainGroups.FirstOrDefault()?.Key ?? "Nu exista inregistrari browser";
         BrowserStatus = records.Count == 0
-            ? "No browser activity has been stored yet."
-            : $"Loaded {records.Count} browser activity records from MySQL.";
+            ? "Nu a fost stocata inca activitate de browser."
+            : $"Au fost incarcate {records.Count} inregistrari de activitate browser din MySQL.";
     }
 
     private static string? TryGetDomain(string url)

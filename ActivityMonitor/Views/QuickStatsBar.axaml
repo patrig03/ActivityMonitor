@@ -20,9 +20,9 @@
               BorderThickness="1"
               Padding="16">
         <StackPanel Spacing="6">
-          <TextBlock Text="Tracked time" Foreground="#8EA0C3" FontSize="12"/>
+          <TextBlock Text="Timp monitorizat" Foreground="#8EA0C3" FontSize="12"/>
           <TextBlock Text="{Binding TotalUsage}" Foreground="#F4F7FF" FontSize="24" FontWeight="Bold"/>
-          <TextBlock Text="Active time across all captured categories." Foreground="#7386A8" TextWrapping="Wrap"/>
+          <TextBlock Text="Timp activ in toate categoriile capturate." Foreground="#7386A8" TextWrapping="Wrap"/>
         </StackPanel>
       </Border>
 
@@ -34,9 +34,9 @@
               BorderThickness="1"
               Padding="16">
         <StackPanel Spacing="6">
-          <TextBlock Text="Sessions" Foreground="#8EA0C3" FontSize="12"/>
+          <TextBlock Text="Sesiuni" Foreground="#8EA0C3" FontSize="12"/>
           <TextBlock Text="{Binding TotalSessions}" Foreground="#F4F7FF" FontSize="24" FontWeight="Bold"/>
-          <TextBlock Text="Distinct app sessions captured for the current report window." Foreground="#7386A8" TextWrapping="Wrap"/>
+          <TextBlock Text="Sesiuni distincte de aplicatii capturate pentru fereastra curenta de raportare." Foreground="#7386A8" TextWrapping="Wrap"/>
         </StackPanel>
       </Border>
 
@@ -48,9 +48,9 @@
               BorderThickness="1"
               Padding="16">
         <StackPanel Spacing="6">
-          <TextBlock Text="Average session" Foreground="#8EA0C3" FontSize="12"/>
+          <TextBlock Text="Sesiune medie" Foreground="#8EA0C3" FontSize="12"/>
           <TextBlock Text="{Binding AverageSession}" Foreground="#F4F7FF" FontSize="24" FontWeight="Bold"/>
-          <TextBlock Text="Useful for spotting long stretches without a context break." Foreground="#7386A8" TextWrapping="Wrap"/>
+          <TextBlock Text="Util pentru a observa perioade lungi fara schimbare de context." Foreground="#7386A8" TextWrapping="Wrap"/>
         </StackPanel>
       </Border>
 
@@ -62,9 +62,9 @@
               BorderThickness="1"
               Padding="16">
         <StackPanel Spacing="6">
-          <TextBlock Text="Focus score" Foreground="#8EA0C3" FontSize="12"/>
+          <TextBlock Text="Scor de concentrare" Foreground="#8EA0C3" FontSize="12"/>
           <TextBlock Text="{Binding FocusScore}" Foreground="#8BFFB1" FontSize="24" FontWeight="Bold"/>
-          <TextBlock Text="Share of time spent in work-oriented categories." Foreground="#7386A8" TextWrapping="Wrap"/>
+          <TextBlock Text="Ponderea timpului petrecut in categorii orientate spre munca." Foreground="#7386A8" TextWrapping="Wrap"/>
         </StackPanel>
       </Border>
 
@@ -76,9 +76,9 @@
               BorderThickness="1"
               Padding="16">
         <StackPanel Spacing="6">
-          <TextBlock Text="Top application" Foreground="#8EA0C3" FontSize="12"/>
+          <TextBlock Text="Aplicatie principala" Foreground="#8EA0C3" FontSize="12"/>
           <TextBlock Text="{Binding TopApplication}" Foreground="#7DD3FC" FontSize="24" FontWeight="Bold" TextWrapping="Wrap"/>
-          <TextBlock Text="The process consuming the most tracked activity time." Foreground="#7386A8" TextWrapping="Wrap"/>
+          <TextBlock Text="Procesul care consuma cel mai mult timp de activitate monitorizat." Foreground="#7386A8" TextWrapping="Wrap"/>
         </StackPanel>
       </Border>
 
@@ -90,9 +90,9 @@
               BorderThickness="1"
               Padding="16">
         <StackPanel Spacing="6">
-          <TextBlock Text="Intervention pulse" Foreground="#8EA0C3" FontSize="12"/>
+          <TextBlock Text="Puls interventii" Foreground="#8EA0C3" FontSize="12"/>
           <TextBlock Text="{Binding InterventionPulse}" Foreground="#FBBF24" FontSize="24" FontWeight="Bold" TextWrapping="Wrap"/>
-          <TextBlock Text="Recent threshold activity, useful for tuning your limits." Foreground="#7386A8" TextWrapping="Wrap"/>
+          <TextBlock Text="Activitate recenta a pragurilor, utila pentru ajustarea limitelor." Foreground="#7386A8" TextWrapping="Wrap"/>
         </StackPanel>
       </Border>
 

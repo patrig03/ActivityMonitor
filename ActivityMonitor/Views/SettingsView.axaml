@@ -15,8 +15,8 @@
               BorderThickness="1">
         <Grid ColumnDefinitions="*,340" ColumnSpacing="18">
           <StackPanel Spacing="10">
-            <TextBlock Text="Settings" FontSize="30" FontWeight="Bold" Foreground="White"/>
-            <TextBlock Text="Tune monitoring cadence, review what the local collector is storing, and persist safe defaults for the desktop client."
+            <TextBlock Text="Setari" FontSize="30" FontWeight="Bold" Foreground="White"/>
+            <TextBlock Text="Ajusteaza ritmul monitorizarii, verifica ce stocheaza colectorul local si salveaza valori implicite sigure pentru clientul desktop."
                        Foreground="#D6E4FF"
                        FontSize="14"
                        TextWrapping="Wrap"/>
@@ -49,7 +49,7 @@
                   BorderBrush="#2A527E"
                   BorderThickness="1">
             <StackPanel Spacing="12">
-              <TextBlock Text="Status" Foreground="#A7C5E8"/>
+              <TextBlock Text="Stare" Foreground="#A7C5E8"/>
               <TextBlock Text="{Binding SaveStatus}" FontSize="20" FontWeight="Bold" Foreground="White" TextWrapping="Wrap"/>
               <TextBlock Text="{Binding ValidationMessage}" Foreground="#D6E4FF" TextWrapping="Wrap"/>
 
@@ -59,14 +59,14 @@
                         Command="{Binding SaveCommand}"
                         Background="#8BD3A7"
                         Foreground="#062A16">
-                  <TextBlock Text="Save changes" HorizontalAlignment="Center"/>
+                  <TextBlock Text="Salveaza modificarile" HorizontalAlignment="Center"/>
                 </Button>
                 <Button Grid.Column="1"
                         Theme="{StaticResource ActionButtonTheme}"
                         Command="{Binding ReloadCommand}"
                         Background="#D7E4F4"
                         Foreground="#17314F">
-                  <TextBlock Text="Reload" HorizontalAlignment="Center"/>
+                  <TextBlock Text="Reincarca" HorizontalAlignment="Center"/>
                 </Button>
               </Grid>
             </StackPanel>
@@ -84,8 +84,8 @@
                   BorderBrush="#D8E2F0"
                   BorderThickness="1">
             <StackPanel Spacing="16">
-              <TextBlock Text="Sampling cadence" FontSize="22" FontWeight="Bold" Foreground="#10233D"/>
-              <TextBlock Text="This interval controls how often the collector reevaluates active windows and intervention rules."
+              <TextBlock Text="Ritm de esantionare" FontSize="22" FontWeight="Bold" Foreground="#10233D"/>
+              <TextBlock Text="Acest interval controleaza cat de des colectorul reevalueaza ferestrele active si regulile de interventie."
                          Foreground="#52657F"
                          TextWrapping="Wrap"/>
 
@@ -95,27 +95,27 @@
                         Command="{Binding UseHighPrecisionPresetCommand}"
                         Background="#DCEBFF"
                         Foreground="#163154">
-                  <TextBlock Foreground="#163154" Text="5s high precision"/>
+                  <TextBlock Foreground="#163154" Text="5s precizie ridicata"/>
                 </Button>
                 <Button Margin="0,0,10,10"
                         Theme="{StaticResource ActionButtonTheme}"
                         Command="{Binding UseBalancedPresetCommand}"
                         Background="#DFF8E8"
                         Foreground="#114B29">
-                  <TextBlock Foreground="#114B29" Text="10s balanced"/>
+                  <TextBlock Foreground="#114B29" Text="10s echilibrat"/>
                 </Button>
                 <Button Margin="0,0,0,10"
                         Theme="{StaticResource ActionButtonTheme}"
                         Command="{Binding UseLowOverheadPresetCommand}"
                         Background="#FCEFD8"
                         Foreground="#6D4C10">
-                  <TextBlock Foreground="#6D4C10" Text="30s low overhead"/>
+                  <TextBlock Foreground="#6D4C10" Text="30s consum redus"/>
                 </Button>
               </WrapPanel>
 
               <Grid ColumnDefinitions="220,*" ColumnSpacing="16">
                 <StackPanel Spacing="8">
-                  <TextBlock Text="Refresh interval (seconds)" Foreground="#10233D" FontWeight="SemiBold"/>
+                  <TextBlock Text="Interval de reimprospatare (secunde)" Foreground="#10233D" FontWeight="SemiBold"/>
                   <TextBox Text="{Binding RefreshIntervalSeconds}"
                            Watermark="10"
                            FontSize="18"
@@ -124,7 +124,7 @@
                            BorderBrush="#C9D8EC"
                            BorderThickness="1"
                            Padding="14,12"/>
-                  <TextBlock Text="Accepted range: 1 to 600 seconds." Foreground="#52657F"/>
+                  <TextBlock Text="Interval acceptat: 1 pana la 600 secunde." Foreground="#52657F"/>
                 </StackPanel>
 
                 <Border Grid.Column="1"
@@ -134,7 +134,7 @@
                         BorderBrush="#D8E2F0"
                         BorderThickness="1">
                   <StackPanel Spacing="8">
-                    <TextBlock Text="Projected impact" FontWeight="SemiBold" Foreground="#10233D"/>
+                    <TextBlock Text="Impact estimat" FontWeight="SemiBold" Foreground="#10233D"/>
                     <TextBlock Text="{Binding IntervalImpact}" FontSize="22" FontWeight="Bold" Foreground="#17314F"/>
                     <TextBlock Text="{Binding ValidationMessage}" Foreground="#52657F" TextWrapping="Wrap"/>
                   </StackPanel>
@@ -149,10 +149,10 @@
                   BorderBrush="#D8E2F0"
                   BorderThickness="1">
             <StackPanel Spacing="16">
-              <TextBlock Text="Persistence and runtime" FontSize="22" FontWeight="Bold" Foreground="#10233D"/>
+              <TextBlock Text="Persistenta si rulare" FontSize="22" FontWeight="Bold" Foreground="#10233D"/>
 
               <StackPanel Spacing="8">
-                <TextBlock Text="Database path" Foreground="#10233D" FontWeight="SemiBold"/>
+                <TextBlock Text="Cale baza de date" Foreground="#10233D" FontWeight="SemiBold"/>
                 <TextBox Text="{Binding DatabasePath}"
                          IsReadOnly="True"
                          TextWrapping="Wrap"
@@ -165,7 +165,7 @@
 
               <Grid ColumnDefinitions="*,*" ColumnSpacing="16">
                 <StackPanel Spacing="8">
-                  <TextBlock Text="Database state" Foreground="#10233D" FontWeight="SemiBold"/>
+                  <TextBlock Text="Stare baza de date" Foreground="#10233D" FontWeight="SemiBold"/>
                   <Border Background="#F5F8FC"
                           BorderBrush="#D8E2F0"
                           BorderThickness="1"
@@ -176,7 +176,7 @@
                 </StackPanel>
 
                 <StackPanel Grid.Column="1" Spacing="8">
-                  <TextBlock Text="Service mutex" Foreground="#10233D" FontWeight="SemiBold"/>
+                  <TextBlock Text="Mutex serviciu" Foreground="#10233D" FontWeight="SemiBold"/>
                   <TextBox Text="{Binding ServiceMutexName}"
                            IsReadOnly="True"
                            Background="#F6F9FD"
@@ -199,7 +199,7 @@
                   BorderBrush="#E7DCC8"
                   BorderThickness="1">
             <StackPanel Spacing="16">
-              <TextBlock Text="Coverage snapshot" FontSize="22" FontWeight="Bold" Foreground="#473113"/>
+              <TextBlock Text="Instantaneu acoperire" FontSize="22" FontWeight="Bold" Foreground="#473113"/>
 
               <Border CornerRadius="18"
                       Padding="16"
@@ -207,7 +207,7 @@
                       BorderBrush="#E7DCC8"
                       BorderThickness="1">
                 <StackPanel Spacing="6">
-                  <TextBlock Text="Threshold coverage" Foreground="#7A5A24" FontSize="12"/>
+                  <TextBlock Text="Acoperire praguri" Foreground="#7A5A24" FontSize="12"/>
                   <TextBlock Text="{Binding ThresholdCoverage}" Foreground="#473113" FontWeight="SemiBold" TextWrapping="Wrap"/>
                 </StackPanel>
               </Border>
@@ -218,7 +218,7 @@
                       BorderBrush="#E7DCC8"
                       BorderThickness="1">
                 <StackPanel Spacing="6">
-                  <TextBlock Text="Activity coverage" Foreground="#7A5A24" FontSize="12"/>
+                  <TextBlock Text="Acoperire activitate" Foreground="#7A5A24" FontSize="12"/>
                   <TextBlock Text="{Binding ActivityCoverage}" Foreground="#473113" FontWeight="SemiBold" TextWrapping="Wrap"/>
                 </StackPanel>
               </Border>
@@ -229,7 +229,7 @@
                       BorderBrush="#E7DCC8"
                       BorderThickness="1">
                 <StackPanel Spacing="6">
-                  <TextBlock Text="Intervention history" Foreground="#7A5A24" FontSize="12"/>
+                  <TextBlock Text="Istoric interventii" Foreground="#7A5A24" FontSize="12"/>
                   <TextBlock Text="{Binding InterventionCoverage}" Foreground="#473113" FontWeight="SemiBold" TextWrapping="Wrap"/>
                 </StackPanel>
               </Border>
@@ -240,7 +240,7 @@
                       BorderBrush="#E7DCC8"
                       BorderThickness="1">
                 <StackPanel Spacing="6">
-                  <TextBlock Text="Browser capture" Foreground="#7A5A24" FontSize="12"/>
+                  <TextBlock Text="Captura browser" Foreground="#7A5A24" FontSize="12"/>
                   <TextBlock Text="{Binding BrowserCoverage}" Foreground="#473113" FontWeight="SemiBold" TextWrapping="Wrap"/>
                 </StackPanel>
               </Border>
@@ -253,8 +253,8 @@
                   BorderBrush="#D8E2F0"
                   BorderThickness="1">
             <StackPanel Spacing="14">
-              <TextBlock Text="Change management" FontSize="22" FontWeight="Bold" Foreground="#10233D"/>
-              <TextBlock Text="Use the default profile if you want reliable trend data without stressing storage. Move to 5 seconds only if your intervention limits need tighter timing."
+              <TextBlock Text="Gestionarea modificarilor" FontSize="22" FontWeight="Bold" Foreground="#10233D"/>
+              <TextBlock Text="Foloseste profilul implicit daca vrei date de trend fiabile fara sa incarci stocarea. Treci la 5 secunde doar daca limitele de interventie au nevoie de sincronizare mai stricta."
                          Foreground="#52657F"
                          TextWrapping="Wrap"/>
 
@@ -262,7 +262,7 @@
                       Command="{Binding ResetDefaultsCommand}"
                       Background="#E7EEF7"
                       Foreground="#17314F">
-                <TextBlock Foreground="#17314F" Text="Reset interval to default"/>
+                <TextBlock Foreground="#17314F" Text="Reseteaza intervalul la implicit"/>
               </Button>
             </StackPanel>
           </Border>

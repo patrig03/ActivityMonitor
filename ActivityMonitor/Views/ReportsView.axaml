@@ -74,13 +74,13 @@
                   BorderBrush="#28415F"
                   BorderThickness="1">
             <StackPanel Spacing="4">
-              <TextBlock Text="Top workload" Foreground="#8EA0C3"/>
+              <TextBlock Text="Activitate dominanta" Foreground="#8EA0C3"/>
               <TextBlock Text="{Binding Highlight}" Foreground="#7DD3FC" FontSize="18" FontWeight="Bold"/>
             </StackPanel>
           </Border>
 
           <StackPanel Spacing="10">
-            <TextBlock Text="Top processes" FontSize="16" FontWeight="SemiBold" Foreground="#F7FAFF"/>
+            <TextBlock Text="Procese principale" FontSize="16" FontWeight="SemiBold" Foreground="#F7FAFF"/>
             <ItemsControl ItemsSource="{Binding TopProcesses}" ItemTemplate="{StaticResource TopProcessTemplate}">
               <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
@@ -103,8 +103,8 @@
               BorderThickness="1">
         <Grid ColumnDefinitions="*,340" ColumnSpacing="18">
           <StackPanel Spacing="10">
-            <TextBlock Text="Reports" FontSize="30" FontWeight="Bold" Foreground="#F7FAFF"/>
-            <TextBlock Text="Review category-level workload summaries and generate exportable snapshots from the MySQL activity database."
+            <TextBlock Text="Rapoarte" FontSize="30" FontWeight="Bold" Foreground="#F7FAFF"/>
+            <TextBlock Text="Revizuieste sumarurile de activitate pe categorii si genereaza instantanee exportabile din baza de date MySQL."
                        Foreground="#8EA0C3"
                        TextWrapping="Wrap"/>
             <WrapPanel Orientation="Horizontal">
@@ -124,7 +124,7 @@
                   BorderBrush="#30415D"
                   BorderThickness="1">
             <StackPanel Spacing="12">
-              <TextBlock Text="Status" Foreground="#8EA0C3"/>
+              <TextBlock Text="Stare" Foreground="#8EA0C3"/>
               <TextBlock Text="{Binding ReportStatus}" FontSize="18" FontWeight="Bold" Foreground="#F7FAFF" TextWrapping="Wrap"/>
               <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
                 <Button Grid.Column="0"
@@ -134,7 +134,7 @@
                         CornerRadius="14"
                         BorderThickness="0"
                         Padding="16,12">
-                  <TextBlock Text="Refresh" HorizontalAlignment="Center" FontWeight="Bold"/>
+                  <TextBlock Text="Reincarca" HorizontalAlignment="Center" FontWeight="Bold"/>
                 </Button>
                 <Button Grid.Column="1"
                         Command="{Binding ExportCsvCommand}"
@@ -143,7 +143,7 @@
                         CornerRadius="14"
                         BorderThickness="0"
                         Padding="16,12">
-                  <TextBlock Text="Export CSV" HorizontalAlignment="Center" FontWeight="Bold"/>
+                  <TextBlock Text="Exporta CSV" HorizontalAlignment="Center" FontWeight="Bold"/>
                 </Button>
               </Grid>
               <Button Command="{Binding ExportPdfCommand}"
@@ -152,7 +152,7 @@
                       CornerRadius="14"
                       BorderThickness="0"
                       Padding="16,12">
-                <TextBlock Text="Export PDF" HorizontalAlignment="Center" FontWeight="Bold"/>
+                <TextBlock Text="Exporta PDF" HorizontalAlignment="Center" FontWeight="Bold"/>
               </Button>
             </StackPanel>
           </Border>
@@ -162,37 +162,37 @@
       <WrapPanel Orientation="Horizontal">
         <Border Width="220" Margin="0,0,14,14" Padding="18" CornerRadius="20" Background="#10192A" BorderBrush="#24324A" BorderThickness="1">
           <StackPanel Spacing="6">
-            <TextBlock Text="Categories" Foreground="#8EA0C3"/>
+            <TextBlock Text="Categorii" Foreground="#8EA0C3"/>
             <TextBlock Text="{Binding CategoryCount}" Foreground="#F7FAFF" FontSize="26" FontWeight="Bold"/>
-            <TextBlock Text="Generated report cards" Foreground="#7386A8"/>
+            <TextBlock Text="Carduri de raport generate" Foreground="#7386A8"/>
           </StackPanel>
         </Border>
         <Border Width="220" Margin="0,0,14,14" Padding="18" CornerRadius="20" Background="#10192A" BorderBrush="#24324A" BorderThickness="1">
           <StackPanel Spacing="6">
-            <TextBlock Text="Tracked time" Foreground="#8EA0C3"/>
+            <TextBlock Text="Timp monitorizat" Foreground="#8EA0C3"/>
             <TextBlock Text="{Binding TotalTrackedTime}" Foreground="#F7FAFF" FontSize="26" FontWeight="Bold"/>
-            <TextBlock Text="Across all reportable categories" Foreground="#7386A8"/>
+            <TextBlock Text="Pe toate categoriile raportabile" Foreground="#7386A8"/>
           </StackPanel>
         </Border>
         <Border Width="220" Margin="0,0,14,14" Padding="18" CornerRadius="20" Background="#10192A" BorderBrush="#24324A" BorderThickness="1">
           <StackPanel Spacing="6">
-            <TextBlock Text="Processes" Foreground="#8EA0C3"/>
+            <TextBlock Text="Procese" Foreground="#8EA0C3"/>
             <TextBlock Text="{Binding ApplicationCount}" Foreground="#F7FAFF" FontSize="26" FontWeight="Bold"/>
-            <TextBlock Text="Unique tracked processes" Foreground="#7386A8"/>
+            <TextBlock Text="Procese monitorizate unice" Foreground="#7386A8"/>
           </StackPanel>
         </Border>
         <Border Width="220" Margin="0,0,14,14" Padding="18" CornerRadius="20" Background="#10192A" BorderBrush="#24324A" BorderThickness="1">
           <StackPanel Spacing="6">
-            <TextBlock Text="Interventions" Foreground="#8EA0C3"/>
+            <TextBlock Text="Interventii" Foreground="#8EA0C3"/>
             <TextBlock Text="{Binding InterventionCount}" Foreground="#F7FAFF" FontSize="26" FontWeight="Bold"/>
-            <TextBlock Text="Threshold triggers in report scope" Foreground="#7386A8"/>
+            <TextBlock Text="Declansari de prag din aria raportului" Foreground="#7386A8"/>
           </StackPanel>
         </Border>
         <Border Width="220" Margin="0,0,0,14" Padding="18" CornerRadius="20" Background="#10192A" BorderBrush="#24324A" BorderThickness="1">
           <StackPanel Spacing="6">
-            <TextBlock Text="Browser records" Foreground="#8EA0C3"/>
+            <TextBlock Text="Inregistrari browser" Foreground="#8EA0C3"/>
             <TextBlock Text="{Binding BrowserEventCount}" Foreground="#F7FAFF" FontSize="26" FontWeight="Bold"/>
-            <TextBlock Text="Captured URL entries" Foreground="#7386A8"/>
+            <TextBlock Text="Intrari URL capturate" Foreground="#7386A8"/>
           </StackPanel>
         </Border>
       </WrapPanel>

@@ -22,21 +22,21 @@
 
         <DataGrid.Columns>
             <!-- Class Column -->
-            <DataGridTextColumn Header="ClassName"
+            <DataGridTextColumn Header="Nume clasa"
                                 Binding="{Binding WmClass}"
                                 Width="Auto"
                                 MinWidth="150"
                                 CanUserSort="True"/>
                                 
             <!-- Title Column -->
-            <DataGridTextColumn Header="Title"
+            <DataGridTextColumn Header="Titlu"
                                 Binding="{Binding Title}"
                                 Width="*"
                                 MinWidth="200"
                                 CanUserSort="True"/>
                                 
             <!-- Visible For Column - Centered -->
-            <DataGridTextColumn Header="Visible For"
+            <DataGridTextColumn Header="Vizibil de"
                                 Binding="{Binding VisibleFor}"
                                 Width="Auto"
                                 MinWidth="120"
@@ -48,7 +48,7 @@
             </DataGridTextColumn>
             
             <!-- Last Visible Column - Centered with Time Format -->
-            <DataGridTextColumn Header="Last Visible"
+            <DataGridTextColumn Header="Ultima vizibilitate"
                                 Binding="{Binding LastVisible, StringFormat='{}{0:HH:mm:ss}'}"
                                 Width="Auto"
                                 MinWidth="140"
@@ -60,7 +60,7 @@
             </DataGridTextColumn>
             
             <!-- Active For Column - Centered -->
-            <DataGridTextColumn Header="Active For"
+            <DataGridTextColumn Header="Activ de"
                                 Binding="{Binding ActiveFor}"
                                 Width="Auto"
                                 MinWidth="120"
@@ -72,7 +72,7 @@
             </DataGridTextColumn>
             
             <!-- Last Active Column - Centered with Time Format -->
-            <DataGridTextColumn Header="Last Active"
+            <DataGridTextColumn Header="Ultima activitate"
                                 Binding="{Binding LastActive, StringFormat='{}{0:HH:mm:ss}'}"
                                 Width="Auto"
                                 MinWidth="140"

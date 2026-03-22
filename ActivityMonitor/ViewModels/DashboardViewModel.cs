@@ -39,19 +39,19 @@ public partial class DashboardViewModel : ObservableObject
     private readonly IDatabaseManager _db = new DatabaseManager(Settings.DatabaseConnectionString);
     private readonly ReportMaker _maker;
 
-    private string _displayName = "Default user";
+    private string _displayName = "Utilizator implicit";
     private string _profileInitials = "DU";
-    private string _dashboardSubtitle = "No tracked activity yet";
-    private string _monitoringCadence = "Sampling interval unavailable";
-    private string _lastRefreshLabel = "Not refreshed";
+    private string _dashboardSubtitle = "Nu exista inca activitate monitorizata";
+    private string _monitoringCadence = "Intervalul de esantionare nu este disponibil";
+    private string _lastRefreshLabel = "Nu a fost reincarcat";
     private string _attentionBadge = "0";
-    private string _snapshotSummary = "No categories active";
+    private string _snapshotSummary = "Nu exista categorii active";
     private string _totalUsage = "--";
     private string _focusScore = "--";
-    private string _topApplication = "No activity";
+    private string _topApplication = "Fara activitate";
     private string _totalSessions = "0";
     private string _averageSession = "--";
-    private string _interventionPulse = "No alerts";
+    private string _interventionPulse = "Fara alerte";
     private ISeries[] _windowUsageSeries = Array.Empty<ISeries>();
     private Axis[] _windowXAxis = Array.Empty<Axis>();
     private ISeries[] _sessionTimelineSeries = Array.Empty<ISeries>();
@@ -264,15 +264,15 @@ public partial class DashboardViewModel : ObservableObject
             .Select(group => group.First())
             .ToList();
 
-        DisplayName = string.IsNullOrWhiteSpace(user?.DisplayName) ? "Default user" : user.DisplayName!;
+        DisplayName = string.IsNullOrWhiteSpace(user?.DisplayName) ? "Utilizator implicit" : user.DisplayName!;
         ProfileInitials = BuildInitials(DisplayName);
         DashboardSubtitle = reports.Count == 0
-            ? "No tracked sessions yet. Leave the monitor running to populate the dashboard."
-            : $"{DateTime.Now:dddd, MMMM d} | {categorySummaries.Count} active categories | {browserRecords.Count} browser events";
+            ? "Nu exista inca sesiuni monitorizate. Lasa monitorul sa ruleze pentru a popula panoul."
+            : $"{DateTime.Now:dddd, MMMM d} | {categorySummaries.Count} categorii active | {browserRecords.Count} evenimente browser";
         MonitoringCadence = settings == null
-            ? "Sampling cadence unavailable"
-            : $"Sampling every {settings.DeltaTimeSeconds}s";
-        LastRefreshLabel = $"Updated {DateTime.Now:HH:mm}";
+            ? "Ritmul de esantionare nu este disponibil"
+            : $"Esantionare la fiecare {settings.DeltaTimeSeconds}s";
+        LastRefreshLabel = $"Actualizat la {DateTime.Now:HH:mm}";
 
         var totalUsage = SumDuration(categorySummaries.Select(summary => summary.Duration));
         var productiveUsage = SumDuration(categorySummaries
@@ -284,17 +284,17 @@ public partial class DashboardViewModel : ObservableObject
 
         TotalUsage = totalUsage == TimeSpan.Zero ? "--" : FormatDuration(totalUsage);
         FocusScore = totalUsage == TimeSpan.Zero ? "--" : $"{Math.Round(focusPercentage):0}%";
-        TopApplication = processSummaries.FirstOrDefault()?.ProcessName ?? "No activity";
+        TopApplication = processSummaries.FirstOrDefault()?.ProcessName ?? "Fara activitate";
         TotalSessions = sessions.Count.ToString();
         AverageSession = sessions.Count == 0
             ? "--"
             : FormatDuration(TimeSpan.FromMinutes(sessions.Average(session => session.Duration.TotalMinutes)));
         InterventionPulse = interventions.Count == 0
-            ? "Quiet week"
-            : $"{interventions.Count(intervention => intervention.TriggeredAt >= DateTime.Now.AddDays(-7))} alerts in 7d";
+            ? "Saptamana linistita"
+            : $"{interventions.Count(intervention => intervention.TriggeredAt >= DateTime.Now.AddDays(-7))} alerte in 7z";
         SnapshotSummary = categorySummaries.Count == 0
-            ? "No thresholds or categories active yet"
-            : $"{categorySummaries.First().Category.Name} leads with {FormatDuration(categorySummaries.First().Duration)}";
+            ? "Nu exista inca praguri sau categorii active"
+            : $"{categorySummaries.First().Category.Name} conduce cu {FormatDuration(categorySummaries.First().Duration)}";
 
         BuildInsights(
             categorySummaries,
@@ -336,8 +336,8 @@ public partial class DashboardViewModel : ObservableObject
         {
             Insights.Add(new DashboardInsight
             {
-                Title = "Waiting for activity",
-                Detail = "The monitor has not captured any sessions yet. Once app sessions land in the database, this page will show trends and limit pressure."
+                Title = "In asteptarea activitatii",
+                Detail = "Monitorul nu a capturat inca nicio sesiune. Dupa ce sesiunile aplicatiilor ajung in baza de date, aceasta pagina va afisa tendinte si presiunea asupra limitelor."
             });
             return;
         }
@@ -348,8 +348,8 @@ public partial class DashboardViewModel : ObservableObject
             : topCategory.Duration.TotalSeconds / SumDuration(categorySummaries.Select(item => item.Duration)).TotalSeconds * 100d;
         Insights.Add(new DashboardInsight
         {
-            Title = "Primary workload",
-            Detail = $"{topCategory.Category.Name} accounts for {Math.Round(topCategoryShare):0}% of tracked time."
+            Title = "Volum principal de lucru",
+            Detail = $"{topCategory.Category.Name} reprezinta {Math.Round(topCategoryShare):0}% din timpul monitorizat."
         });
 
         var longestSession = sessions
@@ -358,13 +358,13 @@ public partial class DashboardViewModel : ObservableObject
         if (longestSession != null)
         {
             var sessionTarget = longestSession.ApplicationId.HasValue && applications.TryGetValue(longestSession.ApplicationId.Value, out var app)
-                ? app.ProcessName ?? app.WindowName ?? "Unknown app"
-                : "Unknown app";
+                ? app.ProcessName ?? app.WindowName ?? "Aplicatie necunoscuta"
+                : "Aplicatie necunoscuta";
 
             Insights.Add(new DashboardInsight
             {
-                Title = "Longest uninterrupted session",
-                Detail = $"{sessionTarget} held focus for {FormatDuration(longestSession.Duration)}."
+                Title = "Cea mai lunga sesiune neintrerupta",
+                Detail = $"{sessionTarget} a pastrat focusul timp de {FormatDuration(longestSession.Duration)}."
             });
         }
 
@@ -375,18 +375,18 @@ public partial class DashboardViewModel : ObservableObject
         {
             Insights.Add(new DashboardInsight
             {
-                Title = "Limit pressure",
-                Detail = $"{exceededThreshold.TargetName} is {exceededThreshold.StateLabel.ToLowerInvariant()} at {exceededThreshold.UsageSummary}."
+                Title = "Presiune pe limita",
+                Detail = $"{exceededThreshold.TargetName} este {exceededThreshold.StateLabel.ToLowerInvariant()} la {exceededThreshold.UsageSummary}."
             });
         }
         else
         {
             Insights.Add(new DashboardInsight
             {
-                Title = "Limits look healthy",
+                Title = "Limitele arata bine",
                 Detail = thresholds.Count == 0
-                    ? "No intervention thresholds are configured yet."
-                    : "Configured thresholds are still below their warning range."
+                    ? "Nu exista inca praguri de interventie configurate."
+                    : "Pragurile configurate sunt inca sub zona lor de avertizare."
             });
         }
 
@@ -400,16 +400,16 @@ public partial class DashboardViewModel : ObservableObject
         {
             Insights.Add(new DashboardInsight
             {
-                Title = "Browser concentration",
-                Detail = $"{dominantDomain.Key} appears in {dominantDomain.Count()} captured browser events."
+                Title = "Concentratie browser",
+                Detail = $"{dominantDomain.Key} apare in {dominantDomain.Count()} evenimente browser capturate."
             });
         }
         else if (processSummaries.Any(summary => string.Equals(summary.ProcessName, "browser", StringComparison.OrdinalIgnoreCase)))
         {
             Insights.Add(new DashboardInsight
             {
-                Title = "Browser sessions detected",
-                Detail = "Browser windows were active, but URL-level data has not been captured for the current sample set."
+                Title = "Sesiuni browser detectate",
+                Detail = "Ferestrele browserului au fost active, dar datele la nivel de URL nu au fost capturate pentru setul curent de esantioane."
             });
         }
 
@@ -417,8 +417,8 @@ public partial class DashboardViewModel : ObservableObject
         {
             Insights.Add(new DashboardInsight
             {
-                Title = "Intervention tempo",
-                Detail = $"{interventions.Count(intervention => intervention.TriggeredAt >= DateTime.Now.AddDays(-1))} alerts fired in the last 24 hours."
+                Title = "Ritm interventii",
+                Detail = $"{interventions.Count(intervention => intervention.TriggeredAt >= DateTime.Now.AddDays(-1))} alerte declansate in ultimele 24 de ore."
             });
         }
     }
@@ -436,7 +436,7 @@ public partial class DashboardViewModel : ObservableObject
             {
                 Label = item.Category.Name,
                 Duration = FormatDuration(item.Duration),
-                Secondary = $"{Math.Round(share):0}% of tracked time"
+                Secondary = $"{Math.Round(share):0}% din timpul monitorizat"
             });
         }
 
@@ -444,9 +444,9 @@ public partial class DashboardViewModel : ObservableObject
         {
             CategoryBreakdown.Add(new DashboardBreakdownItem
             {
-                Label = "No categories yet",
+                Label = "Nu exista categorii inca",
                 Duration = "--",
-                Secondary = "Tracked sessions will populate this list."
+                Secondary = "Sesiunile monitorizate vor popula aceasta lista."
             });
         }
     }
@@ -471,8 +471,8 @@ public partial class DashboardViewModel : ObservableObject
             TopDomains.Add(new DashboardDomainItem
             {
                 Domain = group.Key,
-                Visits = $"{group.Count()} records",
-                Share = $"{Math.Round(share):0}% share"
+                Visits = $"{group.Count()} inregistrari",
+                Share = $"{Math.Round(share):0}% pondere"
             });
         }
 
@@ -480,9 +480,9 @@ public partial class DashboardViewModel : ObservableObject
         {
             TopDomains.Add(new DashboardDomainItem
             {
-                Domain = "No browser detail",
-                Visits = "0 records",
-                Share = "URL tracking has not populated yet."
+                Domain = "Nu exista detalii browser",
+                Visits = "0 inregistrari",
+                Share = "Monitorizarea URL-urilor nu a populat inca date."
             });
         }
     }
@@ -508,9 +508,9 @@ public partial class DashboardViewModel : ObservableObject
         {
             ThresholdStatuses.Add(new DashboardThresholdState
             {
-                TargetName = "No thresholds configured",
-                UsageSummary = "Add daily or session limits in Interventions to monitor pressure here.",
-                LimitSummary = "No active guardrails",
+                TargetName = "Nu exista praguri configurate",
+                UsageSummary = "Adauga limite zilnice sau pe sesiune in Interventii pentru a monitoriza presiunea aici.",
+                LimitSummary = "Nu exista limite active",
                 StateLabel = "Info",
                 ProgressValue = 0,
                 RequiresAttention = false
@@ -547,7 +547,7 @@ public partial class DashboardViewModel : ObservableObject
         if (threshold.TargetType == Threshold.AppTargetType && threshold.AppId != 0)
         {
             applications.TryGetValue(threshold.AppId, out var app);
-            targetName = app?.ProcessName ?? app?.WindowName ?? $"App {threshold.AppId}";
+            targetName = app?.ProcessName ?? app?.WindowName ?? $"Aplicatia {threshold.AppId}";
             currentUsage = threshold.LimitType == Threshold.SessionLimitType
                 ? appLongestSessions.GetValueOrDefault(threshold.AppId)
                 : appDurations.GetValueOrDefault(threshold.AppId);
@@ -556,7 +556,7 @@ public partial class DashboardViewModel : ObservableObject
         {
             targetName = categories.TryGetValue(threshold.CategoryId, out var category)
                 ? category.Name
-                : $"Category {threshold.CategoryId}";
+                : $"Categoria {threshold.CategoryId}";
             currentUsage = threshold.LimitType == Threshold.SessionLimitType
                 ? categoryLongestSessions.GetValueOrDefault(threshold.CategoryId)
                 : categoryDurations.GetValueOrDefault(threshold.CategoryId);
@@ -566,14 +566,14 @@ public partial class DashboardViewModel : ObservableObject
             ? 0
             : Math.Clamp(currentUsage.TotalSeconds / limit.TotalSeconds * 100d, 0, 999);
         var state = !threshold.Active
-            ? "Disabled"
+            ? "Dezactivat"
             : progress >= 100
-                ? "Exceeded"
+                ? "Depasit"
                 : progress >= 80
-                    ? "Warning"
+                    ? "Avertizare"
                     : currentUsage == TimeSpan.Zero
-                        ? "Idle"
-                        : "On track";
+                        ? "Inactiv"
+                        : "In grafic";
 
         return new DashboardThresholdState
         {
@@ -603,10 +603,10 @@ public partial class DashboardViewModel : ObservableObject
             RecentInterventions.Add(new DashboardInterventionItem
             {
                 TargetName = targetName,
-                Status = intervention.Snoozed ? "Snoozed" : "Triggered",
+                Status = intervention.Snoozed ? "Amanat" : "Declansat",
                 TriggeredAt = FormatRelativeTime(intervention.TriggeredAt),
                 Detail = threshold == null
-                    ? "Threshold details unavailable"
+                    ? "Detaliile pragului nu sunt disponibile"
                     : $"{threshold.InterventionType} | {threshold.LimitType} {FormatDuration(threshold.Limit)}",
                 IsRecent = intervention.TriggeredAt >= DateTime.Now.AddDays(-1)
             });
@@ -616,10 +616,10 @@ public partial class DashboardViewModel : ObservableObject
         {
             RecentInterventions.Add(new DashboardInterventionItem
             {
-                TargetName = "No interventions yet",
-                Status = "Clear",
-                TriggeredAt = "No recent triggers",
-                Detail = "Threshold events will appear here once usage crosses a configured limit.",
+                TargetName = "Nu exista inca interventii",
+                Status = "Fara probleme",
+                TriggeredAt = "Nu exista declansari recente",
+                Detail = "Evenimentele de prag vor aparea aici cand utilizarea depaseste o limita configurata.",
                 IsRecent = false
             });
         }
@@ -697,7 +697,7 @@ public partial class DashboardViewModel : ObservableObject
                         return session.StartTime.ToString("HH:mm");
                     }
 
-                    var label = app.ProcessName ?? app.WindowName ?? "App";
+                    var label = app.ProcessName ?? app.WindowName ?? "Aplicatie";
                     return $"{label} {session.StartTime:HH:mm}";
                 }).ToArray(),
                 LabelsRotation = 16,
@@ -724,7 +724,7 @@ public partial class DashboardViewModel : ObservableObject
         {
             series.Add(new PieSeries<double>
             {
-                Name = "Other",
+                Name = "Altele",
                 Values = new[] { otherTotal }
             });
         }
@@ -750,19 +750,19 @@ public partial class DashboardViewModel : ObservableObject
     {
         if (threshold == null)
         {
-            return "Unknown target";
+            return "Tinta necunoscuta";
         }
 
         if (threshold.TargetType == Threshold.AppTargetType &&
             threshold.AppId != 0 &&
             applications.TryGetValue(threshold.AppId, out var app))
         {
-            return app.ProcessName ?? app.WindowName ?? $"App {threshold.AppId}";
+            return app.ProcessName ?? app.WindowName ?? $"Aplicatia {threshold.AppId}";
         }
 
         return categories.TryGetValue(threshold.CategoryId, out var category)
             ? category.Name
-            : $"Category {threshold.CategoryId}";
+            : $"Categoria {threshold.CategoryId}";
     }
 
     private static string BuildInitials(string displayName)
@@ -795,13 +795,13 @@ public partial class DashboardViewModel : ObservableObject
     {
         if (timestamp == default)
         {
-            return "Unknown time";
+            return "Timp necunoscut";
         }
 
         var delta = DateTime.Now - timestamp;
         if (delta.TotalMinutes < 1)
         {
-            return "Just now";
+            return "Chiar acum";
         }
 
         if (delta.TotalHours < 1)

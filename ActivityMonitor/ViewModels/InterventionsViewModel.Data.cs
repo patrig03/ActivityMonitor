@@ -85,7 +85,7 @@ public partial class InterventionsViewModel
 
             var threshold = Threshold.FromDto(thresholdDto);
             var category = categoryLookup.GetValueOrDefault(threshold.CategoryId)
-                           ?? new Category { Id = threshold.CategoryId, Name = $"Category {threshold.CategoryId}" };
+                           ?? new Category { Id = threshold.CategoryId, Name = $"Categoria {threshold.CategoryId}" };
 
             appLookup.TryGetValue(threshold.AppId, out var app);
 
@@ -120,11 +120,11 @@ public partial class InterventionsViewModel
                 ThresholdId = intervention.ThresholdId,
                 TriggeredAt = intervention.TriggeredAt,
                 Snoozed = intervention.Snoozed,
-                TargetName = thresholdRow?.TargetName ?? $"Threshold #{intervention.ThresholdId}",
-                TargetType = thresholdRow?.Threshold.TargetType ?? "Unknown",
-                CategoryName = thresholdRow?.Category.Name ?? "Unknown",
-                InterventionType = thresholdRow?.Threshold.InterventionType ?? "Unknown",
-                LimitSummary = thresholdRow?.LimitSummary ?? "Unknown"
+                TargetName = thresholdRow?.TargetName ?? $"Prag #{intervention.ThresholdId}",
+                TargetType = thresholdRow?.Threshold.TargetType ?? "Necunoscut",
+                CategoryName = thresholdRow?.Category.Name ?? "Necunoscut",
+                InterventionType = thresholdRow?.Threshold.InterventionType ?? "Necunoscut",
+                LimitSummary = thresholdRow?.LimitSummary ?? "Necunoscut"
             };
 
             InterventionHistory.Add(row);
@@ -158,11 +158,11 @@ public partial class InterventionsViewModel
         RecentAlertCount = recentAlerts.ToString();
         SnoozedAlertCount = snoozedAlerts.ToString();
         MostTriggeredTarget = mostTriggered == null
-            ? "No interventions yet"
-            : $"{mostTriggered.Key} ({mostTriggered.Count()} triggers)";
+            ? "Nu exista inca interventii"
+            : $"{mostTriggered.Key} ({mostTriggered.Count()} declansari)";
         ThresholdStatus = ThresholdRows.Count == 0
-            ? "No thresholds configured yet."
-            : $"Tracking {ThresholdRows.Count} thresholds across {coveredCategories} categories and {ThresholdRows.Count(row => row.Threshold.TargetType == Threshold.AppTargetType)} app rules.";
+            ? "Nu exista inca praguri configurate."
+            : $"Sunt monitorizate {ThresholdRows.Count} praguri din {coveredCategories} categorii si {ThresholdRows.Count(row => row.Threshold.TargetType == Threshold.AppTargetType)} reguli pe aplicatii.";
     }
 
     private void SyncDraftSelection()

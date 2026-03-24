@@ -11,5 +11,5 @@ public sealed class ApplicationDto
     public int? PositionY { get; set; }
     public int? Width { get; set; }
     public int? Height { get; set; }
-    public int? WindowId { get; set; }
+    public long? WindowId { get; set; }
 }

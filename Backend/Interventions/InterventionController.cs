@@ -41,13 +41,13 @@ public class InterventionController
                 break;
             case Threshold.TypingLockInterventionType: 
                 if (lastRecord.WindowId == null || lastRecord.WindowId == 0) return;
-                Notifier.TypingLock("Type this message to unlock", (ulong)lastRecord.WindowId, "Type this message to unlock");
+                Notifier.TypingLock("Type this message to unlock", lastRecord.WindowId.Value, "Type this message to unlock");
                 t.Active = false;
                 break;
             case Threshold.TimedLockInterventionType:
             case "TimerLock":
                 if (lastRecord.WindowId == null || lastRecord.WindowId == 0) return;
-                Notifier.TimedLock($"Daily limit exceeded for {lastRecord.ProcessName}", (ulong)lastRecord.WindowId, 20);
+                Notifier.TimedLock($"Daily limit exceeded for {lastRecord.ProcessName}", lastRecord.WindowId.Value, 20);
                 t.Active = false;
                 break;
         }

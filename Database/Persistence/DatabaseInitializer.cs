@@ -1,4 +1,5 @@
 using Database.Configuration;
+using Microsoft.EntityFrameworkCore;
 using MySqlConnector;
 
 namespace Database.Persistence;
@@ -18,6 +19,7 @@ public sealed class MySqlDatabaseInitializer(
 
         using var context = contextFactory.CreateDbContext();
         context.Database.EnsureCreated();
+        EnsureSchemaCompatibility(context);
 
         SeedDefaults(context);
     }
@@ -63,5 +65,10 @@ public sealed class MySqlDatabaseInitializer(
         }
 
         context.SaveChanges();
+    }
+
+    private static void EnsureSchemaCompatibility(ActivityMonitorDbContext context)
+    {
+        context.Database.ExecuteSqlRaw("ALTER TABLE applications MODIFY COLUMN window_id BIGINT NULL;");
     }
 }

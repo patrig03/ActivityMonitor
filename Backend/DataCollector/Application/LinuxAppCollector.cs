@@ -74,7 +74,7 @@ public class LinuxAppCollector : IApplicationDataCollector
             PositionY = int.Parse(parts[4]),
             Width = int.Parse(parts[5]),
             Height = int.Parse(parts[6]),
-            WindowId = Convert.ToInt32(parts[0], 16)
+            WindowId = Convert.ToInt64(parts[0], 16)
             
         };
     }

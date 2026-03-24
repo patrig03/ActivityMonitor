@@ -44,7 +44,7 @@ public sealed class ApplicationEntity
     public int? PositionY { get; set; }
     public int? Width { get; set; }
     public int? Height { get; set; }
-    public int? WindowId { get; set; }
+    public long? WindowId { get; set; }
 
     public CategoryEntity? Category { get; set; }
     public ICollection<SessionEntity> Sessions { get; set; } = new List<SessionEntity>();

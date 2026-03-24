@@ -13,7 +13,7 @@ public class DataCollectorController
     
     private readonly IClassifier _classifier = new RuleBasedClassifier();
     private readonly IBrowserDataCollector _browserCollector = new FirefoxCollector();
-    private readonly IApplicationDataCollector _appCollector = new LinuxAppCollector();
+    private readonly IApplicationDataCollector _appCollector = CreateAppCollector();
     
     public ApplicationRecord? CheckActivity(IDatabaseManager db)
     {
@@ -68,5 +68,20 @@ public class DataCollectorController
             db.InsertSession(session.ToDto());
         }
         return app;
+    }
+
+    private static IApplicationDataCollector CreateAppCollector()
+    {
+        if (OperatingSystem.IsWindows())
+        {
+            return new WindowsAppCollector();
+        }
+
+        if (OperatingSystem.IsLinux())
+        {
+            return new LinuxAppCollector();
+        }
+
+        throw new PlatformNotSupportedException("Only Linux and Windows are currently supported.");
     }
 }

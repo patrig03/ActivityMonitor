@@ -15,10 +15,10 @@ public class DataCollectorController
     private readonly IBrowserDataCollector _browserCollector = new FirefoxCollector();
     private readonly IApplicationDataCollector _appCollector = new LinuxAppCollector();
     
-    public ApplicationRecord CheckActivity(IDatabaseManager db)
+    public ApplicationRecord? CheckActivity(IDatabaseManager db)
     {
         var app = _appCollector.GetActive();
-        if (app == null) throw new Exception("No active window found");
+        if (app == null) { return null; }
 
         app.CategoryId = _classifier.ClassifyAsync(app);
         var dto = app.ToDto();

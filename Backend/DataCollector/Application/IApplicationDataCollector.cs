@@ -5,5 +5,5 @@ namespace Backend.DataCollector.Application;
 
 public interface IApplicationDataCollector
 {
-    ApplicationRecord GetActive();
+    ApplicationRecord? GetActive();
 }

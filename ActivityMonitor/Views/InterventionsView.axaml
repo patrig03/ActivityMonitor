@@ -102,7 +102,8 @@
         </Border>
       </WrapPanel>
 
-      <Grid ColumnDefinitions="1.2*,0.8*" ColumnSpacing="18">
+      <!-- <Grid ColumnDefinitions="1.2*,0.8*" ColumnSpacing="18"> -->
+      <Grid ColumnDefinitions="*">
         <StackPanel Spacing="18">
           <views:AddThresholdView/>
 
@@ -150,60 +151,60 @@
           </Border>
         </StackPanel>
 
-        <StackPanel Grid.Column="1" Spacing="18">
-          <Border Padding="18"
-                  CornerRadius="24"
-                  Background="#121926"
-                  BorderBrush="#273043"
-                  BorderThickness="1">
-            <StackPanel Spacing="14">
-              <TextBlock Text="Alerte recente" FontSize="20" FontWeight="Bold" Foreground="#F7FAFF"/>
-              <TextBlock Text="Cele mai recente evenimente de interventie si regula din care provin." Foreground="#9AA8C1" TextWrapping="Wrap"/>
-
-              <ItemsControl ItemsSource="{Binding RecentAlerts}">
-                <ItemsControl.ItemTemplate>
-                  <DataTemplate>
-                    <Border Margin="0,0,0,10"
-                            Padding="14"
-                            CornerRadius="16"
-                            Background="#1A2334"
-                            BorderBrush="#31415C"
-                            BorderThickness="1">
-                      <StackPanel Spacing="6">
-                        <Grid ColumnDefinitions="*,Auto">
-                          <TextBlock Text="{Binding TargetName}" Foreground="#F7FAFF" FontWeight="SemiBold"/>
-                          <TextBlock Grid.Column="1" Text="{Binding TriggeredAt}" Foreground="#9AA8C1"/>
-                        </Grid>
-                        <TextBlock Text="{Binding InterventionType}" Foreground="#F3C779" FontWeight="Bold"/>
-                        <TextBlock Text="{Binding CategoryName}" Foreground="#D8E4F8"/>
-                        <TextBlock Text="{Binding LimitSummary}" Foreground="#9AA8C1"/>
-                      </StackPanel>
-                    </Border>
-                  </DataTemplate>
-                </ItemsControl.ItemTemplate>
-              </ItemsControl>
-            </StackPanel>
-          </Border>
-
-          <Border Padding="18"
-                  CornerRadius="24"
-                  Background="#121926"
-                  BorderBrush="#273043"
-                  BorderThickness="1">
-            <StackPanel Spacing="12">
-              <TextBlock Text="Note operator" FontSize="20" FontWeight="Bold" Foreground="#F7FAFF"/>
-              <TextBlock Text="Foloseste praguri pe categorii pentru limite generale de comportament si praguri pe aplicatii cand un singur proces necesita reguli mai stricte."
-                         Foreground="#9AA8C1"
-                         TextWrapping="Wrap"/>
-              <TextBlock Text="Daca alertele apar prea des, redu mai intai severitatea interventiei inainte sa maresti intervalul de monitorizare din Setari."
-                         Foreground="#9AA8C1"
-                         TextWrapping="Wrap"/>
-              <TextBlock Text="Amanarile recente sunt un feedback util: amanarile repetate inseamna de obicei ca limita configurata este prea agresiva."
-                         Foreground="#9AA8C1"
-                         TextWrapping="Wrap"/>
-            </StackPanel>
-          </Border>
-        </StackPanel>
+        <!-- <StackPanel Grid.Column="1" Spacing="18"> -->
+        <!--   <Border Padding="18" -->
+        <!--           CornerRadius="24" -->
+        <!--           Background="#121926" -->
+        <!--           BorderBrush="#273043" -->
+        <!--           BorderThickness="1"> -->
+        <!--     <StackPanel Spacing="14"> -->
+        <!--       <TextBlock Text="Alerte recente" FontSize="20" FontWeight="Bold" Foreground="#F7FAFF"/> -->
+        <!--       <TextBlock Text="Cele mai recente evenimente de interventie si regula din care provin." Foreground="#9AA8C1" TextWrapping="Wrap"/> -->
+        <!-- -->
+        <!--       <ItemsControl ItemsSource="{Binding RecentAlerts}"> -->
+        <!--         <ItemsControl.ItemTemplate> -->
+        <!--           <DataTemplate> -->
+        <!--             <Border Margin="0,0,0,10" -->
+        <!--                     Padding="14" -->
+        <!--                     CornerRadius="16" -->
+        <!--                     Background="#1A2334" -->
+        <!--                     BorderBrush="#31415C" -->
+        <!--                     BorderThickness="1"> -->
+        <!--               <StackPanel Spacing="6"> -->
+        <!--                 <Grid ColumnDefinitions="*,Auto"> -->
+        <!--                   <TextBlock Text="{Binding TargetName}" Foreground="#F7FAFF" FontWeight="SemiBold"/> -->
+        <!--                   <TextBlock Grid.Column="1" Text="{Binding TriggeredAt}" Foreground="#9AA8C1"/> -->
+        <!--                 </Grid> -->
+        <!--                 <TextBlock Text="{Binding InterventionType}" Foreground="#F3C779" FontWeight="Bold"/> -->
+        <!--                 <TextBlock Text="{Binding CategoryName}" Foreground="#D8E4F8"/> -->
+        <!--                 <TextBlock Text="{Binding LimitSummary}" Foreground="#9AA8C1"/> -->
+        <!--               </StackPanel> -->
+        <!--             </Border> -->
+        <!--           </DataTemplate> -->
+        <!--         </ItemsControl.ItemTemplate> -->
+        <!--       </ItemsControl> -->
+        <!--     </StackPanel> -->
+        <!--   </Border> -->
+        <!-- -->
+        <!--   <Border Padding="18" -->
+        <!--           CornerRadius="24" -->
+        <!--           Background="#121926" -->
+        <!--           BorderBrush="#273043" -->
+        <!--           BorderThickness="1"> -->
+        <!--     <StackPanel Spacing="12"> -->
+        <!--       <TextBlock Text="Note operator" FontSize="20" FontWeight="Bold" Foreground="#F7FAFF"/> -->
+        <!--       <TextBlock Text="Foloseste praguri pe categorii pentru limite generale de comportament si praguri pe aplicatii cand un singur proces necesita reguli mai stricte." -->
+        <!--                  Foreground="#9AA8C1" -->
+        <!--                  TextWrapping="Wrap"/> -->
+        <!--       <TextBlock Text="Daca alertele apar prea des, redu mai intai severitatea interventiei inainte sa maresti intervalul de monitorizare din Setari." -->
+        <!--                  Foreground="#9AA8C1" -->
+        <!--                  TextWrapping="Wrap"/> -->
+        <!--       <TextBlock Text="Amanarile recente sunt un feedback util: amanarile repetate inseamna de obicei ca limita configurata este prea agresiva." -->
+        <!--                  Foreground="#9AA8C1" -->
+        <!--                  TextWrapping="Wrap"/> -->
+        <!--     </StackPanel> -->
+        <!--   </Border> -->
+        <!-- </StackPanel> -->
       </Grid>
     </StackPanel>
   </ScrollViewer>

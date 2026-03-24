@@ -9,11 +9,10 @@ public class LinuxAppCollector : IApplicationDataCollector
     private const string WmctrlCmd  = "wmctrl";
     private const string XpropCmd   = "xprop";
     
-    public ApplicationRecord GetActive()
+    public ApplicationRecord? GetActive()
     {
         var wmctrlResult = ExecuteCommand(WmctrlCmd, "-lGpx");
         var app = ParseWindows(wmctrlResult);
-        if (app == null) throw new Exception("No active window found");
         return app;
     }
     private string ExecuteCommand(string file, string args)

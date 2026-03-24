@@ -22,7 +22,10 @@ public static class Program
         while (true)
         {
             var app = collector.CheckActivity(dbManager);
-            intervener.VerifyThresholds(dbManager, app);
+            if (app != null)
+            {
+                intervener.VerifyThresholds(dbManager, app);
+            }
             
             var settings = dbManager.GetSettings(1);
             if (settings == null) throw new Exception("settings not found");

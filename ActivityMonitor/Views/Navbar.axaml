@@ -3,8 +3,7 @@
              x:Class="ActivityMonitor.Views.Navbar">
 
 
-  <!-- ========= SIDE NAVIGATION ========= -->
-  <Border Padding="4,24,4,24">
+  <Border Padding="4,24">
     <StackPanel Margin="16,0,8,0" Spacing="8">
 
           

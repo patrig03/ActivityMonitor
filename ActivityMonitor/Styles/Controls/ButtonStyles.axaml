@@ -1,0 +1,65 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <Styles.Resources>
+    <ResourceDictionary>
+      <ResourceDictionary.MergedDictionaries>
+        <ResourceInclude Source="/Styles/Colors.axaml"/>
+        <ResourceInclude Source="/Styles/Spacing.axaml"/>
+      </ResourceDictionary.MergedDictionaries>
+    </ResourceDictionary>
+  </Styles.Resources>
+
+  <!-- ========= NAV BUTTON ========= -->
+  <Style Selector="Button.nav-button">
+    <Setter Property="CornerRadius" Value="{StaticResource RadiusMd}"/>
+    <Setter Property="Padding" Value="{StaticResource SpacingMd}"/>
+    <Setter Property="HorizontalAlignment" Value="Stretch"/>
+    <Setter Property="FontWeight" Value="Medium"/>
+    <Setter Property="Foreground" Value="{StaticResource BrushTextPrimary}"/>
+    <Setter Property="Background" Value="{StaticResource BrushBgTertiary}"/>
+    <Setter Property="BorderBrush" Value="Transparent"/>
+    <Setter Property="BorderThickness" Value="2"/>
+    <Setter Property="Transitions">
+      <Transitions>
+        <BrushTransition Property="Background" Duration="0:0:0.15"/>
+        <BrushTransition Property="BorderBrush" Duration="0:0:0.15"/>
+      </Transitions>
+    </Setter>
+    <Setter Property="Template">
+      <ControlTemplate TargetType="Button">
+        <Border Name="PART_Border"
+                CornerRadius="{TemplateBinding CornerRadius}"
+                Background="{TemplateBinding Background}"
+                BorderBrush="{TemplateBinding BorderBrush}"
+                BorderThickness="{TemplateBinding BorderThickness}">
+          <ContentPresenter
+            Content="{TemplateBinding Content}"
+            ContentTemplate="{TemplateBinding ContentTemplate}"
+            Margin="{TemplateBinding Padding}"
+            HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+            VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+            RecognizesAccessKey="True"/>
+        </Border>
+      </ControlTemplate>
+    </Setter>
+  </Style>
+
+  <Style Selector="Button.nav-button:pointerover /template/ Border">
+    <Setter Property="Background" Value="#2A2A2A"/>
+    <Setter Property="BorderBrush" Value="#3A3A3A"/>
+  </Style>
+
+  <Style Selector="Button.nav-button:pressed /template/ Border">
+    <Setter Property="Background" Value="#1A1A1A"/>
+    <Setter Property="BorderBrush" Value="#4A4A4A"/>
+  </Style>
+
+  <Style Selector="Button.nav-button.nav-button--active">
+    <Setter Property="Background" Value="#3A3F4B"/>
+    <Setter Property="BorderBrush" Value="#4F5A6B"/>
+    <Setter Property="Foreground" Value="#FFFFFF"/>
+    <Setter Property="FontWeight" Value="SemiBold"/>
+  </Style>
+
+</Styles>

@@ -20,8 +20,8 @@
   <!-- </UserControl.Background> -->
 
   <ScrollViewer VerticalScrollBarVisibility="Auto">
-    <StackPanel Margin="18" Spacing="18">
-      <Border CornerRadius="28"
+    <StackPanel Margin="16" Spacing="16">
+      <Border CornerRadius="24"
               Padding="24"
               Background="#121926"
               BorderBrush="#273043"

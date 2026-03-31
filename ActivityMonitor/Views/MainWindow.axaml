@@ -20,9 +20,6 @@
     <views:ActiveViewTemplateSelector x:Key="ActiveViewSelector"/>
   </Window.Resources>
   
-  <Window.Styles>
-    <StyleInclude Source="/Views/DarkModeStyle.axaml"/>
-  </Window.Styles>
 
   <Grid ColumnDefinitions="Auto *" RowDefinitions="*">
     <views:Navbar Grid.Column="0" Margin="0, 0, 4, 0"/>

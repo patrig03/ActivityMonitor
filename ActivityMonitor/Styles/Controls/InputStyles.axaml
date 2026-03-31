@@ -1,0 +1,127 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <Styles.Resources>
+    <ResourceDictionary>
+      <ResourceDictionary.MergedDictionaries>
+        <ResourceInclude Source="/Styles/Colors.axaml"/>
+        <ResourceInclude Source="/Styles/Spacing.axaml"/>
+      </ResourceDictionary.MergedDictionaries>
+    </ResourceDictionary>
+  </Styles.Resources>
+
+  <!-- ========= COMBOBOX ========= -->
+  <Style Selector="ComboBox">
+    <Setter Property="Foreground" Value="{StaticResource BrushTextPrimary}"/>
+    <Setter Property="Background" Value="{StaticResource BrushBgTertiary}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource BrushBgSecondary}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="CornerRadius" Value="{StaticResource RadiusSm}"/>
+    <Setter Property="Padding" Value="10,6"/>
+    <Setter Property="Template">
+      <ControlTemplate TargetType="ComboBox">
+        <Grid>
+          <Border Background="{TemplateBinding Background}"
+                  BorderBrush="{TemplateBinding BorderBrush}"
+                  BorderThickness="{TemplateBinding BorderThickness}"
+                  CornerRadius="{TemplateBinding CornerRadius}">
+            <Grid ColumnDefinitions="*,Auto">
+              <ContentPresenter x:Name="PART_ContentPresenter"
+                                Margin="{TemplateBinding Padding}"
+                                VerticalAlignment="Center"
+                                Content="{TemplateBinding SelectionBoxItem}"
+                                ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"/>
+              <TextBlock Grid.Column="1"
+                         Text="▼"
+                         Margin="8,0,10,0"
+                         VerticalAlignment="Center"
+                         Foreground="{StaticResource BrushTextMuted}"/>
+            </Grid>
+          </Border>
+          <Popup x:Name="PART_Popup"
+                 Placement="Bottom"
+                 IsLightDismissEnabled="True"
+                 IsOpen="{TemplateBinding IsDropDownOpen}">
+            <Border Background="{StaticResource BrushBgSecondary}"
+                    BorderBrush="{StaticResource BrushBgTertiary}"
+                    BorderThickness="1"
+                    CornerRadius="{StaticResource RadiusSm}">
+              <ScrollViewer>
+                <ItemsPresenter/>
+              </ScrollViewer>
+            </Border>
+          </Popup>
+        </Grid>
+      </ControlTemplate>
+    </Setter>
+  </Style>
+
+  <Style Selector="ComboBoxItem">
+    <Setter Property="Foreground" Value="{StaticResource BrushTextPrimary}"/>
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="Padding" Value="10,6"/>
+  </Style>
+
+  <Style Selector="ComboBoxItem:pointerover">
+    <Setter Property="Background" Value="#2A2A2A"/>
+  </Style>
+
+  <Style Selector="ComboBoxItem:selected">
+    <Setter Property="Background" Value="{StaticResource BrushAccent}"/>
+  </Style>
+
+  <!-- ========= CHECKBOX ========= -->
+  <Style Selector="CheckBox">
+    <Setter Property="Foreground" Value="{StaticResource BrushTextPrimary}"/>
+    <Setter Property="FontWeight" Value="Medium"/>
+    <Setter Property="Padding" Value="4"/>
+    <Setter Property="Template">
+      <ControlTemplate TargetType="CheckBox">
+        <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+          <Border x:Name="PART_Box"
+                  Width="18"
+                  Height="18"
+                  CornerRadius="4"
+                  Background="{StaticResource BrushBgTertiary}"
+                  BorderBrush="{StaticResource BrushBgSecondary}"
+                  BorderThickness="1"
+                  VerticalAlignment="Center">
+            <Path x:Name="PART_CheckMark"
+                  Data="M3,9 L7,13 L15,5"
+                  Stroke="White"
+                  StrokeThickness="2"
+                  StrokeLineCap="Round"
+                  IsVisible="False"/>
+          </Border>
+          <ContentPresenter VerticalAlignment="Center"
+                            Content="{TemplateBinding Content}"
+                            ContentTemplate="{TemplateBinding ContentTemplate}"/>
+        </StackPanel>
+      </ControlTemplate>
+    </Setter>
+  </Style>
+
+  <Style Selector="CheckBox:checked /template/ Border#PART_Box">
+    <Setter Property="Background" Value="{StaticResource BrushAccent}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource BrushAccent}"/>
+  </Style>
+
+  <Style Selector="CheckBox:checked /template/ Path#PART_CheckMark">
+    <Setter Property="IsVisible" Value="True"/>
+  </Style>
+
+  <Style Selector="CheckBox:pointerover /template/ Border#PART_Box">
+    <Setter Property="Background" Value="#2A2A2A"/>
+    <Setter Property="BorderBrush" Value="#3A3A3A"/>
+  </Style>
+
+  <Style Selector="CheckBox:pressed /template/ Border#PART_Box">
+    <Setter Property="Background" Value="#1A1A1A"/>
+    <Setter Property="BorderBrush" Value="#4A4A4A"/>
+  </Style>
+
+  <Style Selector="CheckBox:disabled">
+    <Setter Property="Opacity" Value="0.5"/>
+  </Style>
+
+</Styles>

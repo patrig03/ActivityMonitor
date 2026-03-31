@@ -1,0 +1,45 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <Styles.Resources>
+    <ResourceDictionary>
+      <ResourceDictionary.MergedDictionaries>
+        <ResourceInclude Source="/Styles/Colors.axaml"/>
+        <ResourceInclude Source="/Styles/Spacing.axaml"/>
+      </ResourceDictionary.MergedDictionaries>
+    </ResourceDictionary>
+  </Styles.Resources>
+
+  <!-- ========= EXPANDER ========= -->
+  <Style Selector="Expander">
+    <Setter Property="Background" Value="{StaticResource BrushBgSecondary}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource BrushBgTertiary}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="Template">
+      <ControlTemplate TargetType="Expander">
+        <Border Background="{TemplateBinding Background}"
+                BorderBrush="{TemplateBinding BorderBrush}"
+                BorderThickness="{TemplateBinding BorderThickness}"
+                CornerRadius="{StaticResource RadiusMd}">
+          <StackPanel>
+            <ToggleButton IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                          Background="{StaticResource BrushBgTertiary}"
+                          Foreground="{StaticResource BrushTextPrimary}"
+                          Padding="12,10"
+                          HorizontalContentAlignment="Stretch"
+                          HorizontalAlignment="Stretch">
+              <ContentPresenter Content="{TemplateBinding Header}"
+                                ContentTemplate="{TemplateBinding HeaderTemplate}"/>
+            </ToggleButton>
+            <ContentPresenter IsVisible="{TemplateBinding IsExpanded}"
+                              Content="{TemplateBinding Content}"
+                              ContentTemplate="{TemplateBinding ContentTemplate}"
+                              Padding="12"
+                              Background="{StaticResource BrushBgSecondary}"/>
+          </StackPanel>
+        </Border>
+      </ControlTemplate>
+    </Setter>
+  </Style>
+
+</Styles>

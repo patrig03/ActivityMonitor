@@ -11,11 +11,16 @@ public class FirefoxCollector : IBrowserDataCollector, IDisposable
     private readonly CancellationTokenSource _cancellationTokenSource;
     private readonly Task _readTask;
     private readonly SemaphoreSlim _semaphore = new(1, 1);
+    private readonly SemaphoreSlim _startupSemaphore = new(0, 1);
+    private bool _isReady = false;
 
     public FirefoxCollector()
     {
         _cancellationTokenSource = new CancellationTokenSource();
         _readTask = Task.Run(() => StartHttpListenerAsync(_cancellationTokenSource.Token));
+
+        // Wait for listener to start (with timeout)
+        _startupSemaphore.Wait(TimeSpan.FromSeconds(5));
     }
 
     private async Task StartHttpListenerAsync(CancellationToken cancellationToken)
@@ -26,16 +31,22 @@ public class FirefoxCollector : IBrowserDataCollector, IDisposable
         try
         {
             listener.Start();
+            _isReady = true;
+            Console.WriteLine("Firefox collector: HTTP listener started on port 8090");
+            _startupSemaphore.Release();
 
             await ListenForRequestsAsync(listener, cancellationToken);
         }
         catch (Exception ex)
         {
-            Console.Error.WriteLine($"HTTP listener failed to start: {ex}");
+            Console.Error.WriteLine($"Firefox collector: HTTP listener failed to start: {ex}");
+            _startupSemaphore.Release(); // Release even on error so constructor doesn't hang
         }
         finally
         {
             listener.Stop();
+            _isReady = false;
+            Console.WriteLine("Firefox collector: HTTP listener stopped");
         }
     }
 
@@ -50,10 +61,25 @@ public class FirefoxCollector : IBrowserDataCollector, IDisposable
                 {
                     try
                     {
+                        // Add CORS headers
+                        context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
+                        context.Response.Headers.Add("Access-Control-Allow-Methods", "POST, OPTIONS");
+                        context.Response.Headers.Add("Access-Control-Allow-Headers", "Content-Type");
+
+                        if (context.Request.HttpMethod == "OPTIONS")
+                        {
+                            // Handle preflight request
+                            context.Response.StatusCode = 200;
+                            context.Response.Close();
+                            return;
+                        }
+
                         if (context.Request.HttpMethod == "POST" && context.Request.Url?.AbsolutePath == "/tab")
                         {
                             using var reader = new StreamReader(context.Request.InputStream, context.Request.ContentEncoding);
                             string json = await reader.ReadToEndAsync();
+
+                            Console.WriteLine($"Firefox collector: Received data: {json}");
 
                             var data = JsonSerializer.Deserialize<JsonElement>(json);
                             if (data.TryGetProperty("url", out var urlProp))
@@ -67,11 +93,16 @@ public class FirefoxCollector : IBrowserDataCollector, IDisposable
                                     try
                                     {
                                         _lastRecord = record;
+                                        Console.WriteLine($"Firefox collector: Updated last record to: {url}");
                                     }
                                     finally
                                     {
                                         _semaphore.Release();
                                     }
+                                }
+                                else
+                                {
+                                    Console.WriteLine($"Firefox collector: Invalid URL received: {url}");
                                 }
                             }
 
@@ -86,7 +117,7 @@ public class FirefoxCollector : IBrowserDataCollector, IDisposable
                     }
                     catch (Exception ex)
                     {
-                        Console.Error.WriteLine($"Request handler failed: {ex}");
+                        Console.Error.WriteLine($"Firefox collector: Request handler failed: {ex}");
                         try
                         {
                             context.Response.StatusCode = 500;
@@ -120,6 +151,20 @@ public class FirefoxCollector : IBrowserDataCollector, IDisposable
         }
     }
 
+    public void ClearState()
+    {
+        _semaphore.Wait();
+        try
+        {
+            _lastRecord = null;
+            Console.WriteLine("Firefox collector: State cleared");
+        }
+        finally
+        {
+            _semaphore.Release();
+        }
+    }
+
     static BrowserRecord? HandleRequest(string? url)
     {
         if (string.IsNullOrWhiteSpace(url))
@@ -144,5 +189,6 @@ public class FirefoxCollector : IBrowserDataCollector, IDisposable
         _readTask.Wait(TimeSpan.FromSeconds(5));
         _cancellationTokenSource.Dispose();
         _semaphore.Dispose();
+        _startupSemaphore.Dispose();
     }
 }

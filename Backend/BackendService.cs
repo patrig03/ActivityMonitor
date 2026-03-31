@@ -12,13 +12,13 @@ public static class Program
     private static void Main()
     {
         if (!VerifyMutex()) { Console.WriteLine("Another instance is already running"); return; }
-        
+
         var dbManager = new DatabaseManager(Settings.DatabaseConnectionString);
         dbManager.EnsureDatabase();
-        
-        DataCollectorController collector = new();
+
+        using var collector = new DataCollectorController();
         InterventionController intervener = new();
-        
+
         while (true)
         {
             var app = collector.CheckActivity(dbManager);
@@ -26,7 +26,7 @@ public static class Program
             {
                 intervener.VerifyThresholds(dbManager, app);
             }
-            
+
             var settings = dbManager.GetSettings(1);
             if (settings == null) throw new Exception("settings not found");
             var deltaTime = TimeSpan.FromSeconds(settings.DeltaTimeSeconds);

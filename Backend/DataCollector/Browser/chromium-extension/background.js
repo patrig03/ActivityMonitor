@@ -1,4 +1,4 @@
-console.log("Activity Monitor - Firefox extension loaded");
+console.log("Activity Monitor - Chromium extension loaded");
 
 let lastUrl = null;
 let lastSentUrl = null;
@@ -8,10 +8,10 @@ const MAX_RETRIES = 3;
 function sendUrl() {
     console.log("sendUrl called");
 
-    browser.tabs.query({active: true, currentWindow: true}).then((tabs) => {
+    chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
         console.log("tabs:", tabs);
 
-        if (!tabs.length) {
+        if (!tabs || !tabs.length) {
             console.log("No active tabs found");
             return;
         }
@@ -19,7 +19,10 @@ function sendUrl() {
         const currentUrl = tabs[0].url;
 
         // Skip internal browser pages
-        if (currentUrl.startsWith("about:") || currentUrl.startsWith("moz-extension:")) {
+        if (currentUrl.startsWith("chrome:") ||
+            currentUrl.startsWith("chrome-extension:") ||
+            currentUrl.startsWith("edge:") ||
+            currentUrl.startsWith("about:")) {
             console.log("Skipping internal page:", currentUrl);
             return;
         }
@@ -33,7 +36,7 @@ function sendUrl() {
         lastUrl = currentUrl;
 
         sendUrlWithRetry(currentUrl);
-    }).catch(e => console.error("Error querying tabs:", e));
+    });
 }
 
 function sendUrlWithRetry(url, attempt = 0) {
@@ -43,14 +46,14 @@ function sendUrlWithRetry(url, attempt = 0) {
         return;
     }
 
-    fetch("http://127.0.0.1:8090/tab", {
+    fetch("http://127.0.0.1:8091/tab", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify({url: url})
     })
     .then(response => {
         if (response.ok) {
-            console.log("Successfully sent to port 8090:", url);
+            console.log("Successfully sent to port 8091:", url);
             lastSentUrl = url;
             retryCount = 0;
         } else {
@@ -72,30 +75,30 @@ function sendUrlWithRetry(url, attempt = 0) {
 }
 
 // Listen for tab activation (switching between tabs)
-browser.tabs.onActivated.addListener((activeInfo) => {
+chrome.tabs.onActivated.addListener((activeInfo) => {
     sendUrl();
 });
 
 // Listen for tab updates (URL changes, page loads)
-browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     if (changeInfo.status === "complete" && tab.active) {
         sendUrl();
     }
 });
 
 // Listen for window focus changes
-browser.windows.onFocusChanged.addListener((windowId) => {
-    if (windowId !== browser.windows.WINDOW_ID_NONE) {
+chrome.windows.onFocusChanged.addListener((windowId) => {
+    if (windowId !== chrome.windows.WINDOW_ID_NONE) {
         sendUrl();
     }
 });
 
 // Send initial URL on startup
-browser.runtime.onStartup.addListener(() => {
+chrome.runtime.onStartup.addListener(() => {
     sendUrl();
 });
 
 // Send URL when extension is installed/updated
-browser.runtime.onInstalled.addListener(() => {
+chrome.runtime.onInstalled.addListener(() => {
     sendUrl();
 });

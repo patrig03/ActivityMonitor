@@ -20,17 +20,40 @@
                      LetterSpacing="0.5"/>
 
           <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-            <Ellipse Width="8" Height="8" Fill="#6DFF9C"/>
-            <TextBlock Text="Monitorizare activa"
+            <Ellipse Name="StatusIndicator" Width="8" Height="8" Fill="#6DFF9C"/>
+            <TextBlock Name="StatusText"
+                       Text="Monitorizare activa"
                        Foreground="#EAF1FF"
                        FontWeight="SemiBold"
                        FontSize="14"/>
           </StackPanel>
 
-          <TextBlock Text="Ultima actualizare: acum 2 min"
+          <TextBlock Name="StatusUpdateTime"
+                     Text="Ultima actualizare: acum câteva secunde"
                      Foreground="#7C879C"
                      FontSize="11"
                      Margin="0,4,0,0"/>
+
+          <Grid ColumnDefinitions="*,*" ColumnSpacing="8" Margin="0,12,0,0">
+            <Button Name="StartBackendButton"
+                    Grid.Column="0"
+                    Content="Porneste"
+                    Click="StartBackend_OnClick"
+                    HorizontalAlignment="Stretch"/>
+
+            <Button Name="StopBackendButton"
+                    Grid.Column="1"
+                    Content="Opreste"
+                    Click="StopBackend_OnClick"
+                    HorizontalAlignment="Stretch"/>
+          </Grid>
+
+          <TextBlock Name="StatusActionMessage"
+                     IsVisible="False"
+                     Foreground="#FFB366"
+                     FontSize="11"
+                     Margin="0,8,0,0"
+                     TextWrapping="Wrap"/>
         </StackPanel>
       </Border>
           
@@ -39,6 +62,7 @@
       <StackPanel Name="NavItems" Spacing="4">
         <!-- Mark the current item as active via a class -->
         <Button Content="Dashboard"
+                Name="DashboardButton"
                 Tag="Dashboard"
                 Click="Button_OnClick"
                 Classes="nav-button"/>

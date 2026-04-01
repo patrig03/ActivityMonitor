@@ -14,8 +14,7 @@ public sealed class BackendProcessController
 
     public bool IsSupported =>
         OperatingSystem.IsWindows() ||
-        OperatingSystem.IsLinux() ||
-        OperatingSystem.IsMacOS();
+        OperatingSystem.IsLinux();
 
     public bool IsRunning()
     {

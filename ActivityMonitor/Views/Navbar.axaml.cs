@@ -21,7 +21,6 @@ public partial class Navbar : UserControl
     private TextBlock? _statusUpdateTime;
     private TextBlock? _statusActionMessage;
     private Button? _startBackendButton;
-    private Button? _stopBackendButton;
     private bool? _isBackendRunning;
     private DateTime _lastStatusChange = DateTime.Now;
 
@@ -56,7 +55,6 @@ public partial class Navbar : UserControl
         _statusUpdateTime = this.Find<TextBlock>("StatusUpdateTime");
         _statusActionMessage = this.Find<TextBlock>("StatusActionMessage");
         _startBackendButton = this.Find<Button>("StartBackendButton");
-        _stopBackendButton = this.Find<Button>("StopBackendButton");
 
         _statusTimer = new DispatcherTimer
         {
@@ -71,7 +69,6 @@ public partial class Navbar : UserControl
     private void UpdateStatus(object? sender, EventArgs e)
     {
         bool isRunning = _backendProcessController?.IsRunning() ?? false;
-        bool canControlBackend = _backendProcessController?.IsSupported == true;
 
         if (_isBackendRunning != isRunning)
         {
@@ -110,27 +107,25 @@ public partial class Navbar : UserControl
 
         if (_startBackendButton != null)
         {
-            _startBackendButton.IsEnabled = canControlBackend && !isRunning;
+            _startBackendButton.Content = isRunning ? "Opreste" : "Porneste";
         }
 
-        if (_stopBackendButton != null)
+    }
+
+    private void BackendStatus_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (_backendProcessController?.IsRunning() == true)
         {
-            _stopBackendButton.IsEnabled = canControlBackend && isRunning;
+            var error = _backendProcessController?.Stop();
+            ShowActionMessage(error, isError: error != null);
+            UpdateStatus(null, EventArgs.Empty);
         }
-    }
-
-    private void StartBackend_OnClick(object? sender, RoutedEventArgs e)
-    {
-        var error = _backendProcessController?.Start();
-        ShowActionMessage(error, isError: error != null);
-        UpdateStatus(null, EventArgs.Empty);
-    }
-
-    private void StopBackend_OnClick(object? sender, RoutedEventArgs e)
-    {
-        var error = _backendProcessController?.Stop();
-        ShowActionMessage(error, isError: error != null);
-        UpdateStatus(null, EventArgs.Empty);
+        else
+        {
+            var error = _backendProcessController?.Start();
+            ShowActionMessage(error, isError: error != null);
+            UpdateStatus(null, EventArgs.Empty);
+        }
     }
 
     private void ShowActionMessage(string? message, bool isError)

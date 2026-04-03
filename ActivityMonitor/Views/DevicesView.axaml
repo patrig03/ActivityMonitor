@@ -124,8 +124,11 @@
               <Border Margin="0,10,10,0" Background="#14342B" CornerRadius="999" Padding="12,6">
                 <TextBlock Text="{Binding CurrentDeviceLabel}" Foreground="#E7FFF4"/>
               </Border>
-              <Border Margin="0,10,0,0" Background="#14342B" CornerRadius="999" Padding="12,6">
+              <Border Margin="0,10,10,0" Background="#14342B" CornerRadius="999" Padding="12,6">
                 <TextBlock Text="{Binding LastRefreshLabel}" Foreground="#E7FFF4"/>
+              </Border>
+              <Border Margin="0,10,0,0" Background="#14342B" CornerRadius="999" Padding="12,6">
+                <TextBlock Text="{Binding LastServerSyncLabel}" Foreground="#E7FFF4"/>
               </Border>
             </WrapPanel>
           </StackPanel>
@@ -146,8 +149,11 @@
               <TextBlock Text="{Binding CurrentDeviceDetail}"
                          Foreground="#D5E7E1"
                          TextWrapping="Wrap"/>
+              <TextBlock Text="{Binding SyncServerLabel}"
+                         Foreground="#9FC2B6"
+                         TextWrapping="Wrap"/>
 
-              <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+              <Grid ColumnDefinitions="*,*,*" ColumnSpacing="10">
                 <Button Grid.Column="0"
                         Command="{Binding RegisterCurrentDeviceCommand}"
                         Background="#A9E0C4"
@@ -155,11 +161,22 @@
                         CornerRadius="14"
                         BorderThickness="0"
                         Padding="16,12">
-                  <TextBlock Text="Sincronizeaza acest desktop"
+                  <TextBlock Text="Inregistreaza desktopul"
                              HorizontalAlignment="Center"
                              FontWeight="Bold"/>
                 </Button>
                 <Button Grid.Column="1"
+                        Command="{Binding SyncWithServerCommand}"
+                        Background="#C7E6FF"
+                        Foreground="#0E3551"
+                        CornerRadius="14"
+                        BorderThickness="0"
+                        Padding="16,12">
+                  <TextBlock Text="Sincronizeaza cu serverul"
+                             HorizontalAlignment="Center"
+                             FontWeight="Bold"/>
+                </Button>
+                <Button Grid.Column="2"
                         Command="{Binding RefreshCommand}"
                         Background="#DCE8E3"
                         Foreground="#12261F"

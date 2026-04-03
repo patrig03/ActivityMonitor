@@ -39,6 +39,7 @@ public sealed class SettingsEntity
     public int SettingsId { get; set; }
     public int UserId { get; set; }
     public int RefreshTimeSeconds { get; set; }
+    public string? SyncServerAddress { get; set; }
 
     public UserEntity? User { get; set; }
 }

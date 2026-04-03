@@ -26,6 +26,7 @@ public sealed class SettingsEntityConfiguration : IEntityTypeConfiguration<Setti
         builder.Property(entity => entity.SettingsId).HasColumnName("settings_id").ValueGeneratedOnAdd();
         builder.Property(entity => entity.UserId).HasColumnName("user_id");
         builder.Property(entity => entity.RefreshTimeSeconds).HasColumnName("refresh_time_seconds");
+        builder.Property(entity => entity.SyncServerAddress).HasColumnName("sync_server_address").HasMaxLength(512);
 
         builder.HasOne(entity => entity.User)
             .WithMany(user => user.Settings)

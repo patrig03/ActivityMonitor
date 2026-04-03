@@ -114,7 +114,8 @@ public sealed class DatabaseManager : IDatabaseManager
         var entity = new SettingsEntity
         {
             UserId = settings.UserId,
-            RefreshTimeSeconds = settings.DeltaTimeSeconds
+            RefreshTimeSeconds = settings.DeltaTimeSeconds,
+            SyncServerAddress = settings.SyncServerAddress
         };
 
         context.Settings.Add(entity);
@@ -133,6 +134,7 @@ public sealed class DatabaseManager : IDatabaseManager
 
         entity.UserId = settings.UserId;
         entity.RefreshTimeSeconds = settings.DeltaTimeSeconds;
+        entity.SyncServerAddress = settings.SyncServerAddress;
         return context.SaveChanges();
     }
 
@@ -642,7 +644,8 @@ public sealed class DatabaseManager : IDatabaseManager
         {
             Id = entity.SettingsId,
             UserId = entity.UserId,
-            DeltaTimeSeconds = entity.RefreshTimeSeconds
+            DeltaTimeSeconds = entity.RefreshTimeSeconds,
+            SyncServerAddress = entity.SyncServerAddress
         };
     }
 

@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Windows.Input;
 using Backend.Models;
+using Backend.Sync;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Database.Manager;
 
@@ -30,6 +31,8 @@ public class SettingsViewModel : ObservableObject
     private string _browserCoverage = "--";
     private string _monitoringSummary = "--";
     private string _lastSavedLabel = "Nu a fost salvat inca";
+    private string _syncServerAddress = string.Empty;
+    private string _syncEndpointPreview = "Serverul de sincronizare nu este configurat.";
 
     public SettingsViewModel()
     {
@@ -152,6 +155,31 @@ public class SettingsViewModel : ObservableObject
         set => SetProperty(ref _lastSavedLabel, value);
     }
 
+    public string SyncServerAddress
+    {
+        get => _syncServerAddress;
+        set
+        {
+            if (!SetProperty(ref _syncServerAddress, value))
+            {
+                return;
+            }
+
+            UpdateSyncPreview();
+
+            if (!_isLoading)
+            {
+                SaveStatus = "Modificari nesalvate";
+            }
+        }
+    }
+
+    public string SyncEndpointPreview
+    {
+        get => _syncEndpointPreview;
+        set => SetProperty(ref _syncEndpointPreview, value);
+    }
+
     private void Load()
     {
         _isLoading = true;
@@ -160,6 +188,7 @@ public class SettingsViewModel : ObservableObject
         _settings = dto == null ? new Settings() : Settings.FromDto(dto);
 
         RefreshIntervalSeconds = Math.Max(1, (int)_settings.DeltaTime.TotalSeconds).ToString();
+        SyncServerAddress = _settings.SyncServerAddress ?? string.Empty;
         DatabasePath = Settings.DatabaseEndpoint;
         DatabaseStatus = "Schema MySQL va fi creata automat cand conexiunea reuseste";
         ServiceMutexName = Settings.MutexName;
@@ -182,6 +211,16 @@ public class SettingsViewModel : ObservableObject
 
         _settings.UserId = DefaultUserId;
         _settings.DeltaTime = TimeSpan.FromSeconds(seconds);
+        if (!ServerSync.TryNormalizeServerAddress(SyncServerAddress, out var normalizedSyncServerAddress, out var syncValidationError))
+        {
+            SaveStatus = syncValidationError;
+            SyncEndpointPreview = syncValidationError;
+            return;
+        }
+
+        _settings.SyncServerAddress = string.IsNullOrWhiteSpace(normalizedSyncServerAddress)
+            ? null
+            : normalizedSyncServerAddress;
 
         if (_settings.Id > 0)
         {
@@ -200,6 +239,7 @@ public class SettingsViewModel : ObservableObject
     private void ResetToDefaults()
     {
         RefreshIntervalSeconds = DefaultIntervalSeconds.ToString();
+        SyncServerAddress = string.Empty;
         ValidationMessage = "Cadenta implicita a fost restaurata. Salveaza pentru a o pastra.";
     }
 
@@ -247,9 +287,23 @@ public class SettingsViewModel : ObservableObject
         MonitoringSummary = $"Interval curent: {seconds}s | verificarile de interventie ruleaza in acelasi ritm.";
     }
 
+    private void UpdateSyncPreview()
+    {
+        if (!ServerSync.TryNormalizeServerAddress(SyncServerAddress, out var normalizedSyncServerAddress, out var validationError))
+        {
+            SyncEndpointPreview = validationError;
+            return;
+        }
+
+        SyncEndpointPreview = string.IsNullOrWhiteSpace(normalizedSyncServerAddress)
+            ? "Configureaza un IP sau URL. Exemplu: http://192.168.1.10:8080"
+            : $"Cereri catre {ServerSync.BuildDevicesEndpointPreview(normalizedSyncServerAddress)}";
+    }
+
     private void RefreshDiagnostics()
     {
         UpdateIntervalPreview();
+        UpdateSyncPreview();
 
         var categories = _db.GetAllCategories().Count();
         var applications = _db.GetAllApplications().Count();

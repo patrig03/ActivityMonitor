@@ -7,6 +7,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Windows.Input;
 using Backend.Models;
+using Backend.Sync;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Database.DTO;
 using Database.Manager;
@@ -19,6 +20,7 @@ public sealed class DevicesViewModel : ObservableObject
 
     private readonly IDatabaseManager _db = new DatabaseManager(Settings.DatabaseConnectionString);
     private readonly string _currentFingerprint = BuildCurrentFingerprint();
+    private readonly ServerSync _serverSync = new();
 
     private int _selectedDeviceId;
     private string _pageSubtitle = "Se incarca inventarul dispozitivelor...";
@@ -44,11 +46,14 @@ public sealed class DevicesViewModel : ObservableObject
     private string _newDeviceType = DeviceTypeOptions[0];
     private string _newDevicePlatform = string.Empty;
     private string _newDeviceVersion = string.Empty;
+    private string _syncServerLabel = "Server sincronizare neconfigurat";
+    private string _lastServerSyncLabel = "Nicio sincronizare remota";
 
     public DevicesViewModel()
     {
         RefreshCommand = new RelayCommand(_ => Load());
         RegisterCurrentDeviceCommand = new RelayCommand(_ => RegisterCurrentDevice());
+        SyncWithServerCommand = new RelayCommand(_ => SyncWithServerAsync());
         AddDeviceCommand = new RelayCommand(_ => AddDevice());
         SelectDeviceCommand = new RelayCommand(SelectDevice);
         SaveSelectedDeviceCommand = new RelayCommand(_ => SaveSelectedDevice());
@@ -73,6 +78,8 @@ public sealed class DevicesViewModel : ObservableObject
     public ICommand RefreshCommand { get; }
 
     public ICommand RegisterCurrentDeviceCommand { get; }
+
+    public ICommand SyncWithServerCommand { get; }
 
     public ICommand AddDeviceCommand { get; }
 
@@ -258,9 +265,22 @@ public sealed class DevicesViewModel : ObservableObject
         }
     }
 
+    public string SyncServerLabel
+    {
+        get => _syncServerLabel;
+        set => SetProperty(ref _syncServerLabel, value);
+    }
+
+    public string LastServerSyncLabel
+    {
+        get => _lastServerSyncLabel;
+        set => SetProperty(ref _lastServerSyncLabel, value);
+    }
+
     private void Load(int? preferredSelectionId = null)
     {
         RegisterCurrentDevice();
+        RefreshSyncServerStatus();
 
         var devices = _db.GetDevicesForUser(DefaultUserId).ToList();
 
@@ -350,6 +370,46 @@ public sealed class DevicesViewModel : ObservableObject
         current.LastSeenAt = now;
         current.RevokedAt = null;
         _db.UpdateDevice(current);
+    }
+
+    private async void SyncWithServerAsync()
+    {
+        RegisterCurrentDevice();
+        var settings = _db.GetSettings(DefaultUserId);
+        var configuredAddress = settings?.SyncServerAddress;
+
+        if (string.IsNullOrWhiteSpace(configuredAddress))
+        {
+            DeviceStatus = "Configureaza mai intai serverul de sincronizare din pagina Setari.";
+            RefreshSyncServerStatus();
+            return;
+        }
+
+        var devices = _db.GetDevicesForUser(DefaultUserId).ToList();
+        var currentDevice = devices.FirstOrDefault(device => device.Fingerprint == _currentFingerprint);
+        if (currentDevice == null)
+        {
+            DeviceStatus = "Dispozitivul curent nu a putut fi inregistrat local inainte de sincronizare.";
+            return;
+        }
+
+        DeviceStatus = $"Se sincronizeaza cu {configuredAddress}...";
+        var result = await _serverSync.SyncDevicesAsync(configuredAddress, DefaultUserId, devices, currentDevice);
+        if (!result.Success)
+        {
+            DeviceStatus = result.Message;
+            LastServerSyncLabel = "Ultima sincronizare a esuat";
+            RefreshSyncServerStatus();
+            return;
+        }
+
+        MergeRemoteDevices(result.Devices);
+        LastServerSyncLabel = $"Ultima sincronizare la {DateTime.Now:HH:mm}";
+        var syncStatus = result.Devices.Count == 0
+            ? result.Message
+            : $"{result.Message} Au fost sincronizate {result.Devices.Count} dispozitive.";
+        Load(currentDevice.DeviceId);
+        DeviceStatus = syncStatus;
     }
 
     private void AddDevice()
@@ -582,6 +642,52 @@ public sealed class DevicesViewModel : ObservableObject
     {
         var version = typeof(DevicesViewModel).Assembly.GetName().Version;
         return version == null ? "dev-build" : $"v{version.Major}.{version.Minor}.{version.Build}";
+    }
+
+    private void RefreshSyncServerStatus()
+    {
+        var settings = _db.GetSettings(DefaultUserId);
+        var configuredAddress = settings?.SyncServerAddress;
+
+        if (string.IsNullOrWhiteSpace(configuredAddress))
+        {
+            SyncServerLabel = "Server sincronizare neconfigurat";
+            return;
+        }
+
+        SyncServerLabel = ServerSync.TryNormalizeServerAddress(configuredAddress, out var normalizedAddress, out _)
+            ? ServerSync.BuildDevicesEndpointPreview(normalizedAddress)
+            : $"Server sincronizare invalid: {configuredAddress}";
+    }
+
+    private void MergeRemoteDevices(IEnumerable<DeviceDto> remoteDevices)
+    {
+        var now = DateTime.UtcNow;
+
+        foreach (var device in remoteDevices
+                     .Where(device => !string.IsNullOrWhiteSpace(device.Fingerprint))
+                     .GroupBy(device => device.Fingerprint, StringComparer.OrdinalIgnoreCase)
+                     .Select(group => group.Last()))
+        {
+            device.DeviceId = 0;
+            device.UserId = DefaultUserId;
+            device.Name = string.IsNullOrWhiteSpace(device.Name) ? "Dispozitiv sincronizat" : device.Name.Trim();
+            device.DeviceType = string.IsNullOrWhiteSpace(device.DeviceType) ? "Desktop" : device.DeviceType.Trim();
+            device.Platform = string.IsNullOrWhiteSpace(device.Platform) ? "Necunoscut" : device.Platform.Trim();
+            device.Status = string.IsNullOrWhiteSpace(device.Status) ? "Active" : device.Status.Trim();
+            device.AppVersion = NormalizeOptionalValue(device.AppVersion);
+            device.Fingerprint = device.Fingerprint.Trim();
+            device.CreatedAt = device.CreatedAt == default ? now : device.CreatedAt;
+            device.LastSeenAt = device.LastSeenAt == default ? now : device.LastSeenAt;
+            device.IsCurrentDevice = string.Equals(device.Fingerprint, _currentFingerprint, StringComparison.OrdinalIgnoreCase);
+            if (device.IsCurrentDevice)
+            {
+                device.Status = "Active";
+                device.RevokedAt = null;
+            }
+
+            _db.UpsertDevice(device);
+        }
     }
 
     private static string BuildCurrentFingerprint()

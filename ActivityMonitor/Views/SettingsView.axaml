@@ -186,6 +186,30 @@
                            Padding="14,12"/>
                 </StackPanel>
               </Grid>
+
+              <StackPanel Spacing="8">
+                <TextBlock Text="Server sincronizare" Foreground="#10233D" FontWeight="SemiBold"/>
+                <TextBox Text="{Binding SyncServerAddress}"
+                         Watermark="Ex: 192.168.1.10:8080 sau https://sync.example"
+                         Background="#F6F9FD"
+                         Foreground="#10233D"
+                         BorderBrush="#C9D8EC"
+                         BorderThickness="1"
+                         Padding="14,12"/>
+                <Border Background="#F5F8FC"
+                        BorderBrush="#D8E2F0"
+                        BorderThickness="1"
+                        CornerRadius="16"
+                        Padding="14">
+                  <StackPanel Spacing="6">
+                    <TextBlock Text="Endpoint sincronizare" Foreground="#10233D" FontWeight="SemiBold"/>
+                    <TextBlock Text="{Binding SyncEndpointPreview}" Foreground="#17314F" TextWrapping="Wrap"/>
+                    <TextBlock Text="Aplicatia trimite un POST la /api/sync/devices si poate importa optional colectia JSON devices din raspuns."
+                               Foreground="#52657F"
+                               TextWrapping="Wrap"/>
+                  </StackPanel>
+                </Border>
+              </StackPanel>
             </StackPanel>
           </Border>
 

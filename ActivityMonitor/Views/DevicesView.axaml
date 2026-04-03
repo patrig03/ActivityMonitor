@@ -1,0 +1,449 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:viewModels="clr-namespace:ActivityMonitor.ViewModels"
+             x:Class="ActivityMonitor.Views.DevicesView"
+             x:DataType="viewModels:DevicesViewModel">
+
+  <UserControl.Resources>
+    <DataTemplate x:Key="DeviceCardTemplate" DataType="viewModels:AccountDeviceRow">
+      <Border Margin="0,0,0,14"
+              Padding="18"
+              CornerRadius="22"
+              Background="#101A18"
+              BorderBrush="#27443A"
+              BorderThickness="1">
+        <StackPanel Spacing="12">
+          <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+            <StackPanel Spacing="6">
+              <StackPanel Orientation="Horizontal" Spacing="8">
+                <TextBlock Text="{Binding Name}"
+                           FontSize="18"
+                           FontWeight="Bold"
+                           Foreground="#F3FCF8"/>
+                <Border IsVisible="{Binding IsCurrentDevice}"
+                        Background="#1F6B55"
+                        CornerRadius="999"
+                        Padding="10,4">
+                  <TextBlock Text="Acest dispozitiv"
+                             Foreground="#E9FFF5"
+                             FontSize="11"
+                             FontWeight="Bold"/>
+                </Border>
+              </StackPanel>
+              <TextBlock Text="{Binding DeviceType}" Foreground="#A6C7BC" FontWeight="SemiBold"/>
+              <TextBlock Text="{Binding ActivitySummary}" Foreground="#D5E7E1" TextWrapping="Wrap"/>
+            </StackPanel>
+
+            <StackPanel Grid.Column="1" Spacing="8" HorizontalAlignment="Right">
+              <Border Background="#14342B" CornerRadius="999" Padding="10,4">
+                <TextBlock Text="{Binding StatusChip}" Foreground="#E7FFF4" FontSize="11" FontWeight="Bold"/>
+              </Border>
+              <Border Background="#1E2F2A" CornerRadius="999" Padding="10,4">
+                <TextBlock Text="{Binding TrustChip}" Foreground="#D8EEE7" FontSize="11" FontWeight="Bold"/>
+              </Border>
+            </StackPanel>
+          </Grid>
+
+          <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+            <Border Background="#132320" CornerRadius="16" Padding="14">
+              <StackPanel Spacing="4">
+                <TextBlock Text="Platforma" Foreground="#8DB3A6" FontSize="12"/>
+                <TextBlock Text="{Binding Platform}" Foreground="#F3FCF8" FontWeight="SemiBold"/>
+              </StackPanel>
+            </Border>
+
+            <Border Grid.Column="1" Background="#132320" CornerRadius="16" Padding="14">
+              <StackPanel Spacing="4">
+                <TextBlock Text="Ultima activitate" Foreground="#8DB3A6" FontSize="12"/>
+                <TextBlock Text="{Binding LastSeenLabel}" Foreground="#F3FCF8" FontWeight="SemiBold"/>
+              </StackPanel>
+            </Border>
+          </Grid>
+
+          <TextBlock Text="{Binding VersionSummary}" Foreground="#A6C7BC"/>
+
+          <Grid ColumnDefinitions="*,*,*" ColumnSpacing="10">
+            <Button Grid.Column="0"
+                    CommandParameter="{Binding}"
+                    Background="#D6EAE2"
+                    Foreground="#0B2119"
+                    CornerRadius="14"
+                    BorderThickness="0"
+                    Padding="14,10">
+              <TextBlock Text="Detalii" HorizontalAlignment="Center" FontWeight="Bold"/>
+            </Button>
+
+            <Button Grid.Column="1"
+                    CommandParameter="{Binding}"
+                    Background="#A9E0C4"
+                    Foreground="#123427"
+                    CornerRadius="14"
+                    BorderThickness="0"
+                    Padding="14,10">
+              <TextBlock Text="{Binding TrustActionLabel}" HorizontalAlignment="Center" FontWeight="Bold"/>
+            </Button>
+
+            <Button Grid.Column="2"
+                    CommandParameter="{Binding}"
+                    Background="#F0C986"
+                    Foreground="#4D3200"
+                    CornerRadius="14"
+                    BorderThickness="0"
+                    Padding="14,10">
+              <TextBlock Text="{Binding ActionLabel}" HorizontalAlignment="Center" FontWeight="Bold"/>
+            </Button>
+          </Grid>
+        </StackPanel>
+      </Border>
+    </DataTemplate>
+  </UserControl.Resources>
+
+  <ScrollViewer VerticalScrollBarVisibility="Auto">
+    <StackPanel Margin="16" Spacing="16">
+
+      <Border CornerRadius="28"
+              Padding="24"
+              Background="#0F1917"
+              BorderBrush="#27443A"
+              BorderThickness="1">
+        <Grid ColumnDefinitions="*,340" ColumnSpacing="18">
+          <StackPanel Spacing="10">
+            <TextBlock Text="Dispozitive"
+                       FontSize="30"
+                       FontWeight="Bold"
+                       Foreground="#F3FCF8"/>
+            <TextBlock Text="{Binding PageSubtitle}"
+                       Foreground="#A6C7BC"
+                       FontSize="14"
+                       TextWrapping="Wrap"/>
+
+            <WrapPanel Orientation="Horizontal">
+              <Border Margin="0,10,10,0" Background="#14342B" CornerRadius="999" Padding="12,6">
+                <TextBlock Text="{Binding AccountLabel}" Foreground="#E7FFF4"/>
+              </Border>
+              <Border Margin="0,10,10,0" Background="#14342B" CornerRadius="999" Padding="12,6">
+                <TextBlock Text="{Binding CurrentDeviceLabel}" Foreground="#E7FFF4"/>
+              </Border>
+              <Border Margin="0,10,0,0" Background="#14342B" CornerRadius="999" Padding="12,6">
+                <TextBlock Text="{Binding LastRefreshLabel}" Foreground="#E7FFF4"/>
+              </Border>
+            </WrapPanel>
+          </StackPanel>
+
+          <Border Grid.Column="1"
+                  CornerRadius="22"
+                  Padding="18"
+                  Background="#132320"
+                  BorderBrush="#2D4C42"
+                  BorderThickness="1">
+            <StackPanel Spacing="12">
+              <TextBlock Text="Stare cont" Foreground="#9FC2B6"/>
+              <TextBlock Text="{Binding DeviceStatus}"
+                         FontSize="20"
+                         FontWeight="Bold"
+                         Foreground="#F3FCF8"
+                         TextWrapping="Wrap"/>
+              <TextBlock Text="{Binding CurrentDeviceDetail}"
+                         Foreground="#D5E7E1"
+                         TextWrapping="Wrap"/>
+
+              <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                <Button Grid.Column="0"
+                        Command="{Binding RegisterCurrentDeviceCommand}"
+                        Background="#A9E0C4"
+                        Foreground="#123427"
+                        CornerRadius="14"
+                        BorderThickness="0"
+                        Padding="16,12">
+                  <TextBlock Text="Sincronizeaza acest desktop"
+                             HorizontalAlignment="Center"
+                             FontWeight="Bold"/>
+                </Button>
+                <Button Grid.Column="1"
+                        Command="{Binding RefreshCommand}"
+                        Background="#DCE8E3"
+                        Foreground="#12261F"
+                        CornerRadius="14"
+                        BorderThickness="0"
+                        Padding="16,12">
+                  <TextBlock Text="Reincarca"
+                             HorizontalAlignment="Center"
+                             FontWeight="Bold"/>
+                </Button>
+              </Grid>
+            </StackPanel>
+          </Border>
+        </Grid>
+      </Border>
+
+      <WrapPanel Orientation="Horizontal">
+        <Border Width="220" Margin="0,0,14,14" Padding="18" CornerRadius="20" Background="#0F1917" BorderBrush="#27443A" BorderThickness="1">
+          <StackPanel Spacing="6">
+            <TextBlock Text="Total dispozitive" Foreground="#9FC2B6"/>
+            <TextBlock Text="{Binding TotalDevices}" Foreground="#F3FCF8" FontSize="28" FontWeight="Bold"/>
+            <TextBlock Text="Inregistrate pe cont" Foreground="#739085"/>
+          </StackPanel>
+        </Border>
+        <Border Width="220" Margin="0,0,14,14" Padding="18" CornerRadius="20" Background="#0F1917" BorderBrush="#27443A" BorderThickness="1">
+          <StackPanel Spacing="6">
+            <TextBlock Text="Active" Foreground="#9FC2B6"/>
+            <TextBlock Text="{Binding ActiveDevices}" Foreground="#F3FCF8" FontSize="28" FontWeight="Bold"/>
+            <TextBlock Text="Cu acces valid" Foreground="#739085"/>
+          </StackPanel>
+        </Border>
+        <Border Width="220" Margin="0,0,14,14" Padding="18" CornerRadius="20" Background="#0F1917" BorderBrush="#27443A" BorderThickness="1">
+          <StackPanel Spacing="6">
+            <TextBlock Text="De incredere" Foreground="#9FC2B6"/>
+            <TextBlock Text="{Binding TrustedDevices}" Foreground="#F3FCF8" FontSize="28" FontWeight="Bold"/>
+            <TextBlock Text="Nu necesita review" Foreground="#739085"/>
+          </StackPanel>
+        </Border>
+        <Border Width="220" Margin="0,0,0,14" Padding="18" CornerRadius="20" Background="#0F1917" BorderBrush="#27443A" BorderThickness="1">
+          <StackPanel Spacing="6">
+            <TextBlock Text="Revocate" Foreground="#9FC2B6"/>
+            <TextBlock Text="{Binding RevokedDevices}" Foreground="#F3FCF8" FontSize="28" FontWeight="Bold"/>
+            <TextBlock Text="Scoase din acces" Foreground="#739085"/>
+          </StackPanel>
+        </Border>
+      </WrapPanel>
+
+      <Grid ColumnDefinitions="1.2*,0.8*" ColumnSpacing="18">
+        <StackPanel Spacing="18">
+
+          <Border CornerRadius="24"
+                  Padding="20"
+                  Background="#0F1917"
+                  BorderBrush="#27443A"
+                  BorderThickness="1">
+            <StackPanel Spacing="14">
+              <TextBlock Text="Dispozitive conectate" FontSize="22" FontWeight="Bold" Foreground="#F3FCF8"/>
+              <TextBlock Text="Monitorizeaza dispozitivele care au acces la cont si actioneaza rapid cand unul nu mai trebuie sa fie conectat."
+                         Foreground="#A6C7BC"
+                         TextWrapping="Wrap"/>
+
+              <ItemsControl ItemsSource="{Binding Devices}" ItemTemplate="{StaticResource DeviceCardTemplate}"/>
+            </StackPanel>
+          </Border>
+
+          <Border CornerRadius="24"
+                  Padding="20"
+                  Background="#FFFDF8"
+                  BorderBrush="#E7DCC8"
+                  BorderThickness="1">
+            <StackPanel Spacing="16">
+              <TextBlock Text="Adauga un dispozitiv"
+                         FontSize="22"
+                         FontWeight="Bold"
+                         Foreground="#473113"/>
+              <TextBlock Text="Inregistreaza manual un dispozitiv companion pentru a-i urmari accesul si a-l putea revoca din acelasi loc."
+                         Foreground="#7A5A24"
+                         TextWrapping="Wrap"/>
+
+              <Grid ColumnDefinitions="*,*" ColumnSpacing="14">
+                <StackPanel Spacing="8">
+                  <TextBlock Text="Nume dispozitiv" Foreground="#473113" FontWeight="SemiBold"/>
+                  <TextBox Text="{Binding NewDeviceName}"
+                           Watermark="Ex: Laptop birou"
+                           Background="#FFFFFF"
+                           Foreground="#473113"
+                           BorderBrush="#E7DCC8"
+                           BorderThickness="1"
+                           Padding="14,12"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Spacing="8">
+                  <TextBlock Text="Tip" Foreground="#473113" FontWeight="SemiBold"/>
+                  <ComboBox ItemsSource="{Binding AvailableDeviceTypes}"
+                            SelectedItem="{Binding NewDeviceType}"
+                            Background="#FFFFFF"
+                            Foreground="#473113"/>
+                </StackPanel>
+              </Grid>
+
+              <Grid ColumnDefinitions="*,*" ColumnSpacing="14">
+                <StackPanel Spacing="8">
+                  <TextBlock Text="Platforma" Foreground="#473113" FontWeight="SemiBold"/>
+                  <TextBox Text="{Binding NewDevicePlatform}"
+                           Watermark="Windows, macOS, Android..."
+                           Background="#FFFFFF"
+                           Foreground="#473113"
+                           BorderBrush="#E7DCC8"
+                           BorderThickness="1"
+                           Padding="14,12"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Spacing="8">
+                  <TextBlock Text="Versiune aplicatie" Foreground="#473113" FontWeight="SemiBold"/>
+                  <TextBox Text="{Binding NewDeviceVersion}"
+                           Watermark="Optional"
+                           Background="#FFFFFF"
+                           Foreground="#473113"
+                           BorderBrush="#E7DCC8"
+                           BorderThickness="1"
+                           Padding="14,12"/>
+                </StackPanel>
+              </Grid>
+
+              <Button Command="{Binding AddDeviceCommand}"
+                      Background="#F4CA7A"
+                      Foreground="#452B00"
+                      CornerRadius="14"
+                      BorderThickness="0"
+                      Padding="16,12">
+                <TextBlock Text="Adauga dispozitivul"
+                           HorizontalAlignment="Center"
+                           FontWeight="Bold"/>
+              </Button>
+            </StackPanel>
+          </Border>
+        </StackPanel>
+
+        <StackPanel Grid.Column="1" Spacing="18">
+          <Border CornerRadius="24"
+                  Padding="20"
+                  Background="#FFFFFF"
+                  BorderBrush="#D8E2F0"
+                  BorderThickness="1">
+            <StackPanel Spacing="14">
+              <TextBlock Text="Panou de administrare"
+                         FontSize="22"
+                         FontWeight="Bold"
+                         Foreground="#10233D"/>
+
+              <StackPanel IsVisible="{Binding HasSelectedDevice}" Spacing="14">
+                <TextBlock Text="{Binding SelectedDeviceState}"
+                           Foreground="#17314F"
+                           FontWeight="SemiBold"
+                           FontSize="16"/>
+                <TextBlock Text="{Binding SelectedDeviceTimeline}"
+                           Foreground="#52657F"
+                           TextWrapping="Wrap"/>
+                <TextBlock Text="{Binding SelectedDeviceTrust}"
+                           Foreground="#52657F"
+                           TextWrapping="Wrap"/>
+
+                <StackPanel Spacing="8">
+                  <TextBlock Text="Nume dispozitiv" Foreground="#10233D" FontWeight="SemiBold"/>
+                  <TextBox Text="{Binding SelectedDeviceName}"
+                           Background="#F6F9FD"
+                           Foreground="#10233D"
+                           BorderBrush="#C9D8EC"
+                           BorderThickness="1"
+                           Padding="14,12"/>
+                </StackPanel>
+
+                <StackPanel Spacing="8">
+                  <TextBlock Text="Tip dispozitiv" Foreground="#10233D" FontWeight="SemiBold"/>
+                  <ComboBox ItemsSource="{Binding AvailableDeviceTypes}"
+                            SelectedItem="{Binding SelectedDeviceType}"
+                            Background="#F6F9FD"
+                            Foreground="#10233D"/>
+                </StackPanel>
+
+                <StackPanel Spacing="8">
+                  <TextBlock Text="Platforma" Foreground="#10233D" FontWeight="SemiBold"/>
+                  <TextBox Text="{Binding SelectedDevicePlatform}"
+                           Background="#F6F9FD"
+                           Foreground="#10233D"
+                           BorderBrush="#C9D8EC"
+                           BorderThickness="1"
+                           Padding="14,12"/>
+                </StackPanel>
+
+                <StackPanel Spacing="8">
+                  <TextBlock Text="Versiune aplicatie" Foreground="#10233D" FontWeight="SemiBold"/>
+                  <TextBox Text="{Binding SelectedDeviceVersion}"
+                           Background="#F6F9FD"
+                           Foreground="#10233D"
+                           BorderBrush="#C9D8EC"
+                           BorderThickness="1"
+                           Padding="14,12"/>
+                </StackPanel>
+
+                <StackPanel Spacing="8">
+                  <TextBlock Text="Amprenta dispozitiv" Foreground="#10233D" FontWeight="SemiBold"/>
+                  <TextBox Text="{Binding SelectedDeviceFingerprint}"
+                           IsReadOnly="True"
+                           Background="#F6F9FD"
+                           Foreground="#52657F"
+                           BorderBrush="#C9D8EC"
+                           BorderThickness="1"
+                           Padding="14,12"/>
+                </StackPanel>
+
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                  <Button Grid.Column="0"
+                          Command="{Binding SaveSelectedDeviceCommand}"
+                          Background="#8BD3A7"
+                          Foreground="#062A16"
+                          CornerRadius="14"
+                          BorderThickness="0"
+                          Padding="16,12">
+                    <TextBlock Text="Salveaza"
+                               HorizontalAlignment="Center"
+                               FontWeight="Bold"/>
+                  </Button>
+                  <Button Grid.Column="1"
+                          Command="{Binding ClearSelectionCommand}"
+                          Background="#D9E5F5"
+                          Foreground="#112039"
+                          CornerRadius="14"
+                          BorderThickness="0"
+                          Padding="16,12">
+                    <TextBlock Text="Goleste selectia"
+                               HorizontalAlignment="Center"
+                               FontWeight="Bold"/>
+                  </Button>
+                </Grid>
+
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                  <Button Grid.Column="0"
+                          Command="{Binding ToggleTrustedCommand}"
+                          Background="#DFF8E8"
+                          Foreground="#114B29"
+                          CornerRadius="14"
+                          BorderThickness="0"
+                          Padding="16,12">
+                    <TextBlock Text="{Binding SelectedTrustActionLabel}"
+                               HorizontalAlignment="Center"
+                               FontWeight="Bold"
+                               TextWrapping="Wrap"/>
+                  </Button>
+                  <Button Grid.Column="1"
+                          Command="{Binding ToggleDeviceStatusCommand}"
+                          Background="#FCEFD8"
+                          Foreground="#6D4C10"
+                          CornerRadius="14"
+                          BorderThickness="0"
+                          Padding="16,12">
+                    <TextBlock Text="{Binding SelectedStatusActionLabel}"
+                               HorizontalAlignment="Center"
+                               FontWeight="Bold"
+                               TextWrapping="Wrap"/>
+                  </Button>
+                </Grid>
+              </StackPanel>
+
+              <Border IsVisible="{Binding NoSelectedDevice}"
+                      CornerRadius="18"
+                      Padding="16"
+                      Background="#F5F8FC"
+                      BorderBrush="#D8E2F0"
+                      BorderThickness="1">
+                <StackPanel Spacing="8">
+                  <TextBlock Text="Niciun dispozitiv selectat"
+                             Foreground="#17314F"
+                             FontWeight="SemiBold"
+                             FontSize="16"/>
+                  <TextBlock Text="Alege un card din lista pentru a edita numele, platforma sau pentru a revoca rapid accesul."
+                             Foreground="#52657F"
+                             TextWrapping="Wrap"/>
+                </StackPanel>
+              </Border>
+            </StackPanel>
+          </Border>
+        </StackPanel>
+      </Grid>
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>

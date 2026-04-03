@@ -51,6 +51,63 @@ public sealed class DatabaseManager : IDatabaseManager
             .SingleOrDefault();
     }
 
+    public int InsertDevice(DeviceDto device)
+    {
+        using var context = _contextFactory.CreateDbContext();
+        var entity = ToEntity(device);
+        context.Devices.Add(entity);
+        context.SaveChanges();
+        return entity.DeviceId;
+    }
+
+    public int UpdateDevice(DeviceDto device)
+    {
+        using var context = _contextFactory.CreateDbContext();
+        var entity = context.Devices.SingleOrDefault(item => item.DeviceId == device.DeviceId);
+        if (entity is null)
+        {
+            return 0;
+        }
+
+        UpdateEntity(entity, device);
+        return context.SaveChanges();
+    }
+
+    public int UpsertDevice(DeviceDto device)
+    {
+        using var context = _contextFactory.CreateDbContext();
+        var entity = device.DeviceId > 0
+            ? context.Devices.SingleOrDefault(item => item.DeviceId == device.DeviceId)
+            : context.Devices.SingleOrDefault(item =>
+                item.UserId == device.UserId &&
+                item.Fingerprint == device.Fingerprint);
+
+        if (entity is null)
+        {
+            entity = ToEntity(device);
+            context.Devices.Add(entity);
+            context.SaveChanges();
+            return entity.DeviceId;
+        }
+
+        UpdateEntity(entity, device);
+        context.SaveChanges();
+        return entity.DeviceId;
+    }
+
+    public IEnumerable<DeviceDto> GetDevicesForUser(int userId)
+    {
+        using var context = _contextFactory.CreateDbContext();
+        return context.Devices
+            .AsNoTracking()
+            .Where(entity => entity.UserId == userId)
+            .OrderByDescending(entity => entity.IsCurrentDevice)
+            .ThenByDescending(entity => entity.LastSeenAt)
+            .AsEnumerable()
+            .Select(ToDto)
+            .ToList();
+    }
+
     public int InsertSettings(SettingsDto settings)
     {
         using var context = _contextFactory.CreateDbContext();
@@ -490,6 +547,29 @@ public sealed class DatabaseManager : IDatabaseManager
             entity.ProcessName == app.ProcessName);
     }
 
+    private static DeviceEntity ToEntity(DeviceDto dto)
+    {
+        var entity = new DeviceEntity();
+        UpdateEntity(entity, dto);
+        return entity;
+    }
+
+    private static void UpdateEntity(DeviceEntity entity, DeviceDto dto)
+    {
+        entity.UserId = dto.UserId;
+        entity.Name = dto.Name;
+        entity.DeviceType = dto.DeviceType;
+        entity.Platform = dto.Platform;
+        entity.Fingerprint = dto.Fingerprint;
+        entity.Status = dto.Status;
+        entity.AppVersion = dto.AppVersion;
+        entity.IsTrusted = dto.IsTrusted;
+        entity.IsCurrentDevice = dto.IsCurrentDevice;
+        entity.CreatedAt = dto.CreatedAt;
+        entity.LastSeenAt = dto.LastSeenAt;
+        entity.RevokedAt = dto.RevokedAt;
+    }
+
     private static ApplicationEntity ToEntity(ApplicationDto dto)
     {
         return new ApplicationEntity
@@ -533,6 +613,26 @@ public sealed class DatabaseManager : IDatabaseManager
             PinHash = entity.PinHash,
             SyncEnabled = entity.SyncEnabled,
             CreatedAt = entity.CreatedAt
+        };
+    }
+
+    private static DeviceDto ToDto(DeviceEntity entity)
+    {
+        return new DeviceDto
+        {
+            DeviceId = entity.DeviceId,
+            UserId = entity.UserId,
+            Name = entity.Name,
+            DeviceType = entity.DeviceType,
+            Platform = entity.Platform,
+            Fingerprint = entity.Fingerprint,
+            Status = entity.Status,
+            AppVersion = entity.AppVersion,
+            IsTrusted = entity.IsTrusted,
+            IsCurrentDevice = entity.IsCurrentDevice,
+            CreatedAt = entity.CreatedAt,
+            LastSeenAt = entity.LastSeenAt,
+            RevokedAt = entity.RevokedAt
         };
     }
 

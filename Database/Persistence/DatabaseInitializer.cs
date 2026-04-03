@@ -1,4 +1,5 @@
 using Database.Configuration;
+using Microsoft.EntityFrameworkCore;
 using MySqlConnector;
 
 namespace Database.Persistence;
@@ -18,6 +19,7 @@ public sealed class MySqlDatabaseInitializer(
 
         using var context = contextFactory.CreateDbContext();
         context.Database.EnsureCreated();
+        EnsureDevicesTableExists(context);
 
         SeedDefaults(context);
     }
@@ -63,5 +65,31 @@ public sealed class MySqlDatabaseInitializer(
         }
 
         context.SaveChanges();
+    }
+
+    private static void EnsureDevicesTableExists(ActivityMonitorDbContext context)
+    {
+        context.Database.ExecuteSqlRaw(
+            """
+            CREATE TABLE IF NOT EXISTS devices (
+                device_id INT NOT NULL AUTO_INCREMENT,
+                user_id INT NOT NULL,
+                name VARCHAR(255) NOT NULL,
+                device_type VARCHAR(64) NOT NULL,
+                platform VARCHAR(128) NOT NULL,
+                fingerprint VARCHAR(255) NOT NULL,
+                status VARCHAR(32) NOT NULL,
+                app_version VARCHAR(64) NULL,
+                is_trusted TINYINT(1) NOT NULL,
+                is_current_device TINYINT(1) NOT NULL,
+                created_at DATETIME(6) NOT NULL,
+                last_seen_at DATETIME(6) NOT NULL,
+                revoked_at DATETIME(6) NULL,
+                PRIMARY KEY (device_id),
+                CONSTRAINT fk_devices_users_user_id FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE CASCADE,
+                UNIQUE KEY ux_devices_user_fingerprint (user_id, fingerprint),
+                KEY ix_devices_user_last_seen (user_id, last_seen_at)
+            ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+            """);
     }
 }

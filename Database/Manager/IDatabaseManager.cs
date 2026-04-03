@@ -14,6 +14,13 @@ public interface IDatabaseManager : IDisposable
     int InsertUser(UserDto user);
     UserDto? GetUser(int userId);
 
+    /* -------------------- DEVICES -------------------- */
+
+    int InsertDevice(DeviceDto device);
+    int UpdateDevice(DeviceDto device);
+    int UpsertDevice(DeviceDto device);
+    IEnumerable<DeviceDto> GetDevicesForUser(int userId);
+
     /* -------------------- SETTINGS -------------------- */
 
     int InsertSettings(SettingsDto settings);

@@ -18,6 +18,7 @@ namespace ActivityMonitor.Views
                 MainWindow.ActiveView.Reports   => new ReportsView(),
                 MainWindow.ActiveView.Browser => new BrowserView(),
                 MainWindow.ActiveView.Interventions => new InterventionsView(),
+                MainWindow.ActiveView.Devices => new DevicesView(),
                 MainWindow.ActiveView.Settings  => new SettingsView(),
                 _                               => throw new NotImplementedException()
             };

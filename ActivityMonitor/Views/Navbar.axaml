@@ -75,6 +75,11 @@
                 Tag="Interventions"
                 Click="Button_OnClick"
                 Classes="nav-button"/>
+
+        <Button Content="Dispozitive"
+                Tag="Devices"
+                Click="Button_OnClick"
+                Classes="nav-button"/>
         
         <Button Content="Setari"
                 Tag="Settings"

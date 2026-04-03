@@ -174,6 +174,7 @@ public partial class Navbar : UserControl
             "Reports"           => MainWindow.ActiveView.Reports,
             "Browser"           => MainWindow.ActiveView.Browser,
             "Interventions"     => MainWindow.ActiveView.Interventions,
+            "Devices"           => MainWindow.ActiveView.Devices,
             "Settings"          => MainWindow.ActiveView.Settings,
             _                   => throw new Exception("Buton de navigare invalid!")
         };

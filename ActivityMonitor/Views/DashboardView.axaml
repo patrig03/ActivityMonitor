@@ -4,40 +4,33 @@
              xmlns:viewModels="clr-namespace:ActivityMonitor.ViewModels"
              xmlns:lvc="using:LiveChartsCore.SkiaSharpView.Avalonia"
              x:DataType="viewModels:DashboardViewModel"
-             x:Class="ActivityMonitor.Views.DashboardView"
-             Foreground="White">
+             x:Class="ActivityMonitor.Views.DashboardView">
 
   <UserControl.Resources>
     <DataTemplate x:Key="InsightTemplate" DataType="viewModels:DashboardInsight">
-      <Border Width="260"
+      <Border Classes="panel-card panel-card--muted"
+              Width="260"
               Margin="0,0,14,14"
-              CornerRadius="20"
-              Padding="18"
-              Background="#111B2D"
-              BorderBrush="#24324A"
-              BorderThickness="1">
+              Padding="18">
         <StackPanel Spacing="8">
-          <TextBlock Text="{Binding Title}" FontSize="15" FontWeight="SemiBold" Foreground="#F7FAFF"/>
-          <TextBlock Text="{Binding Detail}" Foreground="#8EA0C3" TextWrapping="Wrap"/>
+          <TextBlock Text="{Binding Title}" FontSize="15" FontWeight="SemiBold" Foreground="{StaticResource BrushTextSecondary}"/>
+          <TextBlock Text="{Binding Detail}" Foreground="{StaticResource BrushTextMuted}" TextWrapping="Wrap"/>
         </StackPanel>
       </Border>
     </DataTemplate>
 
     <DataTemplate x:Key="BreakdownTemplate" DataType="viewModels:DashboardBreakdownItem">
-      <Border Margin="0,0,0,10"
-              CornerRadius="16"
-              Padding="14"
-              Background="#111B2D"
-              BorderBrush="#24324A"
-              BorderThickness="1">
+      <Border Classes="panel-card panel-card--muted"
+              Margin="0,0,0,10"
+              Padding="14">
         <Grid ColumnDefinitions="*,Auto">
           <StackPanel Spacing="4">
-            <TextBlock Text="{Binding Label}" FontSize="14" FontWeight="SemiBold" Foreground="#F7FAFF"/>
-            <TextBlock Text="{Binding Secondary}" Foreground="#8EA0C3" TextWrapping="Wrap"/>
+            <TextBlock Text="{Binding Label}" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource BrushTextSecondary}"/>
+            <TextBlock Text="{Binding Secondary}" Foreground="{StaticResource BrushTextMuted}" TextWrapping="Wrap"/>
           </StackPanel>
           <TextBlock Grid.Column="1"
                      Text="{Binding Duration}"
-                     Foreground="#7DD3FC"
+                     Foreground="{StaticResource BrushAccentPrimary}"
                      FontSize="18"
                      FontWeight="Bold"
                      VerticalAlignment="Center"/>
@@ -46,47 +39,38 @@
     </DataTemplate>
 
     <DataTemplate x:Key="ThresholdTemplate" DataType="viewModels:DashboardThresholdState">
-      <Border Margin="0,0,0,10"
-              CornerRadius="16"
-              Padding="14"
-              Background="#111B2D"
-              BorderBrush="#24324A"
-              BorderThickness="1">
+      <Border Classes="panel-card panel-card--muted"
+              Margin="0,0,0,10"
+              Padding="14">
         <StackPanel Spacing="8">
           <Grid ColumnDefinitions="*,Auto">
-            <TextBlock Text="{Binding TargetName}" FontSize="14" FontWeight="SemiBold" Foreground="#F7FAFF"/>
-            <Border Grid.Column="1"
-                    Background="#1E2A40"
-                    CornerRadius="999"
-                    Padding="10,4">
-              <TextBlock Text="{Binding StateLabel}" Foreground="#C7D6F6" FontSize="11" FontWeight="SemiBold"/>
+            <TextBlock Text="{Binding TargetName}" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource BrushTextSecondary}"/>
+            <Border Classes="chip chip--overlay" Grid.Column="1" Padding="10,4">
+              <TextBlock Text="{Binding StateLabel}" Foreground="{StaticResource BrushTextOnSoft}" FontSize="11" FontWeight="SemiBold"/>
             </Border>
           </Grid>
           <ProgressBar Minimum="0"
                        Maximum="100"
                        Value="{Binding ProgressValue}"
                        Height="8"/>
-          <TextBlock Text="{Binding UsageSummary}" Foreground="#F7FAFF" FontWeight="SemiBold"/>
-          <TextBlock Text="{Binding LimitSummary}" Foreground="#8EA0C3"/>
+          <TextBlock Text="{Binding UsageSummary}" Foreground="{StaticResource BrushTextSecondary}" FontWeight="SemiBold"/>
+          <TextBlock Text="{Binding LimitSummary}" Foreground="{StaticResource BrushTextMuted}"/>
         </StackPanel>
       </Border>
     </DataTemplate>
 
     <DataTemplate x:Key="DomainTemplate" DataType="viewModels:DashboardDomainItem">
-      <Border Margin="0,0,0,10"
-              CornerRadius="16"
-              Padding="14"
-              Background="#111B2D"
-              BorderBrush="#24324A"
-              BorderThickness="1">
+      <Border Classes="panel-card panel-card--muted"
+              Margin="0,0,0,10"
+              Padding="14">
         <Grid ColumnDefinitions="*,Auto">
           <StackPanel Spacing="4">
-            <TextBlock Text="{Binding Domain}" FontSize="14" FontWeight="SemiBold" Foreground="#F7FAFF"/>
-            <TextBlock Text="{Binding Share}" Foreground="#8EA0C3"/>
+            <TextBlock Text="{Binding Domain}" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource BrushTextSecondary}"/>
+            <TextBlock Text="{Binding Share}" Foreground="{StaticResource BrushTextMuted}"/>
           </StackPanel>
           <TextBlock Grid.Column="1"
                      Text="{Binding Visits}"
-                     Foreground="#8BFFB1"
+                     Foreground="{StaticResource BrushAccentSuccess}"
                      FontWeight="Bold"
                      VerticalAlignment="Center"/>
         </Grid>
@@ -94,123 +78,90 @@
     </DataTemplate>
 
     <DataTemplate x:Key="InterventionTemplate" DataType="viewModels:DashboardInterventionItem">
-      <Border Margin="0,0,0,10"
-              CornerRadius="16"
-              Padding="14"
-              Background="#111B2D"
-              BorderBrush="#24324A"
-              BorderThickness="1">
+      <Border Classes="panel-card panel-card--muted"
+              Margin="0,0,0,10"
+              Padding="14">
         <StackPanel Spacing="6">
           <Grid ColumnDefinitions="*,Auto">
-            <TextBlock Text="{Binding TargetName}" FontSize="14" FontWeight="SemiBold" Foreground="#F7FAFF"/>
-            <TextBlock Grid.Column="1" Text="{Binding TriggeredAt}" Foreground="#8EA0C3"/>
+            <TextBlock Text="{Binding TargetName}" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource BrushTextSecondary}"/>
+            <TextBlock Grid.Column="1" Text="{Binding TriggeredAt}" Foreground="{StaticResource BrushTextMuted}"/>
           </Grid>
-          <TextBlock Text="{Binding Status}" Foreground="#FBBF24" FontWeight="SemiBold"/>
-          <TextBlock Text="{Binding Detail}" Foreground="#8EA0C3" TextWrapping="Wrap"/>
+          <TextBlock Text="{Binding Status}" Foreground="{StaticResource BrushAccentWarning}" FontWeight="SemiBold"/>
+          <TextBlock Text="{Binding Detail}" Foreground="{StaticResource BrushTextMuted}" TextWrapping="Wrap"/>
         </StackPanel>
       </Border>
     </DataTemplate>
   </UserControl.Resources>
 
-  <ScrollViewer VerticalScrollBarVisibility="Auto">
-    <StackPanel Margin="16" Spacing="16">
+  <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+    <StackPanel Margin="20" Spacing="18">
 
-      <Border CornerRadius="24"
-              Padding="24"
-              Background="#10192A"
-              BorderBrush="#24324A"
-              BorderThickness="1">
-        <Grid ColumnDefinitions="*,320" ColumnSpacing="16">
-
+      <Border Classes="page-hero">
+        <Grid ColumnDefinitions="*,320" ColumnSpacing="18">
           <StackPanel Spacing="10">
-            <TextBlock Text="Dashboard" FontSize="30" FontWeight="Bold" Foreground="#F7FAFF"/>
-            <TextBlock Text="{Binding DashboardSubtitle}" Foreground="#8EA0C3" FontSize="14" TextWrapping="Wrap"/>
+            <TextBlock Text="Dashboard" Classes="page-title"/>
+            <TextBlock Text="{Binding DashboardSubtitle}" Classes="page-subtitle"/>
 
             <WrapPanel Orientation="Horizontal">
-              <Border Margin="0,10,10,0"
-                      Background="#17233A"
-                      CornerRadius="999"
-                      Padding="12,6">
-                <TextBlock Text="{Binding MonitoringCadence}" Foreground="#D6E4FF" FontWeight="SemiBold"/>
+              <Border Classes="chip chip--overlay" Margin="0,10,10,0">
+                <TextBlock Text="{Binding MonitoringCadence}" Foreground="{StaticResource BrushTextOnSoft}" FontWeight="SemiBold"/>
               </Border>
-              <Border Margin="0,10,10,0"
-                      Background="#17233A"
-                      CornerRadius="999"
-                      Padding="12,6">
-                <TextBlock Text="{Binding SnapshotSummary}" Foreground="#D6E4FF" FontWeight="SemiBold"/>
+              <Border Classes="chip chip--overlay" Margin="0,10,10,0">
+                <TextBlock Text="{Binding SnapshotSummary}" Foreground="{StaticResource BrushTextOnSoft}" FontWeight="SemiBold"/>
               </Border>
-              <Border Margin="0,10,0,0"
-                      Background="#17233A"
-                      CornerRadius="999"
-                      Padding="12,6">
-                <TextBlock Text="{Binding LastRefreshLabel}" Foreground="#D6E4FF" FontWeight="SemiBold"/>
+              <Border Classes="chip chip--overlay" Margin="0,10,0,0">
+                <TextBlock Text="{Binding LastRefreshLabel}" Foreground="{StaticResource BrushTextOnSoft}" FontWeight="SemiBold"/>
               </Border>
             </WrapPanel>
           </StackPanel>
 
           <Border Grid.Column="1"
-                  CornerRadius="22"
-                  Padding="18"
-                  Background="#17233A"
-                  BorderBrush="#30415D"
-                  BorderThickness="1">
+                  Classes="panel-card panel-card--overlay"
+                  Padding="18">
             <StackPanel Spacing="14">
               <StackPanel Orientation="Horizontal" Spacing="12">
                 <Border Width="56"
                         Height="56"
                         CornerRadius="18"
-                        Background="#223250">
+                        Background="{StaticResource BrushSurfaceSecondary}">
                   <TextBlock Text="{Binding ProfileInitials}"
                              HorizontalAlignment="Center"
                              VerticalAlignment="Center"
                              FontWeight="Bold"
                              FontSize="20"
-                             Foreground="#F7FAFF"/>
+                             Foreground="{StaticResource BrushTextSecondary}"/>
                 </Border>
                 <StackPanel Spacing="2" VerticalAlignment="Center">
-                  <TextBlock Text="{Binding DisplayName}" FontSize="16" FontWeight="SemiBold" Foreground="#F7FAFF"/>
-                  <TextBlock Text="Profil principal de monitorizare" Foreground="#8EA0C3"/>
+                  <TextBlock Text="{Binding DisplayName}" FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource BrushTextSecondary}"/>
+                  <TextBlock Text="Profil principal de monitorizare" Foreground="{StaticResource BrushTextMuted}"/>
                 </StackPanel>
               </StackPanel>
 
               <Grid ColumnDefinitions="*,Auto">
                 <StackPanel Spacing="4">
-                  <TextBlock Text="Coada de atentie" Foreground="#8EA0C3"/>
-                  <TextBlock Text="Presiune pe praguri si alerte recente" Foreground="#F7FAFF" FontWeight="SemiBold"/>
+                  <TextBlock Text="Coada de atentie" Foreground="{StaticResource BrushTextMuted}"/>
+                  <TextBlock Text="Presiune pe praguri si alerte recente" Foreground="{StaticResource BrushTextSecondary}" FontWeight="SemiBold"/>
                 </StackPanel>
                 <Border Grid.Column="1"
-                        Background="#223250"
-                        CornerRadius="999"
-                        Padding="12,6"
+                        Classes="chip chip--overlay"
                         VerticalAlignment="Center">
-                  <TextBlock Text="{Binding AttentionBadge}" Foreground="#F7FAFF" FontWeight="Bold"/>
+                  <TextBlock Text="{Binding AttentionBadge}" Foreground="{StaticResource BrushTextSecondary}" FontWeight="Bold"/>
                 </Border>
               </Grid>
 
               <Button Command="{Binding RefreshCommand}"
-                      Background="#7DD3FC"
-                      Foreground="#08111F"
-                      BorderThickness="0"
-                      CornerRadius="14"
-                      Padding="16,12"
-                      HorizontalAlignment="Stretch">
-                <TextBlock Text="Reincarca Dashboardul" FontWeight="Bold" HorizontalAlignment="Center"/>
-              </Button>
+                      Classes="action-button primary-button"
+                      Content="Reincarca Dashboardul"/>
             </StackPanel>
           </Border>
-
         </Grid>
       </Border>
 
       <views:QuickStatsBar/>
 
-      <Border CornerRadius="24"
-              Padding="20"
-              Background="#10192A"
-              BorderBrush="#24324A"
-              BorderThickness="1">
+      <Border Classes="panel-card">
         <StackPanel Spacing="14">
-          <TextBlock Text="Ce iese in evidenta" FontSize="20" FontWeight="Bold" Foreground="#F7FAFF"/>
+          <TextBlock Text="Ce iese in evidenta" Classes="section-title"/>
           <ItemsControl ItemsSource="{Binding Insights}" ItemTemplate="{StaticResource InsightTemplate}">
             <ItemsControl.ItemsPanel>
               <ItemsPanelTemplate>
@@ -221,127 +172,83 @@
         </StackPanel>
       </Border>
 
-      <Grid ColumnDefinitions="*,*" ColumnSpacing="16">
-
-        <Border CornerRadius="24"
-                Padding="18"
-                Background="#10192A"
-                BorderBrush="#24324A"
-                BorderThickness="1">
+      <Grid ColumnDefinitions="*,*" ColumnSpacing="18">
+        <Border Classes="panel-card">
           <StackPanel Spacing="12">
-            <TextBlock Text="Dinamica categoriilor" FontSize="18" FontWeight="Bold" Foreground="#F7FAFF"/>
-            <TextBlock Text="Categorii principale dupa ore monitorizate." Foreground="#8EA0C3"/>
+            <TextBlock Text="Dinamica categoriilor" Classes="section-title"/>
+            <TextBlock Text="Categorii principale dupa ore monitorizate." Classes="section-subtitle"/>
             <lvc:CartesianChart Series="{Binding CategoryUsageSeries}"
                                 XAxes="{Binding CategoryXAxis}"
                                 MinHeight="280"/>
           </StackPanel>
         </Border>
 
-        <Border Grid.Column="1"
-                CornerRadius="24"
-                Padding="18"
-                Background="#10192A"
-                BorderBrush="#24324A"
-                BorderThickness="1">
+        <Border Grid.Column="1" Classes="panel-card">
           <StackPanel Spacing="12">
-            <TextBlock Text="Pondere procese" FontSize="18" FontWeight="Bold" Foreground="#F7FAFF"/>
-            <TextBlock Text="Unde se concentreaza timpul monitorizat intre procese." Foreground="#8EA0C3"/>
+            <TextBlock Text="Pondere procese" Classes="section-title"/>
+            <TextBlock Text="Unde se concentreaza timpul monitorizat intre procese." Classes="section-subtitle"/>
             <lvc:PieChart Series="{Binding ProcessShareSeries}"
                           MinHeight="280"/>
           </StackPanel>
         </Border>
-
       </Grid>
 
-      <Grid ColumnDefinitions="*,*" ColumnSpacing="16">
-
-        <Border CornerRadius="24"
-                Padding="18"
-                Background="#10192A"
-                BorderBrush="#24324A"
-                BorderThickness="1">
+      <Grid ColumnDefinitions="*,*" ColumnSpacing="18">
+        <Border Classes="panel-card">
           <StackPanel Spacing="12">
-            <TextBlock Text="Activitate ferestre" FontSize="18" FontWeight="Bold" Foreground="#F7FAFF"/>
-            <TextBlock Text="Ferestrele cu cel mai mare timp total activ." Foreground="#8EA0C3"/>
+            <TextBlock Text="Activitate ferestre" Classes="section-title"/>
+            <TextBlock Text="Ferestrele cu cel mai mare timp total activ." Classes="section-subtitle"/>
             <lvc:CartesianChart Series="{Binding WindowUsageSeries}"
                                 XAxes="{Binding WindowXAxis}"
                                 MinHeight="300"/>
           </StackPanel>
         </Border>
 
-        <Border Grid.Column="1"
-                CornerRadius="24"
-                Padding="18"
-                Background="#10192A"
-                BorderBrush="#24324A"
-                BorderThickness="1">
+        <Border Grid.Column="1" Classes="panel-card">
           <StackPanel Spacing="12">
-            <TextBlock Text="Cronologie sesiuni recente" FontSize="18" FontWeight="Bold" Foreground="#F7FAFF"/>
-            <TextBlock Text="Duratele ultimelor sesiuni in minute." Foreground="#8EA0C3"/>
+            <TextBlock Text="Cronologie sesiuni recente" Classes="section-title"/>
+            <TextBlock Text="Duratele ultimelor sesiuni in minute." Classes="section-subtitle"/>
             <lvc:CartesianChart Series="{Binding SessionTimelineSeries}"
                                 XAxes="{Binding SessionTimelineXAxis}"
                                 MinHeight="300"/>
           </StackPanel>
         </Border>
-
       </Grid>
 
-      <Grid ColumnDefinitions="*,*" ColumnSpacing="16">
-
-        <Border CornerRadius="24"
-                Padding="18"
-                Background="#10192A"
-                BorderBrush="#24324A"
-                BorderThickness="1">
+      <Grid ColumnDefinitions="*,*" ColumnSpacing="18">
+        <Border Classes="panel-card">
           <StackPanel Spacing="12">
-            <TextBlock Text="Defalcare categorii" FontSize="18" FontWeight="Bold" Foreground="#F7FAFF"/>
-            <TextBlock Text="Privire rapida asupra categoriilor care conduc volumul de lucru de azi." Foreground="#8EA0C3"/>
+            <TextBlock Text="Defalcare categorii" Classes="section-title"/>
+            <TextBlock Text="Privire rapida asupra categoriilor care conduc volumul de lucru de azi." Classes="section-subtitle"/>
             <ItemsControl ItemsSource="{Binding CategoryBreakdown}" ItemTemplate="{StaticResource BreakdownTemplate}"/>
           </StackPanel>
         </Border>
 
-        <Border Grid.Column="1"
-                CornerRadius="24"
-                Padding="18"
-                Background="#10192A"
-                BorderBrush="#24324A"
-                BorderThickness="1">
+        <Border Grid.Column="1" Classes="panel-card">
           <StackPanel Spacing="12">
-            <TextBlock Text="Monitorizare praguri" FontSize="18" FontWeight="Bold" Foreground="#F7FAFF"/>
-            <TextBlock Text="Presiunea curenta fata de cele mai relevante limite." Foreground="#8EA0C3"/>
+            <TextBlock Text="Monitorizare praguri" Classes="section-title"/>
+            <TextBlock Text="Presiunea curenta fata de cele mai relevante limite." Classes="section-subtitle"/>
             <ItemsControl ItemsSource="{Binding ThresholdStatuses}" ItemTemplate="{StaticResource ThresholdTemplate}"/>
           </StackPanel>
         </Border>
-
       </Grid>
 
-      <Grid ColumnDefinitions="*,*" ColumnSpacing="16">
-
-        <Border CornerRadius="24"
-                Padding="18"
-                Background="#10192A"
-                BorderBrush="#24324A"
-                BorderThickness="1">
+      <Grid ColumnDefinitions="*,*" ColumnSpacing="18">
+        <Border Classes="panel-card">
           <StackPanel Spacing="12">
-            <TextBlock Text="Domenii browser principale" FontSize="18" FontWeight="Bold" Foreground="#F7FAFF"/>
-            <TextBlock Text="Cele mai comune domenii din activitatea browser capturata." Foreground="#8EA0C3"/>
+            <TextBlock Text="Domenii browser principale" Classes="section-title"/>
+            <TextBlock Text="Cele mai comune domenii din activitatea browser capturata." Classes="section-subtitle"/>
             <ItemsControl ItemsSource="{Binding TopDomains}" ItemTemplate="{StaticResource DomainTemplate}"/>
           </StackPanel>
         </Border>
 
-        <Border Grid.Column="1"
-                CornerRadius="24"
-                Padding="18"
-                Background="#10192A"
-                BorderBrush="#24324A"
-                BorderThickness="1">
+        <Border Grid.Column="1" Classes="panel-card">
           <StackPanel Spacing="12">
-            <TextBlock Text="Interventii recente" FontSize="18" FontWeight="Bold" Foreground="#F7FAFF"/>
-            <TextBlock Text="Cele mai noi evenimente de prag si tipul lor configurat de actiune." Foreground="#8EA0C3"/>
+            <TextBlock Text="Interventii recente" Classes="section-title"/>
+            <TextBlock Text="Cele mai noi evenimente de prag si tipul lor configurat de actiune." Classes="section-subtitle"/>
             <ItemsControl ItemsSource="{Binding RecentInterventions}" ItemTemplate="{StaticResource InterventionTemplate}"/>
           </StackPanel>
         </Border>
-
       </Grid>
 
     </StackPanel>

@@ -16,8 +16,7 @@
               SelectionMode="Single"
               CanUserResizeColumns="True"
               CanUserSortColumns="True"
-              FontSize="13"
-              Foreground="#E0E0E0">
+              FontSize="13">
 
 
         <DataGrid.Columns>

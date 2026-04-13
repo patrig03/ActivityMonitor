@@ -13,13 +13,13 @@
   <!-- ========= NAV BUTTON ========= -->
   <Style Selector="Button.nav-button">
     <Setter Property="CornerRadius" Value="{StaticResource RadiusMd}"/>
-    <Setter Property="Padding" Value="{StaticResource SpacingMd}"/>
+    <Setter Property="Padding" Value="14,12"/>
     <Setter Property="HorizontalAlignment" Value="Stretch"/>
     <Setter Property="FontWeight" Value="Medium"/>
     <Setter Property="Foreground" Value="{StaticResource BrushTextPrimary}"/>
-    <Setter Property="Background" Value="{StaticResource BrushBgTertiary}"/>
-    <Setter Property="BorderBrush" Value="Transparent"/>
-    <Setter Property="BorderThickness" Value="2"/>
+    <Setter Property="Background" Value="{StaticResource BrushSurfaceSecondary}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource BrushBorderPrimary}"/>
+    <Setter Property="BorderThickness" Value="1"/>
     <Setter Property="Transitions">
       <Transitions>
         <BrushTransition Property="Background" Duration="0:0:0.15"/>
@@ -46,20 +46,96 @@
   </Style>
 
   <Style Selector="Button.nav-button:pointerover /template/ Border">
-    <Setter Property="Background" Value="#2A2A2A"/>
-    <Setter Property="BorderBrush" Value="#3A3A3A"/>
+    <Setter Property="Background" Value="{StaticResource BrushSurfaceOverlay}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource BrushBorderStrong}"/>
   </Style>
 
   <Style Selector="Button.nav-button:pressed /template/ Border">
-    <Setter Property="Background" Value="#1A1A1A"/>
-    <Setter Property="BorderBrush" Value="#4A4A4A"/>
+    <Setter Property="Background" Value="{StaticResource BrushAccent}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource BrushBorderStrong}"/>
   </Style>
 
   <Style Selector="Button.nav-button.nav-button--active">
-    <Setter Property="Background" Value="#3A3F4B"/>
-    <Setter Property="BorderBrush" Value="#4F5A6B"/>
-    <Setter Property="Foreground" Value="#FFFFFF"/>
+    <Setter Property="Background" Value="{StaticResource BrushAccent}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource BrushBorderStrong}"/>
+    <Setter Property="Foreground" Value="{StaticResource BrushTextSecondary}"/>
     <Setter Property="FontWeight" Value="SemiBold"/>
+  </Style>
+
+  <Style Selector="Button.action-button">
+    <Setter Property="CornerRadius" Value="{StaticResource RadiusLg}"/>
+    <Setter Property="Padding" Value="16,12"/>
+    <Setter Property="FontWeight" Value="SemiBold"/>
+    <Setter Property="HorizontalAlignment" Value="Stretch"/>
+    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+    <Setter Property="VerticalContentAlignment" Value="Center"/>
+    <Setter Property="Foreground" Value="{StaticResource BrushTextPrimary}"/>
+    <Setter Property="Background" Value="{StaticResource BrushSurfaceSecondary}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource BrushBorderPrimary}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="Transitions">
+      <Transitions>
+        <BrushTransition Property="Background" Duration="0:0:0.15"/>
+        <BrushTransition Property="BorderBrush" Duration="0:0:0.15"/>
+      </Transitions>
+    </Setter>
+    <Setter Property="Template">
+      <ControlTemplate TargetType="Button">
+        <Border Name="PART_Border"
+                CornerRadius="{TemplateBinding CornerRadius}"
+                Background="{TemplateBinding Background}"
+                BorderBrush="{TemplateBinding BorderBrush}"
+                BorderThickness="{TemplateBinding BorderThickness}">
+          <ContentPresenter
+            Content="{TemplateBinding Content}"
+            ContentTemplate="{TemplateBinding ContentTemplate}"
+            Margin="{TemplateBinding Padding}"
+            HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+            VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+            RecognizesAccessKey="True"/>
+        </Border>
+      </ControlTemplate>
+    </Setter>
+  </Style>
+
+  <Style Selector="Button.action-button:pointerover /template/ Border">
+    <Setter Property="Background" Value="{StaticResource BrushSurfaceOverlay}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource BrushBorderStrong}"/>
+  </Style>
+
+  <Style Selector="Button.action-button:pressed /template/ Border">
+    <Setter Property="Background" Value="{StaticResource BrushAccent}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource BrushBorderStrong}"/>
+  </Style>
+
+  <Style Selector="Button.action-button.primary-button">
+    <Setter Property="Background" Value="{StaticResource BrushAccentPrimary}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource BrushAccentPrimary}"/>
+    <Setter Property="Foreground" Value="{StaticResource BrushTextOnAccent}"/>
+  </Style>
+
+  <Style Selector="Button.action-button.success-button">
+    <Setter Property="Background" Value="{StaticResource BrushAccentSuccess}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource BrushAccentSuccess}"/>
+    <Setter Property="Foreground" Value="{StaticResource BrushTextOnAccent}"/>
+  </Style>
+
+  <Style Selector="Button.action-button.warning-button">
+    <Setter Property="Background" Value="{StaticResource BrushAccentWarning}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource BrushAccentWarning}"/>
+    <Setter Property="Foreground" Value="{StaticResource BrushTextOnAccent}"/>
+  </Style>
+
+  <Style Selector="Button.action-button.danger-button">
+    <Setter Property="Background" Value="{StaticResource BrushAccentDanger}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource BrushAccentDanger}"/>
+    <Setter Property="Foreground" Value="{StaticResource BrushTextOnAccent}"/>
+  </Style>
+
+  <Style Selector="Button.action-button.subtle-button">
+    <Setter Property="Background" Value="{StaticResource BrushSurfaceOverlay}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource BrushBorderStrong}"/>
+    <Setter Property="Foreground" Value="{StaticResource BrushTextSecondary}"/>
   </Style>
 
 </Styles>

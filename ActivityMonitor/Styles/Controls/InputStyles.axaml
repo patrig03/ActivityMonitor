@@ -11,13 +11,27 @@
   </Styles.Resources>
 
   <!-- ========= COMBOBOX ========= -->
+  <Style Selector="TextBox">
+    <Setter Property="Foreground" Value="{StaticResource BrushTextPrimary}"/>
+    <Setter Property="Background" Value="{StaticResource BrushBgInput}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource BrushBorderPrimary}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="Padding" Value="14,12"/>
+    <Setter Property="CornerRadius" Value="{StaticResource RadiusMd}"/>
+    <Setter Property="CaretBrush" Value="{StaticResource BrushTextSecondary}"/>
+  </Style>
+
+  <Style Selector="TextBox:focus">
+    <Setter Property="BorderBrush" Value="{StaticResource BrushAccentPrimary}"/>
+  </Style>
+
   <Style Selector="ComboBox">
     <Setter Property="Foreground" Value="{StaticResource BrushTextPrimary}"/>
-    <Setter Property="Background" Value="{StaticResource BrushBgTertiary}"/>
-    <Setter Property="BorderBrush" Value="{StaticResource BrushBgSecondary}"/>
+    <Setter Property="Background" Value="{StaticResource BrushBgInput}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource BrushBorderPrimary}"/>
     <Setter Property="BorderThickness" Value="1"/>
-    <Setter Property="CornerRadius" Value="{StaticResource RadiusSm}"/>
-    <Setter Property="Padding" Value="10,6"/>
+    <Setter Property="CornerRadius" Value="{StaticResource RadiusMd}"/>
+    <Setter Property="Padding" Value="12,10"/>
     <Setter Property="Template">
       <ControlTemplate TargetType="ComboBox">
         <Grid>
@@ -42,10 +56,10 @@
                  Placement="Bottom"
                  IsLightDismissEnabled="True"
                  IsOpen="{TemplateBinding IsDropDownOpen}">
-            <Border Background="{StaticResource BrushBgSecondary}"
-                    BorderBrush="{StaticResource BrushBgTertiary}"
+            <Border Background="{StaticResource BrushSurfaceSecondary}"
+                    BorderBrush="{StaticResource BrushBorderPrimary}"
                     BorderThickness="1"
-                    CornerRadius="{StaticResource RadiusSm}">
+                    CornerRadius="{StaticResource RadiusMd}">
               <ScrollViewer>
                 <ItemsPresenter/>
               </ScrollViewer>
@@ -63,7 +77,7 @@
   </Style>
 
   <Style Selector="ComboBoxItem:pointerover">
-    <Setter Property="Background" Value="#2A2A2A"/>
+    <Setter Property="Background" Value="{StaticResource BrushSurfaceOverlay}"/>
   </Style>
 
   <Style Selector="ComboBoxItem:selected">
@@ -82,8 +96,8 @@
                   Width="18"
                   Height="18"
                   CornerRadius="4"
-                  Background="{StaticResource BrushBgTertiary}"
-                  BorderBrush="{StaticResource BrushBgSecondary}"
+                  Background="{StaticResource BrushBgInput}"
+                  BorderBrush="{StaticResource BrushBorderPrimary}"
                   BorderThickness="1"
                   VerticalAlignment="Center">
             <Path x:Name="PART_CheckMark"
@@ -111,13 +125,13 @@
   </Style>
 
   <Style Selector="CheckBox:pointerover /template/ Border#PART_Box">
-    <Setter Property="Background" Value="#2A2A2A"/>
-    <Setter Property="BorderBrush" Value="#3A3A3A"/>
+    <Setter Property="Background" Value="{StaticResource BrushSurfaceOverlay}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource BrushBorderStrong}"/>
   </Style>
 
   <Style Selector="CheckBox:pressed /template/ Border#PART_Box">
-    <Setter Property="Background" Value="#1A1A1A"/>
-    <Setter Property="BorderBrush" Value="#4A4A4A"/>
+    <Setter Property="Background" Value="{StaticResource BrushAccent}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource BrushBorderStrong}"/>
   </Style>
 
   <Style Selector="CheckBox:disabled">

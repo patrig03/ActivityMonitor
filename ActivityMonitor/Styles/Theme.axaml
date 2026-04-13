@@ -12,8 +12,130 @@
   </Styles.Resources>
 
   <!-- ========= GLOBAL TEXT ========= -->
+  <Style Selector="Window">
+    <Setter Property="Background" Value="{StaticResource BrushAppBackground}"/>
+    <Setter Property="Foreground" Value="{StaticResource BrushTextPrimary}"/>
+  </Style>
+
+  <Style Selector="UserControl">
+    <Setter Property="Foreground" Value="{StaticResource BrushTextPrimary}"/>
+  </Style>
+
   <Style Selector="TextBlock">
     <Setter Property="Foreground" Value="{StaticResource BrushTextPrimary}"/>
+  </Style>
+
+  <Style Selector="TextBlock.page-title">
+    <Setter Property="FontSize" Value="30"/>
+    <Setter Property="FontWeight" Value="Bold"/>
+    <Setter Property="Foreground" Value="{StaticResource BrushTextSecondary}"/>
+  </Style>
+
+  <Style Selector="TextBlock.page-subtitle">
+    <Setter Property="FontSize" Value="14"/>
+    <Setter Property="Foreground" Value="{StaticResource BrushTextMuted}"/>
+    <Setter Property="TextWrapping" Value="Wrap"/>
+  </Style>
+
+  <Style Selector="TextBlock.section-title">
+    <Setter Property="FontSize" Value="21"/>
+    <Setter Property="FontWeight" Value="Bold"/>
+    <Setter Property="Foreground" Value="{StaticResource BrushTextSecondary}"/>
+  </Style>
+
+  <Style Selector="TextBlock.section-subtitle">
+    <Setter Property="Foreground" Value="{StaticResource BrushTextMuted}"/>
+    <Setter Property="TextWrapping" Value="Wrap"/>
+  </Style>
+
+  <Style Selector="TextBlock.metric-label">
+    <Setter Property="FontSize" Value="12"/>
+    <Setter Property="Foreground" Value="{StaticResource BrushTextMuted}"/>
+  </Style>
+
+  <Style Selector="TextBlock.metric-value">
+    <Setter Property="FontSize" Value="27"/>
+    <Setter Property="FontWeight" Value="Bold"/>
+    <Setter Property="Foreground" Value="{StaticResource BrushTextSecondary}"/>
+  </Style>
+
+  <Style Selector="TextBlock.metric-detail">
+    <Setter Property="Foreground" Value="{StaticResource BrushTextSubtle}"/>
+    <Setter Property="TextWrapping" Value="Wrap"/>
+  </Style>
+
+  <Style Selector="TextBlock.field-label">
+    <Setter Property="FontWeight" Value="SemiBold"/>
+    <Setter Property="Foreground" Value="{StaticResource BrushTextPrimary}"/>
+  </Style>
+
+  <Style Selector="Border.page-hero">
+    <Setter Property="CornerRadius" Value="{StaticResource RadiusXxl}"/>
+    <Setter Property="Padding" Value="24"/>
+    <Setter Property="Background" Value="{StaticResource BrushSurfacePrimary}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource BrushBorderPrimary}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+  </Style>
+
+  <Style Selector="Border.panel-card">
+    <Setter Property="CornerRadius" Value="{StaticResource RadiusXl}"/>
+    <Setter Property="Padding" Value="20"/>
+    <Setter Property="Background" Value="{StaticResource BrushSurfacePrimary}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource BrushBorderPrimary}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+  </Style>
+
+  <Style Selector="Border.panel-card.panel-card--muted">
+    <Setter Property="Background" Value="{StaticResource BrushSurfaceSecondary}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource BrushBorderSecondary}"/>
+  </Style>
+
+  <Style Selector="Border.panel-card.panel-card--overlay">
+    <Setter Property="Background" Value="{StaticResource BrushSurfaceOverlay}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource BrushBorderStrong}"/>
+  </Style>
+
+  <Style Selector="Border.panel-card.panel-card--success">
+    <Setter Property="Background" Value="{StaticResource BrushBgSuccessSoft}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource BrushAccentSuccess}"/>
+  </Style>
+
+  <Style Selector="Border.panel-card.panel-card--warning">
+    <Setter Property="Background" Value="{StaticResource BrushBgWarningSoft}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource BrushAccentWarning}"/>
+  </Style>
+
+  <Style Selector="Border.panel-card.panel-card--danger">
+    <Setter Property="Background" Value="{StaticResource BrushBgDangerSoft}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource BrushAccentDanger}"/>
+  </Style>
+
+  <Style Selector="Border.stat-card">
+    <Setter Property="Width" Value="228"/>
+    <Setter Property="Margin" Value="0,0,14,14"/>
+    <Setter Property="Padding" Value="18"/>
+    <Setter Property="CornerRadius" Value="20"/>
+    <Setter Property="Background" Value="{StaticResource BrushSurfaceSecondary}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource BrushBorderPrimary}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+  </Style>
+
+  <Style Selector="Border.chip">
+    <Setter Property="Background" Value="{StaticResource BrushSurfaceTertiary}"/>
+    <Setter Property="CornerRadius" Value="{StaticResource RadiusPill}"/>
+    <Setter Property="Padding" Value="12,6"/>
+  </Style>
+
+  <Style Selector="Border.chip.chip--overlay">
+    <Setter Property="Background" Value="{StaticResource BrushSurfaceOverlay}"/>
+  </Style>
+
+  <Style Selector="Border.chip.chip--success">
+    <Setter Property="Background" Value="{StaticResource BrushBgSuccessSoft}"/>
+  </Style>
+
+  <Style Selector="Border.chip.chip--warning">
+    <Setter Property="Background" Value="{StaticResource BrushBgWarningSoft}"/>
   </Style>
 
   <!-- ========= CONTROL STYLES ========= -->

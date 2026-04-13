@@ -2,59 +2,62 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="ActivityMonitor.Views.Navbar">
 
+  <Border Classes="panel-card"
+          Padding="16"
+          MinWidth="260">
+    <StackPanel Spacing="10">
+      <TextBlock Text="ActivityMonitor"
+                 FontSize="22"
+                 FontWeight="Bold"
+                 Foreground="{StaticResource BrushTextSecondary}"/>
+      <TextBlock Text="Panou principal"
+                 Foreground="{StaticResource BrushTextSubtle}"
+                 Margin="0,0,0,10"/>
 
-  <Border Padding="4,24">
-    <StackPanel Margin="16,0,8,0" Spacing="8">
-
-          
-      <!-- Status Panel -->
-      <Border Background="#191919"
-              CornerRadius="8"
-              Margin="0,0,0,24"
-              Padding="16,12">
+      <Border Classes="panel-card panel-card--muted"
+              Margin="0,0,0,16"
+              Padding="16,14">
         <StackPanel Spacing="4">
           <TextBlock Text="STARE"
-                     Foreground="#7C7C7C"
+                     Foreground="{StaticResource BrushTextSubtle}"
                      FontSize="11"
                      FontWeight="Medium"
                      LetterSpacing="0.5"/>
 
           <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-            <Ellipse Name="StatusIndicator" Width="8" Height="8" Fill="#6DFF9C"/>
+            <Ellipse Name="StatusIndicator"
+                     Width="8"
+                     Height="8"
+                     Fill="{StaticResource BrushAccentSuccess}"/>
             <TextBlock Name="StatusText"
                        Text="Monitorizare activa"
-                       Foreground="#EAF1FF"
+                       Foreground="{StaticResource BrushTextSecondary}"
                        FontWeight="SemiBold"
                        FontSize="14"/>
           </StackPanel>
 
           <TextBlock Name="StatusUpdateTime"
                      Text="Ultima actualizare: acum câteva secunde"
-                     Foreground="#7C879C"
+                     Foreground="{StaticResource BrushTextMuted}"
                      FontSize="11"
                      Margin="0,4,0,0"/>
 
-          <!-- <Grid ColumnDefinitions="*,*" ColumnSpacing="8" Margin="0,12,0,0"> -->
-            <Button Name="StartBackendButton"
-                    Classes="nav-button"
-                    Content="Porneste"
-                    Click="BackendStatus_OnClick"
-                    HorizontalAlignment="Stretch"/>
-          <!-- </Grid> -->
+          <Button Name="StartBackendButton"
+                  Classes="action-button primary-button"
+                  Content="Porneste"
+                  Click="BackendStatus_OnClick"
+                  Margin="0,10,0,0"/>
 
           <TextBlock Name="StatusActionMessage"
                      IsVisible="False"
-                     Foreground="#FFB366"
+                     Foreground="{StaticResource BrushAccentWarning}"
                      FontSize="11"
                      Margin="0,8,0,0"
                      TextWrapping="Wrap"/>
         </StackPanel>
       </Border>
-          
-          
-      <!-- Navigation Items -->
-      <StackPanel Name="NavItems" Spacing="4">
-        <!-- Mark the current item as active via a class -->
+
+      <StackPanel Name="NavItems" Spacing="6">
         <Button Content="Dashboard"
                 Name="DashboardButton"
                 Tag="Dashboard"
@@ -91,7 +94,7 @@
                 Click="Button_OnClick"
                 Classes="nav-button"/>
       </StackPanel>
-          
+
     </StackPanel>
   </Border>
 </UserControl>

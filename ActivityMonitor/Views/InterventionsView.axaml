@@ -8,204 +8,115 @@
              d:DesignWidth="1200"
              d:DesignHeight="900"
              x:Class="ActivityMonitor.Views.InterventionsView"
-             x:DataType="viewModels:InterventionsViewModel"
-             Foreground="White">
+             x:DataType="viewModels:InterventionsViewModel">
 
-  <!-- <UserControl.Background> -->
-  <!--   <LinearGradientBrush StartPoint="0,0" EndPoint="1,1"> -->
-  <!--     <GradientStop Color="#0C101A" Offset="0"/> -->
-  <!--     <GradientStop Color="#171C2A" Offset="0.55"/> -->
-  <!--     <GradientStop Color="#121722" Offset="1"/> -->
-  <!--   </LinearGradientBrush> -->
-  <!-- </UserControl.Background> -->
-
-  <ScrollViewer VerticalScrollBarVisibility="Auto">
-    <StackPanel Margin="16" Spacing="16">
-      <Border CornerRadius="24"
-              Padding="24"
-              Background="#121926"
-              BorderBrush="#273043"
-              BorderThickness="1">
+  <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+    <StackPanel Margin="20" Spacing="18">
+      <Border Classes="page-hero">
         <Grid ColumnDefinitions="*,320" ColumnSpacing="18">
           <StackPanel Spacing="10">
-            <TextBlock Text="Interventii" FontSize="30" FontWeight="Bold" Foreground="#F7FAFF"/>
+            <TextBlock Text="Interventii" Classes="page-title"/>
             <TextBlock Text="Configureaza limitele, revizuieste istoricul declansarilor si pastreaza comportamentul monitorului aliniat cu modul tau real de lucru."
-                       Foreground="#9AA8C1"
-                       TextWrapping="Wrap"/>
+                       Classes="page-subtitle"/>
             <WrapPanel Orientation="Horizontal">
-              <Border Margin="0,10,10,0" Background="#1A2334" CornerRadius="999" Padding="12,6">
-                <TextBlock Text="{Binding ThresholdStatus}" Foreground="#D8E4F8"/>
+              <Border Classes="chip chip--overlay" Margin="0,10,10,0">
+                <TextBlock Text="{Binding ThresholdStatus}" Foreground="{StaticResource BrushTextOnSoft}"/>
               </Border>
-              <Border Margin="0,10,0,0" Background="#1A2334" CornerRadius="999" Padding="12,6">
-                <TextBlock Text="{Binding MostTriggeredTarget}" Foreground="#D8E4F8"/>
+              <Border Classes="chip chip--overlay" Margin="0,10,0,0">
+                <TextBlock Text="{Binding MostTriggeredTarget}" Foreground="{StaticResource BrushTextOnSoft}"/>
               </Border>
             </WrapPanel>
           </StackPanel>
 
           <Border Grid.Column="1"
-                  CornerRadius="22"
-                  Padding="18"
-                  Background="#1A2334"
-                  BorderBrush="#31415C"
-                  BorderThickness="1">
+                  Classes="panel-card panel-card--overlay"
+                  Padding="18">
             <StackPanel Spacing="12">
-              <TextBlock Text="Mentenanta" Foreground="#9AA8C1"/>
-              <TextBlock Text="Reincarca limitele si istoricul interventiilor din baza de date MySQL." Foreground="#F7FAFF" FontWeight="SemiBold" TextWrapping="Wrap"/>
+              <TextBlock Text="Mentenanta" Foreground="{StaticResource BrushTextMuted}"/>
+              <TextBlock Text="Reincarca limitele si istoricul interventiilor din baza de date MySQL." Foreground="{StaticResource BrushTextSecondary}" FontWeight="SemiBold" TextWrapping="Wrap"/>
               <Button Command="{Binding RefreshCommand}"
-                      Background="#8BD3A7"
-                      Foreground="#062A16"
-                      BorderThickness="0"
-                      CornerRadius="14"
-                      Padding="16,12">
-                <TextBlock Text="Reincarca datele" HorizontalAlignment="Center" FontWeight="Bold"/>
-              </Button>
+                      Classes="action-button success-button"
+                      Content="Reincarca datele"/>
             </StackPanel>
           </Border>
         </Grid>
       </Border>
 
       <WrapPanel Orientation="Horizontal">
-        <Border Width="220" Margin="0,0,14,14" Padding="18" CornerRadius="20" Background="#121926" BorderBrush="#273043" BorderThickness="1">
+        <Border Classes="stat-card">
           <StackPanel Spacing="6">
-            <TextBlock Text="Praguri active" Foreground="#9AA8C1"/>
-            <TextBlock Text="{Binding ActiveThresholdCount}" Foreground="#F7FAFF" FontSize="26" FontWeight="Bold"/>
-            <TextBlock Text="Reguli care aplica in prezent interventii" Foreground="#73839F" TextWrapping="Wrap"/>
+            <TextBlock Text="Praguri active" Classes="metric-label"/>
+            <TextBlock Text="{Binding ActiveThresholdCount}" Classes="metric-value"/>
+            <TextBlock Text="Reguli care aplica in prezent interventii" Classes="metric-detail"/>
           </StackPanel>
         </Border>
-        <Border Width="220" Margin="0,0,14,14" Padding="18" CornerRadius="20" Background="#121926" BorderBrush="#273043" BorderThickness="1">
+        <Border Classes="stat-card">
           <StackPanel Spacing="6">
-            <TextBlock Text="Praguri inactive" Foreground="#9AA8C1"/>
-            <TextBlock Text="{Binding InactiveThresholdCount}" Foreground="#F7FAFF" FontSize="26" FontWeight="Bold"/>
-            <TextBlock Text="Reguli salvate care asteapta sa fie reactivate" Foreground="#73839F" TextWrapping="Wrap"/>
+            <TextBlock Text="Praguri inactive" Classes="metric-label"/>
+            <TextBlock Text="{Binding InactiveThresholdCount}" Classes="metric-value"/>
+            <TextBlock Text="Reguli salvate care asteapta sa fie reactivate" Classes="metric-detail"/>
           </StackPanel>
         </Border>
-        <Border Width="220" Margin="0,0,14,14" Padding="18" CornerRadius="20" Background="#121926" BorderBrush="#273043" BorderThickness="1">
+        <Border Classes="stat-card">
           <StackPanel Spacing="6">
-            <TextBlock Text="Acoperire categorii" Foreground="#9AA8C1"/>
-            <TextBlock Text="{Binding CategoryCoverage}" Foreground="#F7FAFF" FontSize="26" FontWeight="Bold"/>
-            <TextBlock Text="Categorii distincte protejate prin praguri" Foreground="#73839F" TextWrapping="Wrap"/>
+            <TextBlock Text="Acoperire categorii" Classes="metric-label"/>
+            <TextBlock Text="{Binding CategoryCoverage}" Classes="metric-value"/>
+            <TextBlock Text="Categorii distincte protejate prin praguri" Classes="metric-detail"/>
           </StackPanel>
         </Border>
-        <Border Width="220" Margin="0,0,14,14" Padding="18" CornerRadius="20" Background="#121926" BorderBrush="#273043" BorderThickness="1">
+        <Border Classes="stat-card">
           <StackPanel Spacing="6">
-            <TextBlock Text="Alerte in 7 zile" Foreground="#9AA8C1"/>
-            <TextBlock Text="{Binding RecentAlertCount}" Foreground="#F7FAFF" FontSize="26" FontWeight="Bold"/>
-            <TextBlock Text="Presiune recenta a interventiilor" Foreground="#73839F" TextWrapping="Wrap"/>
+            <TextBlock Text="Alerte in 7 zile" Classes="metric-label"/>
+            <TextBlock Text="{Binding RecentAlertCount}" Classes="metric-value"/>
+            <TextBlock Text="Presiune recenta a interventiilor" Classes="metric-detail"/>
           </StackPanel>
         </Border>
-        <Border Width="220" Margin="0,0,0,14" Padding="18" CornerRadius="20" Background="#121926" BorderBrush="#273043" BorderThickness="1">
+        <Border Classes="stat-card" Margin="0,0,0,14">
           <StackPanel Spacing="6">
-            <TextBlock Text="Alerte amanate" Foreground="#9AA8C1"/>
-            <TextBlock Text="{Binding SnoozedAlertCount}" Foreground="#F7FAFF" FontSize="26" FontWeight="Bold"/>
-            <TextBlock Text="Interventii amanate de utilizator" Foreground="#73839F" TextWrapping="Wrap"/>
+            <TextBlock Text="Alerte amanate" Classes="metric-label"/>
+            <TextBlock Text="{Binding SnoozedAlertCount}" Classes="metric-value"/>
+            <TextBlock Text="Interventii amanate de utilizator" Classes="metric-detail"/>
           </StackPanel>
         </Border>
       </WrapPanel>
 
-      <!-- <Grid ColumnDefinitions="1.2*,0.8*" ColumnSpacing="18"> -->
-      <Grid ColumnDefinitions="*">
-        <StackPanel Spacing="18">
-          <views:AddThresholdView/>
+      <StackPanel Spacing="18">
+        <views:AddThresholdView/>
 
-          <Border Padding="18"
-                  CornerRadius="24"
-                  Background="#121926"
-                  BorderBrush="#273043"
-                  BorderThickness="1">
-            <StackPanel Spacing="14">
-              <TextBlock Text="Inventar praguri" FontSize="20" FontWeight="Bold" Foreground="#F7FAFF"/>
-              <TextBlock Text="Editeaza sau elimina limitele direct din tabelul curent al pragurilor." Foreground="#9AA8C1" TextWrapping="Wrap"/>
-              <views:CurrentThresholdsView/>
-            </StackPanel>
-          </Border>
+        <Border Classes="panel-card">
+          <StackPanel Spacing="14">
+            <TextBlock Text="Inventar praguri" Classes="section-title"/>
+            <TextBlock Text="Editeaza sau elimina limitele direct din tabelul curent al pragurilor." Classes="section-subtitle"/>
+            <views:CurrentThresholdsView/>
+          </StackPanel>
+        </Border>
 
-          <Border Padding="18"
-                  CornerRadius="24"
-                  Background="#121926"
-                  BorderBrush="#273043"
-                  BorderThickness="1">
-            <StackPanel Spacing="14">
-              <TextBlock Text="Istoric interventii" FontSize="20" FontWeight="Bold" Foreground="#F7FAFF"/>
-              <TextBlock Text="Toate interventiile inregistrate, cele mai noi primele." Foreground="#9AA8C1"/>
-              <DataGrid ItemsSource="{Binding InterventionHistory}"
-                        AutoGenerateColumns="False"
-                        IsReadOnly="True"
-                        SelectionMode="Single"
-                        CanUserResizeColumns="True"
-                        CanUserSortColumns="True"
-                        FontSize="13"
-                        Foreground="#E0E0E0"
-                        MinHeight="280">
-                <DataGrid.Columns>
-                  <DataGridTextColumn Header="Id" Binding="{Binding Id}" Width="Auto"/>
-                  <DataGridTextColumn Header="Declansat la" Binding="{Binding TriggeredAt}" Width="2*"/>
-                  <DataGridTextColumn Header="Tinta" Binding="{Binding TargetName}" Width="2*"/>
-                  <DataGridTextColumn Header="Tip tinta" Binding="{Binding TargetType}" Width="Auto"/>
-                  <DataGridTextColumn Header="Categorie" Binding="{Binding CategoryName}" Width="2*"/>
-                  <DataGridTextColumn Header="Interventie" Binding="{Binding InterventionType}" Width="Auto"/>
-                  <DataGridTextColumn Header="Limita" Binding="{Binding LimitSummary}" Width="Auto"/>
-                  <DataGridTextColumn Header="Amanat" Binding="{Binding Snoozed}" Width="Auto"/>
-                </DataGrid.Columns>
-              </DataGrid>
-            </StackPanel>
-          </Border>
-        </StackPanel>
-
-        <!-- <StackPanel Grid.Column="1" Spacing="18"> -->
-        <!--   <Border Padding="18" -->
-        <!--           CornerRadius="24" -->
-        <!--           Background="#121926" -->
-        <!--           BorderBrush="#273043" -->
-        <!--           BorderThickness="1"> -->
-        <!--     <StackPanel Spacing="14"> -->
-        <!--       <TextBlock Text="Alerte recente" FontSize="20" FontWeight="Bold" Foreground="#F7FAFF"/> -->
-        <!--       <TextBlock Text="Cele mai recente evenimente de interventie si regula din care provin." Foreground="#9AA8C1" TextWrapping="Wrap"/> -->
-        <!-- -->
-        <!--       <ItemsControl ItemsSource="{Binding RecentAlerts}"> -->
-        <!--         <ItemsControl.ItemTemplate> -->
-        <!--           <DataTemplate> -->
-        <!--             <Border Margin="0,0,0,10" -->
-        <!--                     Padding="14" -->
-        <!--                     CornerRadius="16" -->
-        <!--                     Background="#1A2334" -->
-        <!--                     BorderBrush="#31415C" -->
-        <!--                     BorderThickness="1"> -->
-        <!--               <StackPanel Spacing="6"> -->
-        <!--                 <Grid ColumnDefinitions="*,Auto"> -->
-        <!--                   <TextBlock Text="{Binding TargetName}" Foreground="#F7FAFF" FontWeight="SemiBold"/> -->
-        <!--                   <TextBlock Grid.Column="1" Text="{Binding TriggeredAt}" Foreground="#9AA8C1"/> -->
-        <!--                 </Grid> -->
-        <!--                 <TextBlock Text="{Binding InterventionType}" Foreground="#F3C779" FontWeight="Bold"/> -->
-        <!--                 <TextBlock Text="{Binding CategoryName}" Foreground="#D8E4F8"/> -->
-        <!--                 <TextBlock Text="{Binding LimitSummary}" Foreground="#9AA8C1"/> -->
-        <!--               </StackPanel> -->
-        <!--             </Border> -->
-        <!--           </DataTemplate> -->
-        <!--         </ItemsControl.ItemTemplate> -->
-        <!--       </ItemsControl> -->
-        <!--     </StackPanel> -->
-        <!--   </Border> -->
-        <!-- -->
-        <!--   <Border Padding="18" -->
-        <!--           CornerRadius="24" -->
-        <!--           Background="#121926" -->
-        <!--           BorderBrush="#273043" -->
-        <!--           BorderThickness="1"> -->
-        <!--     <StackPanel Spacing="12"> -->
-        <!--       <TextBlock Text="Note operator" FontSize="20" FontWeight="Bold" Foreground="#F7FAFF"/> -->
-        <!--       <TextBlock Text="Foloseste praguri pe categorii pentru limite generale de comportament si praguri pe aplicatii cand un singur proces necesita reguli mai stricte." -->
-        <!--                  Foreground="#9AA8C1" -->
-        <!--                  TextWrapping="Wrap"/> -->
-        <!--       <TextBlock Text="Daca alertele apar prea des, redu mai intai severitatea interventiei inainte sa maresti intervalul de monitorizare din Setari." -->
-        <!--                  Foreground="#9AA8C1" -->
-        <!--                  TextWrapping="Wrap"/> -->
-        <!--       <TextBlock Text="Amanarile recente sunt un feedback util: amanarile repetate inseamna de obicei ca limita configurata este prea agresiva." -->
-        <!--                  Foreground="#9AA8C1" -->
-        <!--                  TextWrapping="Wrap"/> -->
-        <!--     </StackPanel> -->
-        <!--   </Border> -->
-        <!-- </StackPanel> -->
-      </Grid>
+        <Border Classes="panel-card">
+          <StackPanel Spacing="14">
+            <TextBlock Text="Istoric interventii" Classes="section-title"/>
+            <TextBlock Text="Toate interventiile inregistrate, cele mai noi primele." Classes="section-subtitle"/>
+            <DataGrid ItemsSource="{Binding InterventionHistory}"
+                      AutoGenerateColumns="False"
+                      IsReadOnly="True"
+                      SelectionMode="Single"
+                      CanUserResizeColumns="True"
+                      CanUserSortColumns="True"
+                      FontSize="13"
+                      MinHeight="280">
+              <DataGrid.Columns>
+                <DataGridTextColumn Header="Id" Binding="{Binding Id}" Width="Auto"/>
+                <DataGridTextColumn Header="Declansat la" Binding="{Binding TriggeredAt}" Width="2*"/>
+                <DataGridTextColumn Header="Tinta" Binding="{Binding TargetName}" Width="2*"/>
+                <DataGridTextColumn Header="Tip tinta" Binding="{Binding TargetType}" Width="Auto"/>
+                <DataGridTextColumn Header="Categorie" Binding="{Binding CategoryName}" Width="2*"/>
+                <DataGridTextColumn Header="Interventie" Binding="{Binding InterventionType}" Width="Auto"/>
+                <DataGridTextColumn Header="Limita" Binding="{Binding LimitSummary}" Width="Auto"/>
+                <DataGridTextColumn Header="Amanat" Binding="{Binding Snoozed}" Width="Auto"/>
+              </DataGrid.Columns>
+            </DataGrid>
+          </StackPanel>
+        </Border>
+      </StackPanel>
     </StackPanel>
   </ScrollViewer>
 </UserControl>

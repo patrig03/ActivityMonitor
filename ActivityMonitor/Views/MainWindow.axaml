@@ -5,12 +5,10 @@
         xmlns:views="using:ActivityMonitor.Views"
         x:DataType="views:MainWindow"
         mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="1000"
-        MinWidth="1400"
-        MinHeight="1000"
-        Background="#101010"
-        Foreground="White"
-        Width="1000"
-        Height="800"
+        MinWidth="1320"
+        MinHeight="920"
+        Width="1440"
+        Height="960"
         x:Class="ActivityMonitor.Views.MainWindow"
         Icon="/Assets/avalonia-logo.ico"
         Title="ActivityMonitor"
@@ -21,10 +19,10 @@
   </Window.Resources>
   
 
-  <Grid ColumnDefinitions="Auto *" RowDefinitions="*">
-    <views:Navbar Grid.Column="0" Margin="0, 0, 4, 0"/>
+  <Grid ColumnDefinitions="280,*" RowDefinitions="*" Margin="12">
+    <views:Navbar Grid.Column="0" Margin="0,0,12,0"/>
 
-    <ContentControl Grid.Column="1" Margin="0, 8, 16, 0"
+    <ContentControl Grid.Column="1"
                     Content="{Binding CurrentView,
                           RelativeSource={RelativeSource AncestorType=Window}}"
                     ContentTemplate="{StaticResource ActiveViewSelector}"/>

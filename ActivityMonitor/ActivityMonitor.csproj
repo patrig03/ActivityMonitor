@@ -38,5 +38,8 @@
       <Compile Update="Views\DevicesView.axaml.cs">
         <DependentUpon>DevicesView.axaml</DependentUpon>
       </Compile>
+      <Compile Update="Views\CategoriesView.axaml.cs">
+        <DependentUpon>CategoriesView.axaml</DependentUpon>
+      </Compile>
     </ItemGroup>
 </Project>

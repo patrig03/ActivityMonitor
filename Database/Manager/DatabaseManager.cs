@@ -185,6 +185,19 @@ public sealed class DatabaseManager : IDatabaseManager
             .ToList();
     }
 
+    public int DeleteCategory(int categoryId)
+    {
+        using var context = _contextFactory.CreateDbContext();
+        var entity = context.Categories.SingleOrDefault(item => item.CategoryId == categoryId);
+        if (entity is null)
+        {
+            return 0;
+        }
+
+        context.Categories.Remove(entity);
+        return context.SaveChanges();
+    }
+
     public int InsertApplication(ApplicationDto app)
     {
         using var context = _contextFactory.CreateDbContext();
@@ -223,6 +236,19 @@ public sealed class DatabaseManager : IDatabaseManager
 
         context.SaveChanges();
         return entity.AppId;
+    }
+
+    public int UpdateApplicationCategory(int appId, int? categoryId)
+    {
+        using var context = _contextFactory.CreateDbContext();
+        var entity = context.Applications.SingleOrDefault(item => item.AppId == appId);
+        if (entity is null)
+        {
+            return 0;
+        }
+
+        entity.CategoryId = categoryId;
+        return context.SaveChanges();
     }
 
     public IEnumerable<int> InsertApplications(IEnumerable<ApplicationDto> apps)

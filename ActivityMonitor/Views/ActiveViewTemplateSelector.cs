@@ -15,12 +15,13 @@ namespace ActivityMonitor.Views
             return (data as MainWindow.ActiveView?) switch
             {
                 MainWindow.ActiveView.Dashboard => new DashboardView(),
-                MainWindow.ActiveView.Reports   => new ReportsView(),
+                MainWindow.ActiveView.Reports => new ReportsView(),
                 MainWindow.ActiveView.Browser => new BrowserView(),
                 MainWindow.ActiveView.Interventions => new InterventionsView(),
                 MainWindow.ActiveView.Devices => new DevicesView(),
-                MainWindow.ActiveView.Settings  => new SettingsView(),
-                _                               => throw new NotImplementedException()
+                MainWindow.ActiveView.Categories => new CategoriesView(),
+                MainWindow.ActiveView.Settings => new SettingsView(),
+                _ => throw new NotImplementedException()
             };
         }
     }

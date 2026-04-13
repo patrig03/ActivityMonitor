@@ -80,6 +80,11 @@
                 Tag="Devices"
                 Click="Button_OnClick"
                 Classes="nav-button"/>
+
+        <Button Content="Categorii"
+                Tag="Categories"
+                Click="Button_OnClick"
+                Classes="nav-button"/>
         
         <Button Content="Setari"
                 Tag="Settings"

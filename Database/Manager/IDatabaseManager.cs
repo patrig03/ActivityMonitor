@@ -32,12 +32,14 @@ public interface IDatabaseManager : IDisposable
     int InsertCategory(CategoryDto category);
     CategoryDto? GetCategory(int categoryId);
     IEnumerable<CategoryDto> GetAllCategories();
+    int DeleteCategory(int categoryId);
 
     /* -------------------- APPLICATIONS -------------------- */
 
     int InsertApplication(ApplicationDto app);
     int UpsertApplication(ApplicationDto app);
     int? UpdateApplication(ApplicationDto app);
+    int UpdateApplicationCategory(int appId, int? categoryId);
     IEnumerable<int> InsertApplications(IEnumerable<ApplicationDto> apps);
     ApplicationDto? GetApplication(int appId);
     IEnumerable<ApplicationDto> GetApplicationsByCategory(int categoryId);

@@ -1,11 +1,12 @@
 using System.Text.RegularExpressions;
 using Backend.DataCollector.Models;
+using Backend.Models;
 
 namespace Backend.Classifier;
 
 public class RuleBasedClassifier : IClassifier
 {
-    private readonly List<(int Category, Regex Pattern)> _rules = new()
+    private readonly List<(int Category, Regex Pattern)> _applicationRules = new()
     {
         (2, R("(chrome|chromium|firefox|librewolf|brave|edge|opera|vivaldi|waterfox|palemoon)")),
         (2, R("(msedge|google-chrome|navigator|browser)")),
@@ -64,12 +65,55 @@ public class RuleBasedClassifier : IClassifier
         (53, R("(stellarium|celestia|kstars|cartes du ciel)"))
     };
 
+    private readonly List<(int Category, Regex Pattern)> _websiteRules = new()
+    {
+        // 3 Email / news / groupware
+        (3, R("(mail\\.google|outlook\\.(office|live)|mail\\.yahoo|proton\\.(me|mail)|fastmail|mail\\.zoho|icloud\\.com/mail)")),
+
+        // 4 Chat / IM / Telephony
+        (4, R("(slack\\.com|discord\\.com|teams\\.microsoft\\.com|meet\\.google\\.com|web\\.whatsapp\\.com|web\\.telegram\\.org|messenger\\.com|zoom\\.us|webex\\.com)")),
+
+        // 5 Programming / Software Engineering
+        (5, R("(github\\.com|gitlab\\.com|bitbucket\\.org|stackoverflow\\.com|stackexchange\\.com|superuser\\.com|serverfault\\.com|npmjs\\.com|nuget\\.org|pypi\\.org|rubygems\\.org|crates\\.io|pkg\\.go\\.dev)")),
+        (5, R("((developer|learn|docs)\\.microsoft\\.com|developer\\.mozilla\\.org|mdn\\.mozilla\\.org|readthedocs\\.io|jetbrains\\.com|atlassian\\.net|vercel\\.com|netlify\\.com)")),
+
+        // 9 Office suites
+        (9, R("(docs\\.google\\.com|sheets\\.google\\.com|slides\\.google\\.com|office\\.com|microsoft365\\.com)")),
+
+        // 11 Games
+        (11, R("(store\\.steampowered\\.com|steampowered\\.com|epicgames\\.com|gog\\.com|itch\\.io|battle\\.net|roblox\\.com)")),
+
+        // 1 Graphics
+        (1, R("(figma\\.com|canva\\.com|photopea\\.com|dribbble\\.com|behance\\.net)")),
+
+        // 24 Web Design
+        (24, R("(webflow\\.com|wix\\.com|squarespace\\.com)")),
+
+        // 25 Multimedia
+        (25, R("(youtube\\.com|youtu\\.be|netflix\\.com|spotify\\.com|twitch\\.tv|vimeo\\.com|soundcloud\\.com|hulu\\.com|disneyplus\\.com|primevideo\\.com)")),
+
+        // 26 Productivity
+        (26, R("(notion\\.so|trello\\.com|asana\\.com|clickup\\.com|todoist\\.com|monday\\.com|linear\\.app|miro\\.com|evernote\\.com)")),
+
+        // 27 Networking & Communication
+        (27, R("(reddit\\.com|linkedin\\.com|x\\.com|twitter\\.com|facebook\\.com|instagram\\.com|threads\\.net)")),
+
+        // 29 Reference / documentation / info
+        (29, R("(wikipedia\\.org|wiktionary\\.org|britannica\\.com|investopedia\\.com|arxiv\\.org|scholar\\.google\\.com)")),
+
+        // 34 Finance / accounting
+        (34, R("(paypal\\.com|stripe\\.com|wise\\.com|revolut\\.com|quickbooks\\.intuit\\.com|xero\\.com|banking|onlinebanking)")),
+
+        // 36 File transfer / sharing
+        (36, R("(drive\\.google\\.com|dropbox\\.com|onedrive\\.live\\.com|onedrive\\.com|box\\.com|wetransfer\\.com)"))
+    };
+
     public int? ClassifyAsync(ApplicationRecord record)
     {
         var text = $"{record.ClassName} {record.ProcessName}"
             .ToLowerInvariant();
 
-        foreach (var (category, pattern) in _rules)
+        foreach (var (category, pattern) in _applicationRules)
         {
             if (pattern.IsMatch(text))
                 return category;
@@ -82,6 +126,44 @@ public class RuleBasedClassifier : IClassifier
     {
         foreach (var r in records)
             yield return ClassifyAsync(r);
+    }
+
+    public int? ClassifyAsync(BrowserRecord record)
+    {
+        var text = BuildBrowserText(record);
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return null;
+        }
+
+        foreach (var (category, pattern) in _websiteRules)
+        {
+            if (pattern.IsMatch(text))
+                return category;
+        }
+
+        return null;
+    }
+
+    public IEnumerable<int?> ClassifyAsync(IEnumerable<BrowserRecord> records)
+    {
+        foreach (var r in records)
+            yield return ClassifyAsync(r);
+    }
+
+    private static string BuildBrowserText(BrowserRecord record)
+    {
+        if (string.IsNullOrWhiteSpace(record.Url))
+        {
+            return string.Empty;
+        }
+
+        if (!Uri.TryCreate(record.Url, UriKind.Absolute, out var uri))
+        {
+            return record.Url.ToLowerInvariant();
+        }
+
+        return $"{uri.Host} {uri.AbsolutePath} {record.Url}".ToLowerInvariant();
     }
 
     private static Regex R(string pattern) =>

@@ -150,6 +150,7 @@ public sealed class BrowserActivityEntityConfiguration : IEntityTypeConfiguratio
         builder.Property(entity => entity.ActivityId).HasColumnName("activity_id").ValueGeneratedOnAdd();
         builder.Property(entity => entity.UserId).HasColumnName("user_id");
         builder.Property(entity => entity.AppId).HasColumnName("app_id");
+        builder.Property(entity => entity.CategoryId).HasColumnName("category_id");
         builder.Property(entity => entity.Url).HasColumnName("url").HasColumnType("text");
 
         builder.HasOne(entity => entity.User)

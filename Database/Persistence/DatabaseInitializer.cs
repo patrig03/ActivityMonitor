@@ -21,6 +21,7 @@ public sealed class MySqlDatabaseInitializer(
         context.Database.EnsureCreated();
         EnsureDevicesTableExists(context);
         EnsureSettingsColumnsExist();
+        EnsureBrowserActivityCategoryColumnExists();
 
         SeedDefaults(context);
     }
@@ -108,6 +109,22 @@ public sealed class MySqlDatabaseInitializer(
         using var command = connection.CreateCommand();
         command.CommandText =
             "ALTER TABLE settings ADD COLUMN sync_server_address VARCHAR(512) NULL;";
+        command.ExecuteNonQuery();
+    }
+
+    private void EnsureBrowserActivityCategoryColumnExists()
+    {
+        using var connection = new MySqlConnection(DatabaseConnectionFactory.BuildConnectionString(options));
+        connection.Open();
+
+        if (ColumnExists(connection, "browser_activity", "category_id"))
+        {
+            return;
+        }
+
+        using var command = connection.CreateCommand();
+        command.CommandText =
+            "ALTER TABLE browser_activity ADD COLUMN category_id INT NULL;";
         command.ExecuteNonQuery();
     }
 

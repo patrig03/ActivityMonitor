@@ -1,3 +1,4 @@
+using Backend.Classifier;
 using Backend.Classifier.Models;
 using Backend.DataCollector.Models;
 using Backend.Interventions.Models;
@@ -11,6 +12,7 @@ namespace Backend.Report;
 public class ReportMaker
 {
     private IDatabaseManager Manager { get; }
+    private readonly IClassifier _classifier = new RuleBasedClassifier();
     
     private CsvWriter CsvWriter { get; set; }
     private PdfWriter PdfWriter { get; set; }
@@ -23,13 +25,20 @@ public class ReportMaker
     public IEnumerable<ReportData> MakeReportData()
     {
         var categories = Manager.GetAllCategories();
+        var allApplications = Manager.GetAllApplications()
+            .Select(ApplicationRecord.FromDto)
+            .Where(application => application.Id.HasValue)
+            .ToDictionary(application => application.Id!.Value);
 
         var interventions = Manager.GetInterventionsForUser(1);
         var browserRecords = Manager.GetAllBrowserActivity();
         var thresholds = Manager.GetAllThresholds();
 
         var interventionsList = interventions.Select(Intervention.FromDto).ToList();
-        var browserDetailsList = browserRecords.Select(BrowserRecord.FromDto).ToList();
+        var browserDetailsList = browserRecords
+            .Select(BrowserRecord.FromDto)
+            .Select(EnsureBrowserCategory)
+            .ToList();
         var thresholdsList = thresholds.Select(Threshold.FromDto).ToList();
 
         return categories.Select(category => {
@@ -41,9 +50,13 @@ public class ReportMaker
                 .Select(SessionRecord.FromDto)
                 .ToList();
 
-            return new { category, apps, sessions };
+            var browserDetails = browserDetailsList
+                .Where(record => ResolveBrowserCategoryId(record, allApplications) == category.CategoryId)
+                .ToList();
+
+            return new { category, apps, sessions, browserDetails };
         })
-        .Where(x => x.sessions.Any())
+        .Where(x => x.sessions.Any() || x.browserDetails.Any())
         .Select(x =>
         {
             var processes =
@@ -92,7 +105,7 @@ public class ReportMaker
                 Category = Category.FromDto(x.category),
                 Applications = processes,
                 Interventions = interventionsList,
-                BrowserDetails = browserDetailsList,
+                BrowserDetails = x.browserDetails,
                 Thresholds = thresholdsList.Where(t => t.CategoryId == x.category.CategoryId)
             };
         });
@@ -110,5 +123,23 @@ public class ReportMaker
         PdfWriter = new(outputPath + "report.pdf");
         var data = MakeReportData();
         return PdfWriter.WriteToFile(data);
+    }
+
+    private BrowserRecord EnsureBrowserCategory(BrowserRecord record)
+    {
+        record.CategoryId ??= _classifier.ClassifyAsync(record);
+        return record;
+    }
+
+    private static int? ResolveBrowserCategoryId(BrowserRecord record, IReadOnlyDictionary<int, ApplicationRecord> applicationsById)
+    {
+        if (record.CategoryId.HasValue)
+        {
+            return record.CategoryId;
+        }
+
+        return applicationsById.TryGetValue(record.BrowserId, out var application)
+            ? application.CategoryId
+            : null;
     }
 }

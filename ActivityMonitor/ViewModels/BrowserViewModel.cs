@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
+using Backend.Classifier;
 using Backend.Classifier.Models;
 using Backend.DataCollector.Models;
 using Backend.Models;
@@ -13,6 +14,7 @@ namespace ActivityMonitor.ViewModels;
 public class BrowserViewModel : ViewModelBase
 {
     private readonly IDatabaseManager _db = new DatabaseManager(Settings.DatabaseConnectionString);
+    private readonly IClassifier _classifier = new RuleBasedClassifier();
 
     private string _browserStatus = "Se incarca activitatea browserului";
     private string _totalEvents = "0";
@@ -68,6 +70,7 @@ public class BrowserViewModel : ViewModelBase
     {
         var records = _db.GetAllBrowserActivity()
             .Select(BrowserRecord.FromDto)
+            .Select(EnsureBrowserCategory)
             .ToList();
 
         var apps = _db.GetAllApplications()
@@ -106,9 +109,16 @@ public class BrowserViewModel : ViewModelBase
                      .Take(6))
         {
             apps.TryGetValue(group.Key, out var app);
-            var categoryName = app?.CategoryId is int categoryId && categories.TryGetValue(categoryId, out var category)
-                ? category.Name
-                : "Neclasificat";
+            var mostFrequentCategoryId = group
+                .Select(record => ResolveCategoryId(record, app))
+                .Where(categoryId => categoryId.HasValue)
+                .GroupBy(categoryId => categoryId!.Value)
+                .OrderByDescending(categoryGroup => categoryGroup.Count())
+                .ThenBy(categoryGroup => categoryGroup.Key)
+                .Select(categoryGroup => (int?)categoryGroup.Key)
+                .FirstOrDefault();
+
+            var categoryName = ResolveCategoryName(mostFrequentCategoryId, categories);
 
             BrowserApps.Add(new BrowserAppSummary
             {
@@ -122,9 +132,7 @@ public class BrowserViewModel : ViewModelBase
         foreach (var record in records.OrderByDescending(item => item.Id).Take(30))
         {
             apps.TryGetValue(record.BrowserId, out var app);
-            var categoryName = app?.CategoryId is int categoryId && categories.TryGetValue(categoryId, out var category)
-                ? category.Name
-                : "Neclasificat";
+            var categoryName = ResolveCategoryName(ResolveCategoryId(record, app), categories);
 
             RecentActivity.Add(new BrowserActivityRow
             {
@@ -151,6 +159,24 @@ public class BrowserViewModel : ViewModelBase
         return Uri.TryCreate(url, UriKind.Absolute, out var uri)
             ? uri.Host
             : null;
+    }
+
+    private BrowserRecord EnsureBrowserCategory(BrowserRecord record)
+    {
+        record.CategoryId ??= _classifier.ClassifyAsync(record);
+        return record;
+    }
+
+    private static int? ResolveCategoryId(BrowserRecord record, ApplicationRecord? application)
+    {
+        return record.CategoryId ?? application?.CategoryId;
+    }
+
+    private static string ResolveCategoryName(int? categoryId, IReadOnlyDictionary<int, Category> categories)
+    {
+        return categoryId.HasValue && categories.TryGetValue(categoryId.Value, out var category)
+            ? category.Name
+            : "Neclasificat";
     }
 }
 

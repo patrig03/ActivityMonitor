@@ -79,6 +79,7 @@ public class DataCollectorController : IDisposable
             if (browserRecord != null)
             {
                 browserRecord.BrowserId = appid;
+                browserRecord.CategoryId = _classifier.ClassifyAsync(browserRecord);
                 var existingId = db.IsInDb(browserRecord.ToDto());
                 if (existingId == null)
                 {

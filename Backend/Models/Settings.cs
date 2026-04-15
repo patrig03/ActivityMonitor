@@ -8,6 +8,7 @@ public class Settings
     public int Id { get; set; }
     public int UserId { get; set; } = 1;
     public TimeSpan DeltaTime { get; set; } = TimeSpan.FromSeconds(10);
+    public string? SyncServerAddress { get; set; }
 
     public static string MutexName { get => "Global\\ActivityMonitorBackgroundService"; }
 
@@ -33,6 +34,7 @@ public class Settings
             Id = Id,
             UserId = UserId,
             DeltaTimeSeconds = (int)DeltaTime.TotalSeconds,
+            SyncServerAddress = SyncServerAddress,
         };
     }
     public static Settings FromDto(SettingsDto dto)
@@ -42,6 +44,7 @@ public class Settings
             Id = dto.Id,
             UserId = dto.UserId,
             DeltaTime = TimeSpan.FromSeconds(dto.DeltaTimeSeconds),
+            SyncServerAddress = dto.SyncServerAddress,
         };
     }
 }

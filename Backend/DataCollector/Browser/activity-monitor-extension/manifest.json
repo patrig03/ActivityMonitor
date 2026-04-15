@@ -1,6 +1,6 @@
 {
   "manifest_version": 2,
-  "name": "ActiveTabURL",
+  "name": "Activity Monitor - Firefox",
   "version": "1.0",
   "permissions": [
     "tabs",
@@ -12,10 +12,10 @@
   },
   "browser_specific_settings": {
     "gecko": {
-      "id": "activetaburl@example.com"
+      "id": "activitymonitor@example.com"
     }
   },
   "browser_action": {
-    "default_title": "Send Tabs"
+    "default_title": "Activity Monitor"
   }
 }

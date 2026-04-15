@@ -1,0 +1,74 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <Styles.Resources>
+    <ResourceDictionary>
+      <ResourceDictionary.MergedDictionaries>
+        <ResourceInclude Source="/Styles/Colors.axaml"/>
+        <ResourceInclude Source="/Styles/Spacing.axaml"/>
+      </ResourceDictionary.MergedDictionaries>
+    </ResourceDictionary>
+  </Styles.Resources>
+
+  <!-- ========= DATAGRID ========= -->
+  <Style Selector="DataGrid">
+    <Setter Property="Background" Value="{StaticResource BrushSurfaceSecondary}"/>
+    <Setter Property="Foreground" Value="{StaticResource BrushTextPrimary}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource BrushBorderPrimary}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="GridLinesVisibility" Value="All"/>
+    <Setter Property="RowBackground" Value="{StaticResource BrushSurfaceSecondary}"/>
+    <Setter Property="HorizontalGridLinesBrush" Value="{StaticResource BrushBorderPrimary}"/>
+    <Setter Property="VerticalGridLinesBrush" Value="{StaticResource BrushBorderPrimary}"/>
+  </Style>
+
+  <Style Selector="DataGridColumnHeader">
+    <Setter Property="Background" Value="{StaticResource BrushSurfaceTertiary}"/>
+    <Setter Property="Foreground" Value="{StaticResource BrushTextSecondary}"/>
+    <Setter Property="BorderThickness" Value="0,0,1,1"/>
+    <Setter Property="BorderBrush" Value="{StaticResource BrushBorderPrimary}"/>
+    <Setter Property="Padding" Value="14,10"/>
+    <Setter Property="FontSize" Value="14"/>
+    <Setter Property="FontWeight" Value="SemiBold"/>
+    <Setter Property="HorizontalContentAlignment" Value="Left"/>
+  </Style>
+
+  <Style Selector="DataGridCell">
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="Foreground" Value="{StaticResource BrushTextPrimary}"/>
+    <Setter Property="BorderThickness" Value="0,0,1,1"/>
+    <Setter Property="BorderBrush" Value="{StaticResource BrushBorderPrimary}"/>
+    <Setter Property="Padding" Value="14,10"/>
+    <Setter Property="HorizontalContentAlignment" Value="Left"/>
+  </Style>
+
+  <Style Selector="DataGridCell.center">
+    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+  </Style>
+
+  <Style Selector="DataGridCell:pointerover">
+    <Setter Property="Background" Value="{StaticResource BrushSurfaceOverlay}"/>
+  </Style>
+
+  <Style Selector="DataGridCell:focus">
+    <Setter Property="BorderBrush" Value="{StaticResource BrushAccentPrimary}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+  </Style>
+
+  <Style Selector="DataGridRow">
+    <Setter Property="Background" Value="{StaticResource BrushSurfaceSecondary}"/>
+  </Style>
+
+  <Style Selector="DataGridRow:pointerover">
+    <Setter Property="Background" Value="{StaticResource BrushSurfaceOverlay}"/>
+  </Style>
+
+  <Style Selector="DataGridRow:selected">
+    <Setter Property="Background" Value="{StaticResource BrushAccent}"/>
+  </Style>
+
+  <Style Selector="DataGridRow:selected:pointerover">
+    <Setter Property="Background" Value="{StaticResource BrushAccentHover}"/>
+  </Style>
+
+</Styles>

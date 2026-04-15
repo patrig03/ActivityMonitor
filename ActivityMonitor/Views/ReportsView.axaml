@@ -4,83 +4,63 @@
              x:Class="ActivityMonitor.Views.ReportsView"
              x:DataType="viewModels:ReportsViewModel">
 
-  <!-- <UserControl.Background> -->
-  <!--   <LinearGradientBrush StartPoint="0,0" EndPoint="1,1"> -->
-  <!--     <GradientStop Color="#0C1424" Offset="0"/> -->
-  <!--     <GradientStop Color="#15233E" Offset="0.55"/> -->
-  <!--     <GradientStop Color="#122033" Offset="1"/> -->
-  <!--   </LinearGradientBrush> -->
-  <!-- </UserControl.Background> -->
-
   <UserControl.Resources>
     <DataTemplate x:Key="TopProcessTemplate" DataType="viewModels:ReportProcessSummary">
-      <Border Margin="0,0,10,10"
-              Padding="12"
-              CornerRadius="16"
-              Background="#15243D"
-              BorderBrush="#2A4367"
-              BorderThickness="1">
+      <Border Classes="panel-card panel-card--muted"
+              Margin="0,0,10,10"
+              Padding="12">
         <StackPanel Spacing="4">
-          <TextBlock Text="{Binding ProcessName}" Foreground="#F4F7FF" FontWeight="SemiBold"/>
-          <TextBlock Text="{Binding Duration}" Foreground="#8BFFB1" FontWeight="Bold"/>
-          <TextBlock Text="{Binding WindowCount}" Foreground="#8EA0C3"/>
+          <TextBlock Text="{Binding ProcessName}" Foreground="{StaticResource BrushTextSecondary}" FontWeight="SemiBold"/>
+          <TextBlock Text="{Binding Duration}" Foreground="{StaticResource BrushAccentSuccess}" FontWeight="Bold"/>
+          <TextBlock Text="{Binding WindowCount}" Foreground="{StaticResource BrushTextMuted}"/>
         </StackPanel>
       </Border>
     </DataTemplate>
 
     <DataTemplate x:Key="CategoryCardTemplate" DataType="viewModels:ReportCategoryCard">
-      <Border Margin="0,0,0,16"
-              Padding="20"
-              CornerRadius="24"
-              Background="#10192A"
-              BorderBrush="#24324A"
-              BorderThickness="1">
+      <Border Classes="panel-card"
+              Margin="0,0,0,16">
         <StackPanel Spacing="14">
           <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
             <StackPanel Spacing="6">
-              <TextBlock Text="{Binding CategoryName}" FontSize="20" FontWeight="Bold" Foreground="#F7FAFF"/>
-              <TextBlock Text="{Binding Description}" Foreground="#8EA0C3" TextWrapping="Wrap"/>
+              <TextBlock Text="{Binding CategoryName}" FontSize="20" FontWeight="Bold" Foreground="{StaticResource BrushTextSecondary}"/>
+              <TextBlock Text="{Binding Description}" Foreground="{StaticResource BrushTextMuted}" TextWrapping="Wrap"/>
             </StackPanel>
             <Border Grid.Column="1"
-                    Background="#17233A"
-                    CornerRadius="999"
-                    Padding="12,6"
+                    Classes="chip chip--overlay"
                     VerticalAlignment="Top">
-              <TextBlock Text="{Binding TotalDuration}" Foreground="#F7FAFF" FontWeight="Bold"/>
+              <TextBlock Text="{Binding TotalDuration}" Foreground="{StaticResource BrushTextSecondary}" FontWeight="Bold"/>
             </Border>
           </Grid>
 
           <WrapPanel Orientation="Horizontal">
-            <Border Margin="0,0,10,10" Background="#15243D" CornerRadius="999" Padding="12,6">
-              <TextBlock Text="{Binding ApplicationCount}" Foreground="#D6E4FF"/>
+            <Border Classes="chip chip--overlay" Margin="0,0,10,10">
+              <TextBlock Text="{Binding ApplicationCount}" Foreground="{StaticResource BrushTextOnSoft}"/>
             </Border>
-            <Border Margin="0,0,10,10" Background="#15243D" CornerRadius="999" Padding="12,6">
-              <TextBlock Text="{Binding WindowCount}" Foreground="#D6E4FF"/>
+            <Border Classes="chip chip--overlay" Margin="0,0,10,10">
+              <TextBlock Text="{Binding WindowCount}" Foreground="{StaticResource BrushTextOnSoft}"/>
             </Border>
-            <Border Margin="0,0,10,10" Background="#15243D" CornerRadius="999" Padding="12,6">
-              <TextBlock Text="{Binding ThresholdCount}" Foreground="#D6E4FF"/>
+            <Border Classes="chip chip--overlay" Margin="0,0,10,10">
+              <TextBlock Text="{Binding ThresholdCount}" Foreground="{StaticResource BrushTextOnSoft}"/>
             </Border>
-            <Border Margin="0,0,10,10" Background="#15243D" CornerRadius="999" Padding="12,6">
-              <TextBlock Text="{Binding InterventionCount}" Foreground="#D6E4FF"/>
+            <Border Classes="chip chip--overlay" Margin="0,0,10,10">
+              <TextBlock Text="{Binding InterventionCount}" Foreground="{StaticResource BrushTextOnSoft}"/>
             </Border>
-            <Border Margin="0,0,0,10" Background="#15243D" CornerRadius="999" Padding="12,6">
-              <TextBlock Text="{Binding BrowserActivityCount}" Foreground="#D6E4FF"/>
+            <Border Classes="chip chip--overlay" Margin="0,0,0,10">
+              <TextBlock Text="{Binding BrowserActivityCount}" Foreground="{StaticResource BrushTextOnSoft}"/>
             </Border>
           </WrapPanel>
 
-          <Border Padding="14"
-                  CornerRadius="18"
-                  Background="#132238"
-                  BorderBrush="#28415F"
-                  BorderThickness="1">
+          <Border Classes="panel-card panel-card--muted"
+                  Padding="14">
             <StackPanel Spacing="4">
-              <TextBlock Text="Activitate dominanta" Foreground="#8EA0C3"/>
-              <TextBlock Text="{Binding Highlight}" Foreground="#7DD3FC" FontSize="18" FontWeight="Bold"/>
+              <TextBlock Text="Activitate dominanta" Foreground="{StaticResource BrushTextMuted}"/>
+              <TextBlock Text="{Binding Highlight}" Foreground="{StaticResource BrushAccentPrimary}" FontSize="18" FontWeight="Bold"/>
             </StackPanel>
           </Border>
 
           <StackPanel Spacing="10">
-            <TextBlock Text="Procese principale" FontSize="16" FontWeight="SemiBold" Foreground="#F7FAFF"/>
+            <TextBlock Text="Procese principale" FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource BrushTextSecondary}"/>
             <ItemsControl ItemsSource="{Binding TopProcesses}" ItemTemplate="{StaticResource TopProcessTemplate}">
               <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
@@ -94,105 +74,82 @@
     </DataTemplate>
   </UserControl.Resources>
 
-  <ScrollViewer VerticalScrollBarVisibility="Auto">
-    <StackPanel Margin="18" Spacing="18">
-      <Border CornerRadius="28"
-              Padding="24"
-              Background="#10192A"
-              BorderBrush="#24324A"
-              BorderThickness="1">
+  <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+    <StackPanel Margin="20" Spacing="18">
+      <Border Classes="page-hero">
         <Grid ColumnDefinitions="*,340" ColumnSpacing="18">
           <StackPanel Spacing="10">
-            <TextBlock Text="Rapoarte" FontSize="30" FontWeight="Bold" Foreground="#F7FAFF"/>
+            <TextBlock Text="Rapoarte" Classes="page-title"/>
             <TextBlock Text="Revizuieste sumarurile de activitate pe categorii si genereaza instantanee exportabile din baza de date MySQL."
-                       Foreground="#8EA0C3"
-                       TextWrapping="Wrap"/>
+                       Classes="page-subtitle"/>
             <WrapPanel Orientation="Horizontal">
-              <Border Margin="0,10,10,0" Background="#17233A" CornerRadius="999" Padding="12,6">
-                <TextBlock Text="{Binding LastGenerated}" Foreground="#D6E4FF"/>
+              <Border Classes="chip chip--overlay" Margin="0,10,10,0">
+                <TextBlock Text="{Binding LastGenerated}" Foreground="{StaticResource BrushTextOnSoft}"/>
               </Border>
-              <Border Margin="0,10,10,0" Background="#17233A" CornerRadius="999" Padding="12,6">
-                <TextBlock Text="{Binding ExportDirectory}" Foreground="#D6E4FF"/>
+              <Border Classes="chip chip--overlay" Margin="0,10,10,0">
+                <TextBlock Text="{Binding ExportDirectory}" Foreground="{StaticResource BrushTextOnSoft}"/>
               </Border>
             </WrapPanel>
           </StackPanel>
 
           <Border Grid.Column="1"
-                  CornerRadius="22"
-                  Padding="18"
-                  Background="#17233A"
-                  BorderBrush="#30415D"
-                  BorderThickness="1">
+                  Classes="panel-card panel-card--overlay"
+                  Padding="18">
             <StackPanel Spacing="12">
-              <TextBlock Text="Stare" Foreground="#8EA0C3"/>
-              <TextBlock Text="{Binding ReportStatus}" FontSize="18" FontWeight="Bold" Foreground="#F7FAFF" TextWrapping="Wrap"/>
+              <TextBlock Text="Stare" Foreground="{StaticResource BrushTextMuted}"/>
+              <TextBlock Text="{Binding ReportStatus}" FontSize="18" FontWeight="Bold" Foreground="{StaticResource BrushTextSecondary}" TextWrapping="Wrap"/>
               <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
                 <Button Grid.Column="0"
                         Command="{Binding RefreshCommand}"
-                        Background="#D9E5F5"
-                        Foreground="#112039"
-                        CornerRadius="14"
-                        BorderThickness="0"
-                        Padding="16,12">
-                  <TextBlock Text="Reincarca" HorizontalAlignment="Center" FontWeight="Bold"/>
-                </Button>
+                        Classes="action-button subtle-button"
+                        Content="Reincarca"/>
                 <Button Grid.Column="1"
                         Command="{Binding ExportCsvCommand}"
-                        Background="#8BD3A7"
-                        Foreground="#062A16"
-                        CornerRadius="14"
-                        BorderThickness="0"
-                        Padding="16,12">
-                  <TextBlock Text="Exporta CSV" HorizontalAlignment="Center" FontWeight="Bold"/>
-                </Button>
+                        Classes="action-button success-button"
+                        Content="Exporta CSV"/>
               </Grid>
               <Button Command="{Binding ExportPdfCommand}"
-                      Background="#F4CA7A"
-                      Foreground="#452B00"
-                      CornerRadius="14"
-                      BorderThickness="0"
-                      Padding="16,12">
-                <TextBlock Text="Exporta PDF" HorizontalAlignment="Center" FontWeight="Bold"/>
-              </Button>
+                      Classes="action-button warning-button"
+                      Content="Exporta PDF"/>
             </StackPanel>
           </Border>
         </Grid>
       </Border>
 
       <WrapPanel Orientation="Horizontal">
-        <Border Width="220" Margin="0,0,14,14" Padding="18" CornerRadius="20" Background="#10192A" BorderBrush="#24324A" BorderThickness="1">
+        <Border Classes="stat-card">
           <StackPanel Spacing="6">
-            <TextBlock Text="Categorii" Foreground="#8EA0C3"/>
-            <TextBlock Text="{Binding CategoryCount}" Foreground="#F7FAFF" FontSize="26" FontWeight="Bold"/>
-            <TextBlock Text="Carduri de raport generate" Foreground="#7386A8"/>
+            <TextBlock Text="Categorii" Classes="metric-label"/>
+            <TextBlock Text="{Binding CategoryCount}" Classes="metric-value"/>
+            <TextBlock Text="Carduri de raport generate" Classes="metric-detail"/>
           </StackPanel>
         </Border>
-        <Border Width="220" Margin="0,0,14,14" Padding="18" CornerRadius="20" Background="#10192A" BorderBrush="#24324A" BorderThickness="1">
+        <Border Classes="stat-card">
           <StackPanel Spacing="6">
-            <TextBlock Text="Timp monitorizat" Foreground="#8EA0C3"/>
-            <TextBlock Text="{Binding TotalTrackedTime}" Foreground="#F7FAFF" FontSize="26" FontWeight="Bold"/>
-            <TextBlock Text="Pe toate categoriile raportabile" Foreground="#7386A8"/>
+            <TextBlock Text="Timp monitorizat" Classes="metric-label"/>
+            <TextBlock Text="{Binding TotalTrackedTime}" Classes="metric-value"/>
+            <TextBlock Text="Pe toate categoriile raportabile" Classes="metric-detail"/>
           </StackPanel>
         </Border>
-        <Border Width="220" Margin="0,0,14,14" Padding="18" CornerRadius="20" Background="#10192A" BorderBrush="#24324A" BorderThickness="1">
+        <Border Classes="stat-card">
           <StackPanel Spacing="6">
-            <TextBlock Text="Procese" Foreground="#8EA0C3"/>
-            <TextBlock Text="{Binding ApplicationCount}" Foreground="#F7FAFF" FontSize="26" FontWeight="Bold"/>
-            <TextBlock Text="Procese monitorizate unice" Foreground="#7386A8"/>
+            <TextBlock Text="Procese" Classes="metric-label"/>
+            <TextBlock Text="{Binding ApplicationCount}" Classes="metric-value"/>
+            <TextBlock Text="Procese monitorizate unice" Classes="metric-detail"/>
           </StackPanel>
         </Border>
-        <Border Width="220" Margin="0,0,14,14" Padding="18" CornerRadius="20" Background="#10192A" BorderBrush="#24324A" BorderThickness="1">
+        <Border Classes="stat-card">
           <StackPanel Spacing="6">
-            <TextBlock Text="Interventii" Foreground="#8EA0C3"/>
-            <TextBlock Text="{Binding InterventionCount}" Foreground="#F7FAFF" FontSize="26" FontWeight="Bold"/>
-            <TextBlock Text="Declansari de prag din aria raportului" Foreground="#7386A8"/>
+            <TextBlock Text="Interventii" Classes="metric-label"/>
+            <TextBlock Text="{Binding InterventionCount}" Classes="metric-value"/>
+            <TextBlock Text="Declansari de prag din aria raportului" Classes="metric-detail"/>
           </StackPanel>
         </Border>
-        <Border Width="220" Margin="0,0,0,14" Padding="18" CornerRadius="20" Background="#10192A" BorderBrush="#24324A" BorderThickness="1">
+        <Border Classes="stat-card" Margin="0,0,0,14">
           <StackPanel Spacing="6">
-            <TextBlock Text="Inregistrari browser" Foreground="#8EA0C3"/>
-            <TextBlock Text="{Binding BrowserEventCount}" Foreground="#F7FAFF" FontSize="26" FontWeight="Bold"/>
-            <TextBlock Text="Intrari URL capturate" Foreground="#7386A8"/>
+            <TextBlock Text="Inregistrari browser" Classes="metric-label"/>
+            <TextBlock Text="{Binding BrowserEventCount}" Classes="metric-value"/>
+            <TextBlock Text="Intrari URL capturate" Classes="metric-detail"/>
           </StackPanel>
         </Border>
       </WrapPanel>

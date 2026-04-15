@@ -1,0 +1,75 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <!-- ========= BACKGROUND COLORS ========= -->
+  <Color x:Key="BgPrimary">#07111E</Color>
+  <Color x:Key="BgSecondary">#0D182A</Color>
+  <Color x:Key="BgTertiary">#16253C</Color>
+  <Color x:Key="BgCard">#0F1B2E</Color>
+  <Color x:Key="BgCardAlt">#15243B</Color>
+  <Color x:Key="BgInput">#122136</Color>
+  <Color x:Key="BgOverlay">#1B2D48</Color>
+  <Color x:Key="BgSuccessSoft">#142922</Color>
+  <Color x:Key="BgWarningSoft">#352816</Color>
+  <Color x:Key="BgDangerSoft">#3A1E26</Color>
+
+  <!-- ========= ACCENT COLORS ========= -->
+  <Color x:Key="Accent">#2B4568</Color>
+  <Color x:Key="AccentHover">#35557F</Color>
+  <Color x:Key="AccentPrimary">#7DD3FC</Color>
+  <Color x:Key="AccentSuccess">#8BD3A7</Color>
+  <Color x:Key="AccentWarning">#F4CA7A</Color>
+  <Color x:Key="AccentDanger">#F0A7A7</Color>
+
+  <!-- ========= TEXT COLORS ========= -->
+  <Color x:Key="TextPrimary">#E6EEFB</Color>
+  <Color x:Key="TextSecondary">#F7FAFF</Color>
+  <Color x:Key="TextMuted">#A1B3CD</Color>
+  <Color x:Key="TextSubtle">#7F96B7</Color>
+  <Color x:Key="TextOnAccent">#08111F</Color>
+  <Color x:Key="TextOnSoft">#DCE8FA</Color>
+
+  <!-- ========= BORDER COLORS ========= -->
+  <Color x:Key="BorderPrimary">#243A58</Color>
+  <Color x:Key="BorderSecondary">#2D4668</Color>
+  <Color x:Key="BorderStrong">#35557F</Color>
+  <Color x:Key="BorderLight">#A9BCD8</Color>
+
+  <!-- ========= BRUSHES ========= -->
+  <SolidColorBrush x:Key="BrushBgPrimary" Color="{StaticResource BgPrimary}"/>
+  <SolidColorBrush x:Key="BrushBgSecondary" Color="{StaticResource BgSecondary}"/>
+  <SolidColorBrush x:Key="BrushBgTertiary" Color="{StaticResource BgTertiary}"/>
+  <SolidColorBrush x:Key="BrushBgCard" Color="{StaticResource BgCard}"/>
+  <SolidColorBrush x:Key="BrushBgCardAlt" Color="{StaticResource BgCardAlt}"/>
+  <SolidColorBrush x:Key="BrushBgInput" Color="{StaticResource BgInput}"/>
+  <SolidColorBrush x:Key="BrushBgOverlay" Color="{StaticResource BgOverlay}"/>
+  <SolidColorBrush x:Key="BrushBgSuccessSoft" Color="{StaticResource BgSuccessSoft}"/>
+  <SolidColorBrush x:Key="BrushBgWarningSoft" Color="{StaticResource BgWarningSoft}"/>
+  <SolidColorBrush x:Key="BrushBgDangerSoft" Color="{StaticResource BgDangerSoft}"/>
+
+  <SolidColorBrush x:Key="BrushAccent" Color="{StaticResource Accent}"/>
+  <SolidColorBrush x:Key="BrushAccentHover" Color="{StaticResource AccentHover}"/>
+  <SolidColorBrush x:Key="BrushAccentPrimary" Color="{StaticResource AccentPrimary}"/>
+  <SolidColorBrush x:Key="BrushAccentSuccess" Color="{StaticResource AccentSuccess}"/>
+  <SolidColorBrush x:Key="BrushAccentWarning" Color="{StaticResource AccentWarning}"/>
+  <SolidColorBrush x:Key="BrushAccentDanger" Color="{StaticResource AccentDanger}"/>
+
+  <SolidColorBrush x:Key="BrushTextPrimary" Color="{StaticResource TextPrimary}"/>
+  <SolidColorBrush x:Key="BrushTextSecondary" Color="{StaticResource TextSecondary}"/>
+  <SolidColorBrush x:Key="BrushTextMuted" Color="{StaticResource TextMuted}"/>
+  <SolidColorBrush x:Key="BrushTextSubtle" Color="{StaticResource TextSubtle}"/>
+  <SolidColorBrush x:Key="BrushTextOnAccent" Color="{StaticResource TextOnAccent}"/>
+  <SolidColorBrush x:Key="BrushTextOnSoft" Color="{StaticResource TextOnSoft}"/>
+
+  <SolidColorBrush x:Key="BrushBorderPrimary" Color="{StaticResource BorderPrimary}"/>
+  <SolidColorBrush x:Key="BrushBorderSecondary" Color="{StaticResource BorderSecondary}"/>
+  <SolidColorBrush x:Key="BrushBorderStrong" Color="{StaticResource BorderStrong}"/>
+  <SolidColorBrush x:Key="BrushBorderLight" Color="{StaticResource BorderLight}"/>
+
+  <SolidColorBrush x:Key="BrushAppBackground" Color="{StaticResource BgPrimary}"/>
+  <SolidColorBrush x:Key="BrushSurfacePrimary" Color="{StaticResource BgCard}"/>
+  <SolidColorBrush x:Key="BrushSurfaceSecondary" Color="{StaticResource BgCardAlt}"/>
+  <SolidColorBrush x:Key="BrushSurfaceTertiary" Color="{StaticResource BgTertiary}"/>
+  <SolidColorBrush x:Key="BrushSurfaceOverlay" Color="{StaticResource BgOverlay}"/>
+
+</ResourceDictionary>

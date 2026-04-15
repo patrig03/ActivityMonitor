@@ -6,93 +6,66 @@
 
   <Border CornerRadius="24"
           Padding="20"
-          Background="#111828"
-          BorderBrush="#263146"
+          Background="{StaticResource BrushSurfacePrimary}"
+          BorderBrush="{StaticResource BrushBorderPrimary}"
           BorderThickness="1">
     <WrapPanel Orientation="Horizontal"
                HorizontalAlignment="Stretch">
 
-      <Border Width="210"
-              Margin="0,0,14,14"
-              CornerRadius="18"
-              Background="#172033"
-              BorderBrush="#2B3953"
-              BorderThickness="1"
-              Padding="16">
+      <Border Classes="stat-card">
         <StackPanel Spacing="6">
-          <TextBlock Text="Timp monitorizat" Foreground="#8EA0C3" FontSize="12"/>
-          <TextBlock Text="{Binding TotalUsage}" Foreground="#F4F7FF" FontSize="24" FontWeight="Bold"/>
-          <TextBlock Text="Timp activ in toate categoriile capturate." Foreground="#7386A8" TextWrapping="Wrap"/>
+          <TextBlock Text="Timp monitorizat" Classes="metric-label"/>
+          <TextBlock Text="{Binding TotalUsage}" Classes="metric-value"/>
+          <TextBlock Text="Timp activ in toate categoriile capturate." Classes="metric-detail"/>
         </StackPanel>
       </Border>
 
-      <Border Width="210"
-              Margin="0,0,14,14"
-              CornerRadius="18"
-              Background="#172033"
-              BorderBrush="#2B3953"
-              BorderThickness="1"
-              Padding="16">
+      <Border Classes="stat-card">
         <StackPanel Spacing="6">
-          <TextBlock Text="Sesiuni" Foreground="#8EA0C3" FontSize="12"/>
-          <TextBlock Text="{Binding TotalSessions}" Foreground="#F4F7FF" FontSize="24" FontWeight="Bold"/>
-          <TextBlock Text="Sesiuni distincte de aplicatii capturate pentru fereastra curenta de raportare." Foreground="#7386A8" TextWrapping="Wrap"/>
+          <TextBlock Text="Sesiuni" Classes="metric-label"/>
+          <TextBlock Text="{Binding TotalSessions}" Classes="metric-value"/>
+          <TextBlock Text="Sesiuni distincte de aplicatii capturate pentru fereastra curenta de raportare." Classes="metric-detail"/>
         </StackPanel>
       </Border>
 
-      <Border Width="210"
-              Margin="0,0,14,14"
-              CornerRadius="18"
-              Background="#172033"
-              BorderBrush="#2B3953"
-              BorderThickness="1"
-              Padding="16">
+      <Border Classes="stat-card">
         <StackPanel Spacing="6">
-          <TextBlock Text="Sesiune medie" Foreground="#8EA0C3" FontSize="12"/>
-          <TextBlock Text="{Binding AverageSession}" Foreground="#F4F7FF" FontSize="24" FontWeight="Bold"/>
-          <TextBlock Text="Util pentru a observa perioade lungi fara schimbare de context." Foreground="#7386A8" TextWrapping="Wrap"/>
+          <TextBlock Text="Sesiune medie" Classes="metric-label"/>
+          <TextBlock Text="{Binding AverageSession}" Classes="metric-value"/>
+          <TextBlock Text="Util pentru a observa perioade lungi fara schimbare de context." Classes="metric-detail"/>
         </StackPanel>
       </Border>
 
-      <Border Width="210"
-              Margin="0,0,14,14"
-              CornerRadius="18"
-              Background="#172033"
-              BorderBrush="#2B3953"
-              BorderThickness="1"
-              Padding="16">
+      <Border Classes="stat-card">
         <StackPanel Spacing="6">
-          <TextBlock Text="Scor de concentrare" Foreground="#8EA0C3" FontSize="12"/>
-          <TextBlock Text="{Binding FocusScore}" Foreground="#8BFFB1" FontSize="24" FontWeight="Bold"/>
-          <TextBlock Text="Ponderea timpului petrecut in categorii orientate spre munca." Foreground="#7386A8" TextWrapping="Wrap"/>
+          <TextBlock Text="Scor de concentrare" Classes="metric-label"/>
+          <TextBlock Text="{Binding FocusScore}"
+                     Classes="metric-value"
+                     Foreground="{StaticResource BrushAccentSuccess}"/>
+          <TextBlock Text="Ponderea timpului petrecut in categorii orientate spre munca." Classes="metric-detail"/>
         </StackPanel>
       </Border>
 
-      <Border Width="210"
-              Margin="0,0,14,14"
-              CornerRadius="18"
-              Background="#172033"
-              BorderBrush="#2B3953"
-              BorderThickness="1"
-              Padding="16">
+      <Border Classes="stat-card">
         <StackPanel Spacing="6">
-          <TextBlock Text="Aplicatie principala" Foreground="#8EA0C3" FontSize="12"/>
-          <TextBlock Text="{Binding TopApplication}" Foreground="#7DD3FC" FontSize="24" FontWeight="Bold" TextWrapping="Wrap"/>
-          <TextBlock Text="Procesul care consuma cel mai mult timp de activitate monitorizat." Foreground="#7386A8" TextWrapping="Wrap"/>
+          <TextBlock Text="Aplicatie principala" Classes="metric-label"/>
+          <TextBlock Text="{Binding TopApplication}"
+                     Classes="metric-value"
+                     Foreground="{StaticResource BrushAccentPrimary}"
+                     TextWrapping="Wrap"/>
+          <TextBlock Text="Procesul care consuma cel mai mult timp de activitate monitorizat." Classes="metric-detail"/>
         </StackPanel>
       </Border>
 
-      <Border Width="210"
-              Margin="0,0,0,14"
-              CornerRadius="18"
-              Background="#172033"
-              BorderBrush="#2B3953"
-              BorderThickness="1"
-              Padding="16">
+      <Border Classes="stat-card"
+              Margin="0,0,0,14">
         <StackPanel Spacing="6">
-          <TextBlock Text="Puls interventii" Foreground="#8EA0C3" FontSize="12"/>
-          <TextBlock Text="{Binding InterventionPulse}" Foreground="#FBBF24" FontSize="24" FontWeight="Bold" TextWrapping="Wrap"/>
-          <TextBlock Text="Activitate recenta a pragurilor, utila pentru ajustarea limitelor." Foreground="#7386A8" TextWrapping="Wrap"/>
+          <TextBlock Text="Puls interventii" Classes="metric-label"/>
+          <TextBlock Text="{Binding InterventionPulse}"
+                     Classes="metric-value"
+                     Foreground="{StaticResource BrushAccentWarning}"
+                     TextWrapping="Wrap"/>
+          <TextBlock Text="Activitate recenta a pragurilor, utila pentru ajustarea limitelor." Classes="metric-detail"/>
         </StackPanel>
       </Border>
 

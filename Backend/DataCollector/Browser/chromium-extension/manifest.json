@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "Activity Monitor - Chromium",
+  "version": "1.0",
+  "permissions": [
+    "tabs",
+    "activeTab"
+  ],
+  "host_permissions": [
+    "<all_urls>",
+    "http://127.0.0.1:8091/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "Activity Monitor"
+  }
+}

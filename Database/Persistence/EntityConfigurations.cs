@@ -26,6 +26,7 @@ public sealed class SettingsEntityConfiguration : IEntityTypeConfiguration<Setti
         builder.Property(entity => entity.SettingsId).HasColumnName("settings_id").ValueGeneratedOnAdd();
         builder.Property(entity => entity.UserId).HasColumnName("user_id");
         builder.Property(entity => entity.RefreshTimeSeconds).HasColumnName("refresh_time_seconds");
+        builder.Property(entity => entity.SyncServerAddress).HasColumnName("sync_server_address").HasMaxLength(512);
 
         builder.HasOne(entity => entity.User)
             .WithMany(user => user.Settings)
@@ -33,6 +34,40 @@ public sealed class SettingsEntityConfiguration : IEntityTypeConfiguration<Setti
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasIndex(entity => entity.UserId).IsUnique();
+    }
+}
+
+public sealed class DeviceEntityConfiguration : IEntityTypeConfiguration<DeviceEntity>
+{
+    public void Configure(EntityTypeBuilder<DeviceEntity> builder)
+    {
+        builder.ToTable("devices");
+        builder.HasKey(entity => entity.DeviceId);
+        builder.Property(entity => entity.DeviceId).HasColumnName("device_id").ValueGeneratedOnAdd();
+        builder.Property(entity => entity.UserId).HasColumnName("user_id");
+        builder.Property(entity => entity.Name).HasColumnName("name").HasMaxLength(255);
+        builder.Property(entity => entity.DeviceType).HasColumnName("device_type").HasMaxLength(64);
+        builder.Property(entity => entity.Platform).HasColumnName("platform").HasMaxLength(128);
+        builder.Property(entity => entity.Fingerprint).HasColumnName("fingerprint").HasMaxLength(255);
+        builder.Property(entity => entity.Status).HasColumnName("status").HasMaxLength(32);
+        builder.Property(entity => entity.AppVersion).HasColumnName("app_version").HasMaxLength(64);
+        builder.Property(entity => entity.IsTrusted).HasColumnName("is_trusted");
+        builder.Property(entity => entity.IsCurrentDevice).HasColumnName("is_current_device");
+        builder.Property(entity => entity.CreatedAt).HasColumnName("created_at");
+        builder.Property(entity => entity.LastSeenAt).HasColumnName("last_seen_at");
+        builder.Property(entity => entity.RevokedAt).HasColumnName("revoked_at");
+
+        builder.HasOne(entity => entity.User)
+            .WithMany(user => user.Devices)
+            .HasForeignKey(entity => entity.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasIndex(entity => new { entity.UserId, entity.Fingerprint })
+            .IsUnique()
+            .HasDatabaseName("ux_devices_user_fingerprint");
+
+        builder.HasIndex(entity => new { entity.UserId, entity.LastSeenAt })
+            .HasDatabaseName("ix_devices_user_last_seen");
     }
 }
 

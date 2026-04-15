@@ -4,70 +4,45 @@
              x:DataType="viewModels:SettingsViewModel"
              x:Class="ActivityMonitor.Views.SettingsView">
 
+  <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+    <StackPanel Margin="20" Spacing="18">
 
-  <ScrollViewer VerticalScrollBarVisibility="Auto">
-    <StackPanel Margin="18" Spacing="18">
-
-      <Border CornerRadius="28"
-              Padding="24"
-              Background="#10233D"
-              BorderBrush="#27496E"
-              BorderThickness="1">
-        <Grid ColumnDefinitions="*,340" ColumnSpacing="18">
+      <Border Classes="page-hero">
+        <Grid ColumnDefinitions="*,340" ColumnSpacing="16">
           <StackPanel Spacing="10">
-            <TextBlock Text="Setari" FontSize="30" FontWeight="Bold" Foreground="White"/>
+            <TextBlock Text="Setari" Classes="page-title"/>
             <TextBlock Text="Ajusteaza ritmul monitorizarii, verifica ce stocheaza colectorul local si salveaza valori implicite sigure pentru clientul desktop."
-                       Foreground="#D6E4FF"
-                       FontSize="14"
-                       TextWrapping="Wrap"/>
+                       Classes="page-subtitle"/>
             <WrapPanel Orientation="Horizontal">
-              <Border Margin="0,10,10,0"
-                      Background="#163154"
-                      CornerRadius="999"
-                      Padding="12,6">
-                <TextBlock Text="{Binding MonitoringSummary}" Foreground="#EAF3FF"/>
+              <Border Classes="chip chip--overlay" Margin="0,10,10,0">
+                <TextBlock Text="{Binding MonitoringSummary}" Foreground="{StaticResource BrushTextOnSoft}"/>
               </Border>
-              <Border Margin="0,10,10,0"
-                      Background="#163154"
-                      CornerRadius="999"
-                      Padding="12,6">
-                <TextBlock Text="{Binding IntervalProfile}" Foreground="#EAF3FF"/>
+              <Border Classes="chip chip--overlay" Margin="0,10,10,0">
+                <TextBlock Text="{Binding IntervalProfile}" Foreground="{StaticResource BrushTextOnSoft}"/>
               </Border>
-              <Border Margin="0,10,0,0"
-                      Background="#163154"
-                      CornerRadius="999"
-                      Padding="12,6">
-                <TextBlock Text="{Binding LastSavedLabel}" Foreground="#EAF3FF"/>
+              <Border Classes="chip chip--overlay" Margin="0,10,0,0">
+                <TextBlock Text="{Binding LastSavedLabel}" Foreground="{StaticResource BrushTextOnSoft}"/>
               </Border>
             </WrapPanel>
           </StackPanel>
 
           <Border Grid.Column="1"
-                  CornerRadius="22"
-                  Padding="18"
-                  Background="#163154"
-                  BorderBrush="#2A527E"
-                  BorderThickness="1">
+                  Classes="panel-card panel-card--overlay"
+                  Padding="18">
             <StackPanel Spacing="12">
-              <TextBlock Text="Stare" Foreground="#A7C5E8"/>
-              <TextBlock Text="{Binding SaveStatus}" FontSize="20" FontWeight="Bold" Foreground="White" TextWrapping="Wrap"/>
-              <TextBlock Text="{Binding ValidationMessage}" Foreground="#D6E4FF" TextWrapping="Wrap"/>
+              <TextBlock Text="Stare" Foreground="{StaticResource BrushTextMuted}"/>
+              <TextBlock Text="{Binding SaveStatus}" FontSize="20" FontWeight="Bold" Foreground="{StaticResource BrushTextSecondary}" TextWrapping="Wrap"/>
+              <TextBlock Text="{Binding ValidationMessage}" Foreground="{StaticResource BrushTextMuted}" TextWrapping="Wrap"/>
 
               <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
                 <Button Grid.Column="0"
-                        Theme="{StaticResource ActionButtonTheme}"
                         Command="{Binding SaveCommand}"
-                        Background="#8BD3A7"
-                        Foreground="#062A16">
-                  <TextBlock Text="Salveaza modificarile" HorizontalAlignment="Center"/>
-                </Button>
+                        Classes="action-button success-button"
+                        Content="Salveaza modificarile"/>
                 <Button Grid.Column="1"
-                        Theme="{StaticResource ActionButtonTheme}"
                         Command="{Binding ReloadCommand}"
-                        Background="#D7E4F4"
-                        Foreground="#17314F">
-                  <TextBlock Text="Reincarca" HorizontalAlignment="Center"/>
-                </Button>
+                        Classes="action-button subtle-button"
+                        Content="Reincarca"/>
               </Grid>
             </StackPanel>
           </Border>
@@ -75,200 +50,143 @@
       </Border>
 
       <Grid ColumnDefinitions="1.2*,0.8*" ColumnSpacing="18">
-
         <StackPanel Spacing="18">
 
-          <Border CornerRadius="24"
-                  Padding="20"
-                  Background="#FFFFFF"
-                  BorderBrush="#D8E2F0"
-                  BorderThickness="1">
+          <Border Classes="panel-card">
             <StackPanel Spacing="16">
-              <TextBlock Text="Ritm de esantionare" FontSize="22" FontWeight="Bold" Foreground="#10233D"/>
+              <TextBlock Text="Ritm de esantionare" Classes="section-title"/>
               <TextBlock Text="Acest interval controleaza cat de des colectorul reevalueaza ferestrele active si regulile de interventie."
-                         Foreground="#52657F"
-                         TextWrapping="Wrap"/>
+                         Classes="section-subtitle"/>
 
               <WrapPanel Orientation="Horizontal">
                 <Button Margin="0,0,10,10"
-                        Theme="{StaticResource ActionButtonTheme}"
                         Command="{Binding UseHighPrecisionPresetCommand}"
-                        Background="#DCEBFF"
-                        Foreground="#163154">
-                  <TextBlock Foreground="#163154" Text="5s precizie ridicata"/>
-                </Button>
+                        Classes="action-button subtle-button"
+                        Content="5s precizie ridicata"/>
                 <Button Margin="0,0,10,10"
-                        Theme="{StaticResource ActionButtonTheme}"
                         Command="{Binding UseBalancedPresetCommand}"
-                        Background="#DFF8E8"
-                        Foreground="#114B29">
-                  <TextBlock Foreground="#114B29" Text="10s echilibrat"/>
-                </Button>
+                        Classes="action-button success-button"
+                        Content="10s echilibrat"/>
                 <Button Margin="0,0,0,10"
-                        Theme="{StaticResource ActionButtonTheme}"
                         Command="{Binding UseLowOverheadPresetCommand}"
-                        Background="#FCEFD8"
-                        Foreground="#6D4C10">
-                  <TextBlock Foreground="#6D4C10" Text="30s consum redus"/>
-                </Button>
+                        Classes="action-button warning-button"
+                        Content="30s consum redus"/>
               </WrapPanel>
 
               <Grid ColumnDefinitions="220,*" ColumnSpacing="16">
                 <StackPanel Spacing="8">
-                  <TextBlock Text="Interval de reimprospatare (secunde)" Foreground="#10233D" FontWeight="SemiBold"/>
+                  <TextBlock Text="Interval de reimprospatare (secunde)" Classes="field-label"/>
                   <TextBox Text="{Binding RefreshIntervalSeconds}"
                            Watermark="10"
-                           FontSize="18"
-                           Background="#F6F9FD"
-                           Foreground="#10233D"
-                           BorderBrush="#C9D8EC"
-                           BorderThickness="1"
-                           Padding="14,12"/>
-                  <TextBlock Text="Interval acceptat: 1 pana la 600 secunde." Foreground="#52657F"/>
+                           FontSize="18"/>
+                  <TextBlock Text="Interval acceptat: 1 pana la 600 secunde." Classes="section-subtitle"/>
                 </StackPanel>
 
                 <Border Grid.Column="1"
-                        CornerRadius="18"
-                        Padding="16"
-                        Background="#F5F8FC"
-                        BorderBrush="#D8E2F0"
-                        BorderThickness="1">
+                        Classes="panel-card panel-card--muted"
+                        Padding="16">
                   <StackPanel Spacing="8">
-                    <TextBlock Text="Impact estimat" FontWeight="SemiBold" Foreground="#10233D"/>
-                    <TextBlock Text="{Binding IntervalImpact}" FontSize="22" FontWeight="Bold" Foreground="#17314F"/>
-                    <TextBlock Text="{Binding ValidationMessage}" Foreground="#52657F" TextWrapping="Wrap"/>
+                    <TextBlock Text="Impact estimat" Classes="field-label"/>
+                    <TextBlock Text="{Binding IntervalImpact}" FontSize="22" FontWeight="Bold" Foreground="{StaticResource BrushTextSecondary}"/>
+                    <TextBlock Text="{Binding ValidationMessage}" Classes="section-subtitle"/>
                   </StackPanel>
                 </Border>
               </Grid>
             </StackPanel>
           </Border>
 
-          <Border CornerRadius="24"
-                  Padding="20"
-                  Background="#FFFFFF"
-                  BorderBrush="#D8E2F0"
-                  BorderThickness="1">
+          <Border Classes="panel-card">
             <StackPanel Spacing="16">
-              <TextBlock Text="Persistenta si rulare" FontSize="22" FontWeight="Bold" Foreground="#10233D"/>
+              <TextBlock Text="Persistenta si rulare" Classes="section-title"/>
 
               <StackPanel Spacing="8">
-                <TextBlock Text="Cale baza de date" Foreground="#10233D" FontWeight="SemiBold"/>
+                <TextBlock Text="Cale baza de date" Classes="field-label"/>
                 <TextBox Text="{Binding DatabasePath}"
                          IsReadOnly="True"
-                         TextWrapping="Wrap"
-                         Background="#F6F9FD"
-                         Foreground="#10233D"
-                         BorderBrush="#C9D8EC"
-                         BorderThickness="1"
-                         Padding="14,12"/>
+                         TextWrapping="Wrap"/>
               </StackPanel>
 
               <Grid ColumnDefinitions="*,*" ColumnSpacing="16">
                 <StackPanel Spacing="8">
-                  <TextBlock Text="Stare baza de date" Foreground="#10233D" FontWeight="SemiBold"/>
-                  <Border Background="#F5F8FC"
-                          BorderBrush="#D8E2F0"
-                          BorderThickness="1"
-                          CornerRadius="16"
+                  <TextBlock Text="Stare baza de date" Classes="field-label"/>
+                  <Border Classes="panel-card panel-card--muted"
                           Padding="14">
-                    <TextBlock Text="{Binding DatabaseStatus}" Foreground="#17314F" TextWrapping="Wrap"/>
+                    <TextBlock Text="{Binding DatabaseStatus}" Foreground="{StaticResource BrushTextPrimary}" TextWrapping="Wrap"/>
                   </Border>
                 </StackPanel>
 
                 <StackPanel Grid.Column="1" Spacing="8">
-                  <TextBlock Text="Mutex serviciu" Foreground="#10233D" FontWeight="SemiBold"/>
+                  <TextBlock Text="Mutex serviciu" Classes="field-label"/>
                   <TextBox Text="{Binding ServiceMutexName}"
-                           IsReadOnly="True"
-                           Background="#F6F9FD"
-                           Foreground="#10233D"
-                           BorderBrush="#C9D8EC"
-                           BorderThickness="1"
-                           Padding="14,12"/>
+                           IsReadOnly="True"/>
                 </StackPanel>
               </Grid>
+
+              <StackPanel Spacing="8">
+                <TextBlock Text="Server sincronizare" Classes="field-label"/>
+                <TextBox Text="{Binding SyncServerAddress}"
+                         Watermark="Ex: 192.168.1.10:8080 sau https://sync.example"/>
+                <Border Classes="panel-card panel-card--muted"
+                        Padding="14">
+                  <StackPanel Spacing="6">
+                    <TextBlock Text="Endpoint sincronizare" Classes="field-label"/>
+                    <TextBlock Text="{Binding SyncEndpointPreview}" Foreground="{StaticResource BrushTextPrimary}" TextWrapping="Wrap"/>
+                    <TextBlock Text="Aplicatia trimite un POST la /api/sync/devices si poate importa optional colectia JSON devices din raspuns."
+                               Classes="section-subtitle"/>
+                  </StackPanel>
+                </Border>
+              </StackPanel>
             </StackPanel>
           </Border>
-
         </StackPanel>
 
         <StackPanel Grid.Column="1" Spacing="18">
-
-          <Border CornerRadius="24"
-                  Padding="20"
-                  Background="#FFFDF8"
-                  BorderBrush="#E7DCC8"
-                  BorderThickness="1">
+          <Border Classes="panel-card panel-card--warning">
             <StackPanel Spacing="16">
-              <TextBlock Text="Instantaneu acoperire" FontSize="22" FontWeight="Bold" Foreground="#473113"/>
+              <TextBlock Text="Instantaneu acoperire" Classes="section-title"/>
 
-              <Border CornerRadius="18"
-                      Padding="16"
-                      Background="#FFFFFF"
-                      BorderBrush="#E7DCC8"
-                      BorderThickness="1">
+              <Border Classes="panel-card panel-card--muted" Padding="16">
                 <StackPanel Spacing="6">
-                  <TextBlock Text="Acoperire praguri" Foreground="#7A5A24" FontSize="12"/>
-                  <TextBlock Text="{Binding ThresholdCoverage}" Foreground="#473113" FontWeight="SemiBold" TextWrapping="Wrap"/>
+                  <TextBlock Text="Acoperire praguri" Classes="metric-label"/>
+                  <TextBlock Text="{Binding ThresholdCoverage}" Foreground="{StaticResource BrushTextSecondary}" FontWeight="SemiBold" TextWrapping="Wrap"/>
                 </StackPanel>
               </Border>
 
-              <Border CornerRadius="18"
-                      Padding="16"
-                      Background="#FFFFFF"
-                      BorderBrush="#E7DCC8"
-                      BorderThickness="1">
+              <Border Classes="panel-card panel-card--muted" Padding="16">
                 <StackPanel Spacing="6">
-                  <TextBlock Text="Acoperire activitate" Foreground="#7A5A24" FontSize="12"/>
-                  <TextBlock Text="{Binding ActivityCoverage}" Foreground="#473113" FontWeight="SemiBold" TextWrapping="Wrap"/>
+                  <TextBlock Text="Acoperire activitate" Classes="metric-label"/>
+                  <TextBlock Text="{Binding ActivityCoverage}" Foreground="{StaticResource BrushTextSecondary}" FontWeight="SemiBold" TextWrapping="Wrap"/>
                 </StackPanel>
               </Border>
 
-              <Border CornerRadius="18"
-                      Padding="16"
-                      Background="#FFFFFF"
-                      BorderBrush="#E7DCC8"
-                      BorderThickness="1">
+              <Border Classes="panel-card panel-card--muted" Padding="16">
                 <StackPanel Spacing="6">
-                  <TextBlock Text="Istoric interventii" Foreground="#7A5A24" FontSize="12"/>
-                  <TextBlock Text="{Binding InterventionCoverage}" Foreground="#473113" FontWeight="SemiBold" TextWrapping="Wrap"/>
+                  <TextBlock Text="Istoric interventii" Classes="metric-label"/>
+                  <TextBlock Text="{Binding InterventionCoverage}" Foreground="{StaticResource BrushTextSecondary}" FontWeight="SemiBold" TextWrapping="Wrap"/>
                 </StackPanel>
               </Border>
 
-              <Border CornerRadius="18"
-                      Padding="16"
-                      Background="#FFFFFF"
-                      BorderBrush="#E7DCC8"
-                      BorderThickness="1">
+              <Border Classes="panel-card panel-card--muted" Padding="16">
                 <StackPanel Spacing="6">
-                  <TextBlock Text="Captura browser" Foreground="#7A5A24" FontSize="12"/>
-                  <TextBlock Text="{Binding BrowserCoverage}" Foreground="#473113" FontWeight="SemiBold" TextWrapping="Wrap"/>
+                  <TextBlock Text="Captura browser" Classes="metric-label"/>
+                  <TextBlock Text="{Binding BrowserCoverage}" Foreground="{StaticResource BrushTextSecondary}" FontWeight="SemiBold" TextWrapping="Wrap"/>
                 </StackPanel>
               </Border>
             </StackPanel>
           </Border>
 
-          <Border CornerRadius="24"
-                  Padding="20"
-                  Background="#FFFFFF"
-                  BorderBrush="#D8E2F0"
-                  BorderThickness="1">
+          <Border Classes="panel-card">
             <StackPanel Spacing="14">
-              <TextBlock Text="Gestionarea modificarilor" FontSize="22" FontWeight="Bold" Foreground="#10233D"/>
+              <TextBlock Text="Gestionarea modificarilor" Classes="section-title"/>
               <TextBlock Text="Foloseste profilul implicit daca vrei date de trend fiabile fara sa incarci stocarea. Treci la 5 secunde doar daca limitele de interventie au nevoie de sincronizare mai stricta."
-                         Foreground="#52657F"
-                         TextWrapping="Wrap"/>
+                         Classes="section-subtitle"/>
 
-              <Button Theme="{StaticResource ActionButtonTheme}"
-                      Command="{Binding ResetDefaultsCommand}"
-                      Background="#E7EEF7"
-                      Foreground="#17314F">
-                <TextBlock Foreground="#17314F" Text="Reseteaza intervalul la implicit"/>
-              </Button>
+              <Button Command="{Binding ResetDefaultsCommand}"
+                      Classes="action-button subtle-button"
+                      Content="Reseteaza intervalul la implicit"/>
             </StackPanel>
           </Border>
-
         </StackPanel>
-
       </Grid>
 
     </StackPanel>

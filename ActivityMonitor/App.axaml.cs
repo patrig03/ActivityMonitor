@@ -7,12 +7,15 @@ using System.Linq;
 using Avalonia.Markup.Xaml;
 using ActivityMonitor.ViewModels;
 using ActivityMonitor.Views;
+using ActivityMonitor.Services;
 using Avalonia.Markup.Xaml.Templates;
 
 namespace ActivityMonitor;
 
 public partial class App : Application
 {
+    public BackendProcessController BackendProcessController { get; } = new();
+
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);

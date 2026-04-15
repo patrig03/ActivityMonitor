@@ -6,6 +6,7 @@ public sealed class ActivityMonitorDbContext(DbContextOptions<ActivityMonitorDbC
 {
     public DbSet<UserEntity> Users => Set<UserEntity>();
     public DbSet<SettingsEntity> Settings => Set<SettingsEntity>();
+    public DbSet<DeviceEntity> Devices => Set<DeviceEntity>();
     public DbSet<CategoryEntity> Categories => Set<CategoryEntity>();
     public DbSet<ApplicationEntity> Applications => Set<ApplicationEntity>();
     public DbSet<SessionEntity> Sessions => Set<SessionEntity>();

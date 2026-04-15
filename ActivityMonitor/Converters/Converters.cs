@@ -1,37 +1,4 @@
-using System;
-using System.Globalization;
-using Avalonia.Data.Converters;
+// This file is kept for backwards compatibility
+// Individual converters have been moved to separate files
+namespace ActivityMonitor.Converters;
 
-namespace ActivityMonitor.Converters
-{
-    public class IsCategoryTwoConverter : IValueConverter
-    {
-        public object? Convert(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
-        {
-            if (value is int id && id == 2)
-                return true;
-            return false;
-        }
-
-        public object? ConvertBack(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture) =>
-            throw new NotImplementedException();
-    }
-    public class EqualsConverter : IValueConverter
-    {
-        public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
-        {
-            if (value is null || parameter is null)
-            {
-                return false;
-            }
-
-            return string.Equals(
-                value.ToString(),
-                parameter.ToString(),
-                StringComparison.OrdinalIgnoreCase);
-        }
-
-        public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
-            => throw new NotImplementedException();
-    }
-}

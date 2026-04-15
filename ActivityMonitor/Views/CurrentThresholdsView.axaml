@@ -17,7 +17,6 @@
             CanUserResizeColumns="True"
             CanUserSortColumns="True"
             FontSize="13"
-            Foreground="#E0E0E0"
             MinHeight="260">
     <DataGrid.Columns>
       <DataGridTextColumn Header="Id" Binding="{Binding Threshold.Id}" Width="Auto"/>
@@ -31,12 +30,9 @@
         <DataGridTemplateColumn.CellTemplate>
           <DataTemplate>
             <Button Content="Editeaza"
-                    Classes="nav-button"
+                    Classes="action-button subtle-button"
                     Command="{Binding #Root.DataContext.EditRowCommand}"
                     CommandParameter="{Binding}"
-                    Background="#D9E5F5"
-                    Foreground="#112039"
-                    BorderThickness="0"
                     CornerRadius="10"
                     Padding="10,6"/>
           </DataTemplate>
@@ -47,12 +43,9 @@
         <DataGridTemplateColumn.CellTemplate>
           <DataTemplate>
             <Button Content="Sterge"
-                    Classes="nav-button"
+                    Classes="action-button warning-button"
                     Command="{Binding #Root.DataContext.DeleteCommand}"
                     CommandParameter="{Binding}"
-                    Background="#F4CA7A"
-                    Foreground="#452B00"
-                    BorderThickness="0"
                     CornerRadius="10"
                     Padding="10,6"/>
           </DataTemplate>

@@ -9,9 +9,29 @@ public sealed class UserEntity
     public DateTime CreatedAt { get; set; }
 
     public ICollection<SettingsEntity> Settings { get; set; } = new List<SettingsEntity>();
+    public ICollection<DeviceEntity> Devices { get; set; } = new List<DeviceEntity>();
     public ICollection<SessionEntity> Sessions { get; set; } = new List<SessionEntity>();
     public ICollection<BrowserActivityEntity> BrowserActivities { get; set; } = new List<BrowserActivityEntity>();
     public ICollection<ThresholdEntity> Thresholds { get; set; } = new List<ThresholdEntity>();
+}
+
+public sealed class DeviceEntity
+{
+    public int DeviceId { get; set; }
+    public int UserId { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string DeviceType { get; set; } = "Desktop";
+    public string Platform { get; set; } = string.Empty;
+    public string Fingerprint { get; set; } = string.Empty;
+    public string Status { get; set; } = "Active";
+    public string? AppVersion { get; set; }
+    public bool IsTrusted { get; set; }
+    public bool IsCurrentDevice { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public DateTime LastSeenAt { get; set; }
+    public DateTime? RevokedAt { get; set; }
+
+    public UserEntity? User { get; set; }
 }
 
 public sealed class SettingsEntity
@@ -19,6 +39,7 @@ public sealed class SettingsEntity
     public int SettingsId { get; set; }
     public int UserId { get; set; }
     public int RefreshTimeSeconds { get; set; }
+    public string? SyncServerAddress { get; set; }
 
     public UserEntity? User { get; set; }
 }

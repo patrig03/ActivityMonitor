@@ -4,170 +4,128 @@
              x:DataType="viewModels:BrowserViewModel"
              x:Class="ActivityMonitor.Views.BrowserView">
 
-  <!-- <UserControl.Background> -->
-  <!--   <LinearGradientBrush StartPoint="0,0" EndPoint="1,1"> -->
-  <!--     <GradientStop Color="#F7F3EB" Offset="0"/> -->
-  <!--     <GradientStop Color="#E7EEF4" Offset="0.55"/> -->
-  <!--     <GradientStop Color="#F8FBFF" Offset="1"/> -->
-  <!--   </LinearGradientBrush> -->
-  <!-- </UserControl.Background> -->
-
   <UserControl.Resources>
     <DataTemplate x:Key="DomainTemplate" DataType="viewModels:BrowserDomainSummary">
-      <Border Margin="0,0,0,10"
-              Padding="14"
-              CornerRadius="16"
-              Background="#FFFFFF"
-              BorderBrush="#D7E2F0"
-              BorderThickness="1">
+      <Border Classes="panel-card panel-card--muted"
+              Margin="0,0,0,10"
+              Padding="14">
         <StackPanel Spacing="6">
           <Grid ColumnDefinitions="*,Auto">
-            <TextBlock Text="{Binding Domain}" Foreground="#10233D" FontWeight="Bold"/>
-            <TextBlock Grid.Column="1" Text="{Binding RecordCount}" Foreground="#3D5A80"/>
+            <TextBlock Text="{Binding Domain}" Foreground="{StaticResource BrushTextSecondary}" FontWeight="Bold"/>
+            <TextBlock Grid.Column="1" Text="{Binding RecordCount}" Foreground="{StaticResource BrushAccentPrimary}"/>
           </Grid>
-          <TextBlock Text="{Binding Share}" Foreground="#5A6D86"/>
-          <TextBlock Text="{Binding SampleUrl}" Foreground="#7A889A" TextWrapping="Wrap"/>
+          <TextBlock Text="{Binding Share}" Foreground="{StaticResource BrushTextMuted}"/>
+          <TextBlock Text="{Binding SampleUrl}" Foreground="{StaticResource BrushTextSubtle}" TextWrapping="Wrap"/>
         </StackPanel>
       </Border>
     </DataTemplate>
 
     <DataTemplate x:Key="BrowserAppTemplate" DataType="viewModels:BrowserAppSummary">
-      <Border Margin="0,0,0,10"
-              Padding="14"
-              CornerRadius="16"
-              Background="#FFFFFF"
-              BorderBrush="#D7E2F0"
-              BorderThickness="1">
+      <Border Classes="panel-card panel-card--muted"
+              Margin="0,0,0,10"
+              Padding="14">
         <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
           <StackPanel Spacing="4">
-            <TextBlock Text="{Binding ProcessName}" Foreground="#10233D" FontWeight="Bold"/>
-            <TextBlock Text="{Binding CategoryName}" Foreground="#5A6D86"/>
+            <TextBlock Text="{Binding ProcessName}" Foreground="{StaticResource BrushTextSecondary}" FontWeight="Bold"/>
+            <TextBlock Text="{Binding CategoryName}" Foreground="{StaticResource BrushTextMuted}"/>
           </StackPanel>
-          <TextBlock Grid.Column="1" Text="{Binding RecordCount}" Foreground="#17314F" FontWeight="SemiBold" VerticalAlignment="Center"/>
+          <TextBlock Grid.Column="1" Text="{Binding RecordCount}" Foreground="{StaticResource BrushTextSecondary}" FontWeight="SemiBold" VerticalAlignment="Center"/>
         </Grid>
       </Border>
     </DataTemplate>
   </UserControl.Resources>
 
-  <ScrollViewer VerticalScrollBarVisibility="Auto">
-    <StackPanel Margin="18" Spacing="18">
-      <Border CornerRadius="28"
-              Padding="24"
-              Background="#FFFFFF"
-              BorderBrush="#D7E2F0"
-              BorderThickness="1">
+  <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+    <StackPanel Margin="20" Spacing="18">
+      <Border Classes="page-hero">
         <Grid ColumnDefinitions="*,300" ColumnSpacing="18">
           <StackPanel Spacing="10">
-            <TextBlock Text="Activitate browser" FontSize="30" FontWeight="Bold" Foreground="#10233D"/>
+            <TextBlock Text="Activitate browser" Classes="page-title"/>
             <TextBlock Text="Inspecteaza URL-urile capturate, concentrarea pe domenii si procesele de browser monitorizate care genereaza cele mai multe inregistrari."
-                       Foreground="#52657F"
-                       TextWrapping="Wrap"/>
-            <Border Background="#EDF4FB"
-                    CornerRadius="999"
-                    Padding="12,6"
+                       Classes="page-subtitle"/>
+            <Border Classes="chip chip--overlay"
                     HorizontalAlignment="Left"
                     Margin="0,10,0,0">
-              <TextBlock Text="{Binding BrowserStatus}" Foreground="#17314F"/>
+              <TextBlock Text="{Binding BrowserStatus}" Foreground="{StaticResource BrushTextOnSoft}"/>
             </Border>
           </StackPanel>
 
           <Button Grid.Column="1"
                   Command="{Binding RefreshCommand}"
-                  Background="#17314F"
-                  Foreground="White"
-                  BorderThickness="0"
-                  CornerRadius="16"
-                  Padding="18,14"
-                  VerticalAlignment="Center"
-                  HorizontalAlignment="Stretch">
-            <TextBlock Text="Reincarca datele browserului" HorizontalAlignment="Center" FontWeight="Bold"/>
-          </Button>
+                  Classes="action-button primary-button"
+                  Content="Reincarca datele browserului"
+                  VerticalAlignment="Center"/>
         </Grid>
       </Border>
 
       <WrapPanel Orientation="Horizontal">
-        <Border Width="220" Margin="0,0,14,14" Padding="18" CornerRadius="20" Background="#FFFFFF" BorderBrush="#D7E2F0" BorderThickness="1">
+        <Border Classes="stat-card">
           <StackPanel Spacing="6">
-            <TextBlock Text="Inregistrari browser" Foreground="#5A6D86"/>
-            <TextBlock Text="{Binding TotalEvents}" Foreground="#10233D" FontSize="26" FontWeight="Bold"/>
-            <TextBlock Text="Total intrari URL capturate" Foreground="#7A889A"/>
+            <TextBlock Text="Inregistrari browser" Classes="metric-label"/>
+            <TextBlock Text="{Binding TotalEvents}" Classes="metric-value"/>
+            <TextBlock Text="Total intrari URL capturate" Classes="metric-detail"/>
           </StackPanel>
         </Border>
-        <Border Width="220" Margin="0,0,14,14" Padding="18" CornerRadius="20" Background="#FFFFFF" BorderBrush="#D7E2F0" BorderThickness="1">
+        <Border Classes="stat-card">
           <StackPanel Spacing="6">
-            <TextBlock Text="Domenii unice" Foreground="#5A6D86"/>
-            <TextBlock Text="{Binding UniqueDomains}" Foreground="#10233D" FontSize="26" FontWeight="Bold"/>
-            <TextBlock Text="Gazde distincte in setul capturat" Foreground="#7A889A"/>
+            <TextBlock Text="Domenii unice" Classes="metric-label"/>
+            <TextBlock Text="{Binding UniqueDomains}" Classes="metric-value"/>
+            <TextBlock Text="Gazde distincte in setul capturat" Classes="metric-detail"/>
           </StackPanel>
         </Border>
-        <Border Width="220" Margin="0,0,14,14" Padding="18" CornerRadius="20" Background="#FFFFFF" BorderBrush="#D7E2F0" BorderThickness="1">
+        <Border Classes="stat-card">
           <StackPanel Spacing="6">
-            <TextBlock Text="Aplicatii browser monitorizate" Foreground="#5A6D86"/>
-            <TextBlock Text="{Binding TrackedBrowsers}" Foreground="#10233D" FontSize="26" FontWeight="Bold"/>
-            <TextBlock Text="Id-uri distincte de aplicatii care produc inregistrari browser" Foreground="#7A889A" TextWrapping="Wrap"/>
+            <TextBlock Text="Aplicatii browser monitorizate" Classes="metric-label"/>
+            <TextBlock Text="{Binding TrackedBrowsers}" Classes="metric-value"/>
+            <TextBlock Text="Id-uri distincte de aplicatii care produc inregistrari browser" Classes="metric-detail"/>
           </StackPanel>
         </Border>
-        <Border Width="260" Margin="0,0,0,14" Padding="18" CornerRadius="20" Background="#FFFFFF" BorderBrush="#D7E2F0" BorderThickness="1">
+        <Border Classes="stat-card" Width="260" Margin="0,0,0,14">
           <StackPanel Spacing="6">
-            <TextBlock Text="Domeniu principal" Foreground="#5A6D86"/>
-            <TextBlock Text="{Binding TopDomain}" Foreground="#10233D" FontSize="26" FontWeight="Bold" TextWrapping="Wrap"/>
-            <TextBlock Text="Cea mai frecventa gazda din setul curent de date browser" Foreground="#7A889A" TextWrapping="Wrap"/>
+            <TextBlock Text="Domeniu principal" Classes="metric-label"/>
+            <TextBlock Text="{Binding TopDomain}" Classes="metric-value" TextWrapping="Wrap"/>
+            <TextBlock Text="Cea mai frecventa gazda din setul curent de date browser" Classes="metric-detail"/>
           </StackPanel>
         </Border>
       </WrapPanel>
 
       <Grid ColumnDefinitions="*,*" ColumnSpacing="18">
-        <Border Padding="18"
-                CornerRadius="24"
-                Background="#FDFEFE"
-                BorderBrush="#D7E2F0"
-                BorderThickness="1">
+        <Border Classes="panel-card">
           <StackPanel Spacing="12">
-            <TextBlock Text="Domenii principale" FontSize="20" FontWeight="Bold" Foreground="#10233D"/>
-            <TextBlock Text="Ce gazde apar cel mai des in setul curent de capturi." Foreground="#52657F"/>
+            <TextBlock Text="Domenii principale" Classes="section-title"/>
+            <TextBlock Text="Ce gazde apar cel mai des in setul curent de capturi." Classes="section-subtitle"/>
             <ItemsControl ItemsSource="{Binding TopDomains}" ItemTemplate="{StaticResource DomainTemplate}"/>
           </StackPanel>
         </Border>
 
-        <Border Grid.Column="1"
-                Padding="18"
-                CornerRadius="24"
-                Background="#FDFEFE"
-                BorderBrush="#D7E2F0"
-                BorderThickness="1">
+        <Border Grid.Column="1" Classes="panel-card">
           <StackPanel Spacing="12">
-            <TextBlock Text="Procese browser" FontSize="20" FontWeight="Bold" Foreground="#10233D"/>
-            <TextBlock Text="Aplicatii monitorizate care genereaza inregistrari URL." Foreground="#52657F"/>
+            <TextBlock Text="Procese browser" Classes="section-title"/>
+            <TextBlock Text="Aplicatii monitorizate care genereaza inregistrari URL." Classes="section-subtitle"/>
             <ItemsControl ItemsSource="{Binding BrowserApps}" ItemTemplate="{StaticResource BrowserAppTemplate}"/>
           </StackPanel>
         </Border>
       </Grid>
 
-      <Border Padding="18"
-              CornerRadius="24"
-              Background="#FDFEFE"
-              BorderBrush="#D7E2F0"
-              BorderThickness="1">
+      <Border Classes="panel-card">
         <StackPanel Spacing="14">
-          <TextBlock Text="URL-uri capturate recent" FontSize="20" FontWeight="Bold" Foreground="#10233D"/>
+          <TextBlock Text="URL-uri capturate recent" Classes="section-title"/>
           <TextBlock Text="Ordonate dupa cel mai nou id de activitate."
-                     Foreground="#52657F"
-                     TextWrapping="Wrap"/>
+                     Classes="section-subtitle"/>
           <DataGrid ItemsSource="{Binding RecentActivity}"
                     AutoGenerateColumns="False"
                     IsReadOnly="True"
                     SelectionMode="Single"
-                    Foreground="Black"
                     CanUserResizeColumns="True"
                     CanUserSortColumns="True"
                     MinHeight="320">
             <DataGrid.Columns>
-              <DataGridTextColumn Foreground="Black" Header="Id" Binding="{Binding ActivityId}" Width="Auto"/>
-              <DataGridTextColumn Foreground="Black" Header="Domeniu" Binding="{Binding Domain}" Width="1.5*"/>
-              <DataGridTextColumn Foreground="Black" Header="URL" Binding="{Binding Url}" Width="*"/>
-              <DataGridTextColumn Foreground="Black" Header="Proces" Binding="{Binding BrowserProcess}" Width="1.5*"/>
-              <DataGridTextColumn Foreground="Black" Header="Categorie" Binding="{Binding CategoryName}" Width="1.5*"/>
-              <DataGridTextColumn Foreground="Black" Header="Utilizator" Binding="{Binding UserId}" Width="Auto"/>
+              <DataGridTextColumn Header="Id" Binding="{Binding ActivityId}" Width="Auto"/>
+              <DataGridTextColumn Header="Domeniu" Binding="{Binding Domain}" Width="1.5*"/>
+              <DataGridTextColumn Header="URL" Binding="{Binding Url}" Width="*"/>
+              <DataGridTextColumn Header="Proces" Binding="{Binding BrowserProcess}" Width="1.5*"/>
+              <DataGridTextColumn Header="Categorie" Binding="{Binding CategoryName}" Width="1.5*"/>
+              <DataGridTextColumn Header="Utilizator" Binding="{Binding UserId}" Width="Auto"/>
             </DataGrid.Columns>
           </DataGrid>
         </StackPanel>

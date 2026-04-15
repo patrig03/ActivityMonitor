@@ -6,14 +6,16 @@ public class BrowserRecord
 {
     public int Id { get; set; }
     public int BrowserId { get; set; }
-    public string Url { get; set; }
+    public int? CategoryId { get; set; }
+    public string Url { get; set; } = string.Empty;
 
     public string Domain
     {
         get
         {
-            var uri = new Uri(Url);
-            return uri.Host;
+            return Uri.TryCreate(Url, UriKind.Absolute, out var uri)
+                ? uri.Host
+                : string.Empty;
         }
     }
 
@@ -24,6 +26,7 @@ public class BrowserRecord
             UserId = 1,
             ActivityId = Id,
             AppId = BrowserId,
+            CategoryId = CategoryId,
             Url = Url,
         };
     }
@@ -33,7 +36,8 @@ public class BrowserRecord
         {
             Id = dto.ActivityId,
             BrowserId = dto.AppId,
-            Url = dto.Url,
+            CategoryId = dto.CategoryId,
+            Url = dto.Url ?? string.Empty,
         };
     }
 }

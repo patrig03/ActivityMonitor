@@ -149,9 +149,9 @@ public class ReportsViewModel : ViewModelBase
                 WindowCount = $"{report.Applications.Sum(app => app.Windows.Count())} ferestre capturate",
                 ThresholdCount = $"{report.Thresholds.Count()} praguri asociate",
                 InterventionCount = $"{interventionsForCategory.Count} interventii asociate",
-                BrowserActivityCount = report.Category.Id == 2
-                    ? $"{browserEventCount} inregistrari browser"
-                    : "Detaliile browserului sunt monitorizate separat",
+                BrowserActivityCount = report.BrowserDetails.Any()
+                    ? $"{report.BrowserDetails.Count()} inregistrari browser asociate"
+                    : "Fara activitate browser asociata",
                 TopProcesses = new ObservableCollection<ReportProcessSummary>(topProcesses),
                 Highlight = topProcesses.FirstOrDefault()?.ProcessName ?? "Nu exista activitate de proces"
             });

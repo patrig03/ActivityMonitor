@@ -418,6 +418,7 @@ public sealed class DatabaseManager : IDatabaseManager
         {
             UserId = activity.UserId,
             AppId = activity.AppId,
+            CategoryId = activity.CategoryId,
             Url = activity.Url
         });
         context.SaveChanges();
@@ -721,6 +722,7 @@ public sealed class DatabaseManager : IDatabaseManager
             ActivityId = entity.ActivityId,
             UserId = entity.UserId,
             AppId = entity.AppId,
+            CategoryId = entity.CategoryId,
             Url = entity.Url
         };
     }

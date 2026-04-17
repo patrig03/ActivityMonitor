@@ -106,36 +106,33 @@ public class DataCollectorController : IDisposable
             }
         }
 
-        var session = new SessionRecord
+        // switch app → close previous session (if any) and start a new one
+        if (_previousRecord == null || _previousRecord.ApplicationId != appid)
         {
-            ApplicationId = appid,
-            UserId = 1,
-            StartTime = _previousRecord.StartTime,
-        };
-        var sessionId = db.IsInDb(session.ToDto());
+            if (_previousRecord != null)
+            {
+                _previousRecord.EndTime = DateTime.Now;
+                db.UpdateSession(_previousRecord.ToDto());
+            }
 
-        if (sessionId == null)
-        {
-            session.StartTime = DateTime.Now;
-            session.EndTime = DateTime.Now + TimeSpan.FromSeconds(1);
-            _previousRecord = session;
-            _previousRecord.Id = db.InsertSession(session.ToDto());
+            var newSession = new SessionRecord
+            {
+                ApplicationId = appid,
+                UserId = 1,
+                StartTime = DateTime.Now,
+                EndTime = DateTime.Now
+            };
+
+            newSession.Id = db.InsertSession(newSession.ToDto());
+            _previousRecord = newSession;
+
             return app;
         }
 
-        var sdto = db.GetSession(sessionId.Value);
-        if (sdto == null) throw new Exception("Session not found");
-        session = SessionRecord.FromDto(sdto);
-        if (_previousRecord.Id == sessionId)
-        {
-            session.EndTime = DateTime.Now;
-            db.UpdateSession(session.ToDto());
-        }
-        else
-        {
-            _previousRecord = session;
-            db.InsertSession(session.ToDto());
-        }
+        // same app → extend current session
+        _previousRecord.EndTime = DateTime.Now;
+        db.UpdateSession(_previousRecord.ToDto());
+
         return app;
     }
 

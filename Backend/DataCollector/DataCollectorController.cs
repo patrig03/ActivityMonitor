@@ -14,7 +14,7 @@ public class DataCollectorController : IDisposable
     private readonly IClassifier _classifier = new RuleBasedClassifier();
     private readonly FirefoxCollector _firefoxCollector = new();
     private readonly ChromiumCollector _chromiumCollector = new();
-    private readonly IApplicationDataCollector _appCollector = new LinuxAppCollector();
+    private readonly IApplicationDataCollector _appCollector = new WindowsAppCollector();
 
     private string? _lastBrowserProcessName = null;
 

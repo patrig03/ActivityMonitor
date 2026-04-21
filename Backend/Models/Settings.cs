@@ -9,6 +9,11 @@ public class Settings
     public int UserId { get; set; } = 1;
     public TimeSpan DeltaTime { get; set; } = TimeSpan.FromSeconds(10);
     public string? SyncServerAddress { get; set; }
+    public string? SyncEmail { get; set; }
+    public string? SyncAuthToken { get; set; }
+    public string? SyncRemoteUserId { get; set; }
+    public string? SyncDeviceId { get; set; }
+    public DateTime? SyncLastServerTimeUtc { get; set; }
 
     public static string MutexName { get => "Global\\ActivityMonitorBackgroundService"; }
 
@@ -35,6 +40,11 @@ public class Settings
             UserId = UserId,
             DeltaTimeSeconds = (int)DeltaTime.TotalSeconds,
             SyncServerAddress = SyncServerAddress,
+            SyncEmail = SyncEmail,
+            SyncAuthToken = SyncAuthToken,
+            SyncRemoteUserId = SyncRemoteUserId,
+            SyncDeviceId = SyncDeviceId,
+            SyncLastServerTimeUtc = SyncLastServerTimeUtc,
         };
     }
     public static Settings FromDto(SettingsDto dto)
@@ -45,6 +55,11 @@ public class Settings
             UserId = dto.UserId,
             DeltaTime = TimeSpan.FromSeconds(dto.DeltaTimeSeconds),
             SyncServerAddress = dto.SyncServerAddress,
+            SyncEmail = dto.SyncEmail,
+            SyncAuthToken = dto.SyncAuthToken,
+            SyncRemoteUserId = dto.SyncRemoteUserId,
+            SyncDeviceId = dto.SyncDeviceId,
+            SyncLastServerTimeUtc = dto.SyncLastServerTimeUtc,
         };
     }
 }

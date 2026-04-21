@@ -125,13 +125,70 @@
               <StackPanel Spacing="8">
                 <TextBlock Text="Server sincronizare" Classes="field-label"/>
                 <TextBox Text="{Binding SyncServerAddress}"
-                         Watermark="Ex: 192.168.1.10:8080 sau https://sync.example"/>
+                         Watermark="Ex: localhost:5000 sau https://sync.example"/>
+              </StackPanel>
+
+              <Grid ColumnDefinitions="*,*" ColumnSpacing="16">
+                <StackPanel Spacing="8">
+                  <TextBlock Text="Email SyncServer" Classes="field-label"/>
+                  <TextBox Text="{Binding SyncEmail}"
+                           Watermark="user@example.com"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Spacing="8">
+                  <TextBlock Text="Parola SyncServer" Classes="field-label"/>
+                  <TextBox Text="{Binding SyncPassword}"
+                           Watermark="Introdu parola contului server"/>
+                </StackPanel>
+              </Grid>
+
+              <Grid ColumnDefinitions="*,*,*,*" ColumnSpacing="10">
+                <Button Grid.Column="0"
+                        Command="{Binding CheckSyncServerCommand}"
+                        Classes="action-button subtle-button"
+                        Content="Testeaza serverul"/>
+                <Button Grid.Column="1"
+                        Command="{Binding LoginSyncCommand}"
+                        Classes="action-button success-button"
+                        Content="Conecteaza-te"/>
+                <Button Grid.Column="2"
+                        Command="{Binding RegisterSyncCommand}"
+                        Classes="action-button warning-button"
+                        Content="Creeaza cont"/>
+                <Button Grid.Column="3"
+                        Command="{Binding ClearSyncSessionCommand}"
+                        Classes="action-button subtle-button"
+                        Content="Sterge sesiunea"/>
+              </Grid>
+
+              <Grid ColumnDefinitions="*,*" ColumnSpacing="16">
                 <Border Classes="panel-card panel-card--muted"
                         Padding="14">
                   <StackPanel Spacing="6">
-                    <TextBlock Text="Endpoint sincronizare" Classes="field-label"/>
+                    <TextBlock Text="Autentificare" Classes="field-label"/>
+                    <TextBlock Text="{Binding SyncAuthStatus}" Foreground="{StaticResource BrushTextPrimary}" TextWrapping="Wrap"/>
+                  </StackPanel>
+                </Border>
+
+                <Border Grid.Column="1"
+                        Classes="panel-card panel-card--muted"
+                        Padding="14">
+                  <StackPanel Spacing="6">
+                    <TextBlock Text="Dispozitiv si serverTime" Classes="field-label"/>
+                    <TextBlock Text="{Binding SyncDeviceStatus}" Foreground="{StaticResource BrushTextPrimary}" TextWrapping="Wrap"/>
+                    <TextBlock Text="{Binding SyncServerTimeStatus}" Classes="section-subtitle" TextWrapping="Wrap"/>
+                  </StackPanel>
+                </Border>
+              </Grid>
+
+              <StackPanel Spacing="8">
+                <TextBlock Text="Preview endpointuri" Classes="field-label"/>
+                <Border Classes="panel-card panel-card--muted"
+                        Padding="14">
+                  <StackPanel Spacing="6">
+                    <TextBlock Text="Health, auth, devices si sync" Classes="field-label"/>
                     <TextBlock Text="{Binding SyncEndpointPreview}" Foreground="{StaticResource BrushTextPrimary}" TextWrapping="Wrap"/>
-                    <TextBlock Text="Aplicatia trimite un POST la /api/sync/devices si poate importa optional colectia JSON devices din raspuns."
+                    <TextBlock Text="Clientul verifica health, obtine un token prin /api/auth/login sau /api/auth/register, inregistreaza dispozitivul prin /api/devices si sincronizeaza datele prin POST /api/sync."
                                Classes="section-subtitle"/>
                   </StackPanel>
                 </Border>

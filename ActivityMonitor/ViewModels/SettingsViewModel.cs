@@ -14,6 +14,7 @@ public class SettingsViewModel : ObservableObject
     private const int DefaultIntervalSeconds = 10;
 
     private readonly IDatabaseManager _db = new DatabaseManager(Settings.DatabaseConnectionString);
+    private readonly ServerSync _serverSync = new();
     private Settings _settings = new();
     private bool _isLoading;
 
@@ -32,7 +33,12 @@ public class SettingsViewModel : ObservableObject
     private string _monitoringSummary = "--";
     private string _lastSavedLabel = "Nu a fost salvat inca";
     private string _syncServerAddress = string.Empty;
+    private string _syncEmail = string.Empty;
+    private string _syncPassword = string.Empty;
     private string _syncEndpointPreview = "Serverul de sincronizare nu este configurat.";
+    private string _syncAuthStatus = "Neautentificat";
+    private string _syncDeviceStatus = "Niciun dispozitiv server configurat";
+    private string _syncServerTimeStatus = "Nicio sincronizare confirmata de server";
 
     public SettingsViewModel()
     {
@@ -42,6 +48,10 @@ public class SettingsViewModel : ObservableObject
         UseHighPrecisionPresetCommand = new RelayCommand(_ => ApplyPreset(5));
         UseBalancedPresetCommand = new RelayCommand(_ => ApplyPreset(DefaultIntervalSeconds));
         UseLowOverheadPresetCommand = new RelayCommand(_ => ApplyPreset(30));
+        CheckSyncServerCommand = new RelayCommand(_ => CheckSyncServerAsync());
+        LoginSyncCommand = new RelayCommand(_ => AuthenticateWithSyncServerAsync(register: false));
+        RegisterSyncCommand = new RelayCommand(_ => AuthenticateWithSyncServerAsync(register: true));
+        ClearSyncSessionCommand = new RelayCommand(_ => ClearSyncSession());
 
         Load();
     }
@@ -57,6 +67,14 @@ public class SettingsViewModel : ObservableObject
     public ICommand UseBalancedPresetCommand { get; }
 
     public ICommand UseLowOverheadPresetCommand { get; }
+
+    public ICommand CheckSyncServerCommand { get; }
+
+    public ICommand LoginSyncCommand { get; }
+
+    public ICommand RegisterSyncCommand { get; }
+
+    public ICommand ClearSyncSessionCommand { get; }
 
     public string RefreshIntervalSeconds
     {
@@ -174,10 +192,51 @@ public class SettingsViewModel : ObservableObject
         }
     }
 
+    public string SyncEmail
+    {
+        get => _syncEmail;
+        set
+        {
+            if (!SetProperty(ref _syncEmail, value))
+            {
+                return;
+            }
+
+            if (!_isLoading)
+            {
+                SaveStatus = "Modificari nesalvate";
+            }
+        }
+    }
+
+    public string SyncPassword
+    {
+        get => _syncPassword;
+        set => SetProperty(ref _syncPassword, value);
+    }
+
     public string SyncEndpointPreview
     {
         get => _syncEndpointPreview;
         set => SetProperty(ref _syncEndpointPreview, value);
+    }
+
+    public string SyncAuthStatus
+    {
+        get => _syncAuthStatus;
+        set => SetProperty(ref _syncAuthStatus, value);
+    }
+
+    public string SyncDeviceStatus
+    {
+        get => _syncDeviceStatus;
+        set => SetProperty(ref _syncDeviceStatus, value);
+    }
+
+    public string SyncServerTimeStatus
+    {
+        get => _syncServerTimeStatus;
+        set => SetProperty(ref _syncServerTimeStatus, value);
     }
 
     private void Load()
@@ -189,6 +248,8 @@ public class SettingsViewModel : ObservableObject
 
         RefreshIntervalSeconds = Math.Max(1, (int)_settings.DeltaTime.TotalSeconds).ToString();
         SyncServerAddress = _settings.SyncServerAddress ?? string.Empty;
+        SyncEmail = _settings.SyncEmail ?? string.Empty;
+        SyncPassword = string.Empty;
         DatabasePath = Settings.DatabaseEndpoint;
         DatabaseStatus = "Schema MySQL va fi creata automat cand conexiunea reuseste";
         ServiceMutexName = Settings.MutexName;
@@ -202,45 +263,111 @@ public class SettingsViewModel : ObservableObject
 
     private void Save()
     {
-        if (!TryParseInterval(out var seconds, out var error))
+        if (!TryApplyEditorValuesToSettings(out var error))
         {
             SaveStatus = error;
             ValidationMessage = error;
             return;
         }
 
-        _settings.UserId = DefaultUserId;
-        _settings.DeltaTime = TimeSpan.FromSeconds(seconds);
-        if (!ServerSync.TryNormalizeServerAddress(SyncServerAddress, out var normalizedSyncServerAddress, out var syncValidationError))
+        PersistSettings("Persistate in tabelul MySQL de setari");
+        SaveStatus = $"Salvat la {DateTime.Now:HH:mm}";
+        RefreshDiagnostics();
+    }
+
+    private async void CheckSyncServerAsync()
+    {
+        if (!TryGetNormalizedServerAddress(out var normalizedAddress, out var error))
         {
-            SaveStatus = syncValidationError;
-            SyncEndpointPreview = syncValidationError;
+            SaveStatus = error;
+            SyncAuthStatus = error;
             return;
         }
 
-        _settings.SyncServerAddress = string.IsNullOrWhiteSpace(normalizedSyncServerAddress)
-            ? null
-            : normalizedSyncServerAddress;
+        SaveStatus = $"Se verifica serverul {normalizedAddress}...";
+        var result = await _serverSync.CheckHealthAsync(normalizedAddress);
+        SaveStatus = result.Message;
+        SyncAuthStatus = result.Success
+            ? $"Server disponibil ({result.Status})"
+            : result.Message;
+        RefreshSyncState();
+    }
 
-        if (_settings.Id > 0)
+    private async void AuthenticateWithSyncServerAsync(bool register)
+    {
+        if (!TryApplyEditorValuesToSettings(out var error))
         {
-            _db.UpdateSettings(_settings.ToDto());
-        }
-        else
-        {
-            _settings.Id = _db.InsertSettings(_settings.ToDto());
+            SaveStatus = error;
+            SyncAuthStatus = error;
+            return;
         }
 
-        SaveStatus = $"Salvat la {DateTime.Now:HH:mm}";
-        LastSavedLabel = "Persistate in tabelul MySQL de setari";
-        RefreshDiagnostics();
+        if (string.IsNullOrWhiteSpace(_settings.SyncServerAddress))
+        {
+            SaveStatus = "Configureaza mai intai adresa serverului de sincronizare.";
+            SyncAuthStatus = SaveStatus;
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(_settings.SyncEmail) || string.IsNullOrWhiteSpace(SyncPassword))
+        {
+            SaveStatus = "Emailul si parola sunt obligatorii pentru autentificarea la server.";
+            SyncAuthStatus = SaveStatus;
+            return;
+        }
+
+        SaveStatus = register
+            ? $"Se creeaza contul {_settings.SyncEmail}..."
+            : $"Se autentifica {_settings.SyncEmail}...";
+
+        var authResult = register
+            ? await _serverSync.RegisterAsync(_settings.SyncServerAddress, _settings.SyncEmail, SyncPassword)
+            : await _serverSync.LoginAsync(_settings.SyncServerAddress, _settings.SyncEmail, SyncPassword);
+
+        if (!authResult.Success || string.IsNullOrWhiteSpace(authResult.Token))
+        {
+            SaveStatus = authResult.Message;
+            SyncAuthStatus = authResult.Message;
+            return;
+        }
+
+        _settings.SyncEmail = authResult.Email ?? _settings.SyncEmail;
+        _settings.SyncAuthToken = authResult.Token;
+        _settings.SyncRemoteUserId = authResult.UserId;
+        _settings.SyncDeviceId = null;
+        _settings.SyncLastServerTimeUtc = null;
+        SyncEmail = _settings.SyncEmail ?? string.Empty;
+        SyncPassword = string.Empty;
+
+        PersistSettings("Credentialele SyncServer au fost salvate");
+        SaveStatus = authResult.Message;
+        RefreshSyncState();
+    }
+
+    private void ClearSyncSession()
+    {
+        if (!TryApplyEditorValuesToSettings(out var error))
+        {
+            SaveStatus = error;
+            return;
+        }
+
+        ResetStoredSyncSession();
+        SyncPassword = string.Empty;
+        PersistSettings("Sesiunea SyncServer a fost eliminata");
+        SaveStatus = "Tokenul local a fost sters. Va trebui sa te autentifici din nou.";
+        RefreshSyncState();
     }
 
     private void ResetToDefaults()
     {
         RefreshIntervalSeconds = DefaultIntervalSeconds.ToString();
         SyncServerAddress = string.Empty;
+        SyncEmail = string.Empty;
+        SyncPassword = string.Empty;
+        ResetStoredSyncSession();
         ValidationMessage = "Cadenta implicita a fost restaurata. Salveaza pentru a o pastra.";
+        RefreshSyncState();
     }
 
     private void ApplyPreset(int seconds)
@@ -296,14 +423,15 @@ public class SettingsViewModel : ObservableObject
         }
 
         SyncEndpointPreview = string.IsNullOrWhiteSpace(normalizedSyncServerAddress)
-            ? "Configureaza un IP sau URL. Exemplu: http://192.168.1.10:8080"
-            : $"Cereri catre {ServerSync.BuildDevicesEndpointPreview(normalizedSyncServerAddress)}";
+            ? "Configureaza un IP sau URL. Exemplu: http://localhost:5000"
+            : $"Health: {ServerSync.BuildHealthEndpointPreview(normalizedSyncServerAddress)}\nSync: {ServerSync.BuildSyncEndpointPreview(normalizedSyncServerAddress)}\nDevices: {ServerSync.BuildDevicesEndpointPreview(normalizedSyncServerAddress)}";
     }
 
     private void RefreshDiagnostics()
     {
         UpdateIntervalPreview();
         UpdateSyncPreview();
+        RefreshSyncState();
 
         var categories = _db.GetAllCategories().Count();
         var applications = _db.GetAllApplications().Count();
@@ -317,6 +445,99 @@ public class SettingsViewModel : ObservableObject
         ActivityCoverage = $"{applications} aplicatii monitorizate, {trackedSessions} sesiuni capturate, {categories} categorii disponibile";
         InterventionCoverage = $"{interventions} interventii inregistrate pentru utilizatorul curent";
         BrowserCoverage = $"{browserEvents} evenimente browser stocate in MySQL";
+    }
+
+    private void RefreshSyncState()
+    {
+        SyncAuthStatus = string.IsNullOrWhiteSpace(_settings.SyncAuthToken)
+            ? "Neautentificat pe SyncServer"
+            : $"Token activ pentru {_settings.SyncEmail ?? "cont necunoscut"}";
+
+        SyncDeviceStatus = string.IsNullOrWhiteSpace(_settings.SyncDeviceId)
+            ? "Dispozitivul curent nu este inca inregistrat pe server"
+            : $"Device server: {ShortenGuid(_settings.SyncDeviceId)}";
+
+        SyncServerTimeStatus = _settings.SyncLastServerTimeUtc.HasValue
+            ? $"Ultimul serverTime primit: {_settings.SyncLastServerTimeUtc.Value.ToLocalTime():dd MMM yyyy, HH:mm:ss}"
+            : "Nicio sincronizare confirmata de server";
+    }
+
+    private bool TryApplyEditorValuesToSettings(out string error)
+    {
+        error = string.Empty;
+
+        if (!TryParseInterval(out var seconds, out error))
+        {
+            return false;
+        }
+
+        if (!ServerSync.TryNormalizeServerAddress(SyncServerAddress, out var normalizedSyncServerAddress, out var syncValidationError))
+        {
+            error = syncValidationError;
+            SyncEndpointPreview = syncValidationError;
+            return false;
+        }
+
+        var normalizedEmail = NormalizeOptionalValue(SyncEmail);
+        var currentAddress = NormalizeOptionalValue(_settings.SyncServerAddress);
+        var nextAddress = NormalizeOptionalValue(normalizedSyncServerAddress);
+        var currentEmail = NormalizeOptionalValue(_settings.SyncEmail);
+        var nextEmail = NormalizeOptionalValue(normalizedEmail);
+
+        _settings.UserId = DefaultUserId;
+        _settings.DeltaTime = TimeSpan.FromSeconds(seconds);
+        _settings.SyncServerAddress = nextAddress;
+        _settings.SyncEmail = nextEmail;
+
+        if (!string.Equals(currentAddress, nextAddress, StringComparison.OrdinalIgnoreCase) ||
+            !string.Equals(currentEmail, nextEmail, StringComparison.OrdinalIgnoreCase))
+        {
+            ResetStoredSyncSession();
+        }
+
+        return true;
+    }
+
+    private bool TryGetNormalizedServerAddress(out string normalizedAddress, out string error)
+    {
+        normalizedAddress = string.Empty;
+        error = string.Empty;
+
+        if (!TryApplyEditorValuesToSettings(out error))
+        {
+            return false;
+        }
+
+        if (string.IsNullOrWhiteSpace(_settings.SyncServerAddress))
+        {
+            error = "Configureaza mai intai adresa serverului de sincronizare.";
+            return false;
+        }
+
+        normalizedAddress = _settings.SyncServerAddress;
+        return true;
+    }
+
+    private void PersistSettings(string lastSavedMessage)
+    {
+        if (_settings.Id > 0)
+        {
+            _db.UpdateSettings(_settings.ToDto());
+        }
+        else
+        {
+            _settings.Id = _db.InsertSettings(_settings.ToDto());
+        }
+
+        LastSavedLabel = lastSavedMessage;
+    }
+
+    private void ResetStoredSyncSession()
+    {
+        _settings.SyncAuthToken = null;
+        _settings.SyncRemoteUserId = null;
+        _settings.SyncDeviceId = null;
+        _settings.SyncLastServerTimeUtc = null;
     }
 
     private bool TryParseInterval(out int seconds, out string error)
@@ -335,5 +556,17 @@ public class SettingsViewModel : ObservableObject
 
         error = string.Empty;
         return true;
+    }
+
+    private static string? NormalizeOptionalValue(string? value)
+    {
+        return string.IsNullOrWhiteSpace(value) ? null : value.Trim();
+    }
+
+    private static string ShortenGuid(string? value)
+    {
+        return string.IsNullOrWhiteSpace(value) || value.Length <= 8
+            ? value ?? "--"
+            : value[..8];
     }
 }

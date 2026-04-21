@@ -375,12 +375,11 @@ public sealed class DevicesViewModel : ObservableObject
     private async void SyncWithServerAsync()
     {
         RegisterCurrentDevice();
-        var settings = _db.GetSettings(DefaultUserId);
-        var configuredAddress = settings?.SyncServerAddress;
+        var settings = EnsureSettingsRecord();
 
-        if (string.IsNullOrWhiteSpace(configuredAddress))
+        if (!TryValidateSyncConfiguration(settings, out var normalizedAddress, out var bearerToken, out var error))
         {
-            DeviceStatus = "Configureaza mai intai serverul de sincronizare din pagina Setari.";
+            DeviceStatus = error;
             RefreshSyncServerStatus();
             return;
         }
@@ -393,8 +392,26 @@ public sealed class DevicesViewModel : ObservableObject
             return;
         }
 
-        DeviceStatus = $"Se sincronizeaza cu {configuredAddress}...";
-        var result = await _serverSync.SyncDevicesAsync(configuredAddress, DefaultUserId, devices, currentDevice);
+        DeviceStatus = $"Se inregistreaza dispozitivul curent pe {normalizedAddress}...";
+        var deviceRegistration = await _serverSync.EnsureDeviceAsync(
+            normalizedAddress,
+            bearerToken,
+            settings.SyncDeviceId,
+            currentDevice.Name);
+
+        if (!deviceRegistration.Success || string.IsNullOrWhiteSpace(deviceRegistration.DeviceId))
+        {
+            DeviceStatus = deviceRegistration.Message;
+            LastServerSyncLabel = "Ultima sincronizare a esuat";
+            return;
+        }
+
+        settings.SyncDeviceId = deviceRegistration.DeviceId;
+        SaveSettings(settings);
+
+        DeviceStatus = $"Se sincronizeaza datele locale cu {normalizedAddress}...";
+        var payload = BuildSyncRequest(settings, deviceRegistration.DeviceId);
+        var result = await _serverSync.SyncDataAsync(normalizedAddress, bearerToken, payload);
         if (!result.Success)
         {
             DeviceStatus = result.Message;
@@ -403,13 +420,14 @@ public sealed class DevicesViewModel : ObservableObject
             return;
         }
 
-        MergeRemoteDevices(result.Devices);
-        LastServerSyncLabel = $"Ultima sincronizare la {DateTime.Now:HH:mm}";
-        var syncStatus = result.Devices.Count == 0
-            ? result.Message
-            : $"{result.Message} Au fost sincronizate {result.Devices.Count} dispozitive.";
+        MergeSyncResponse(result.Data);
+
+        settings.SyncLastServerTimeUtc = result.Data.ServerTime?.ToUniversalTime() ?? DateTime.UtcNow;
+        SaveSettings(settings);
+
         Load(currentDevice.DeviceId);
-        DeviceStatus = syncStatus;
+        LastServerSyncLabel = FormatLastSyncLabel(settings.SyncLastServerTimeUtc);
+        DeviceStatus = BuildSyncSummary(result.Data, deviceRegistration.Created, result.Message);
     }
 
     private void AddDevice()
@@ -652,42 +670,482 @@ public sealed class DevicesViewModel : ObservableObject
         if (string.IsNullOrWhiteSpace(configuredAddress))
         {
             SyncServerLabel = "Server sincronizare neconfigurat";
+            LastServerSyncLabel = "Nicio sincronizare remota";
             return;
         }
 
-        SyncServerLabel = ServerSync.TryNormalizeServerAddress(configuredAddress, out var normalizedAddress, out _)
-            ? ServerSync.BuildDevicesEndpointPreview(normalizedAddress)
-            : $"Server sincronizare invalid: {configuredAddress}";
+        if (!ServerSync.TryNormalizeServerAddress(configuredAddress, out var normalizedAddress, out _))
+        {
+            SyncServerLabel = $"Server sincronizare invalid: {configuredAddress}";
+            LastServerSyncLabel = "Configuratie invalida";
+            return;
+        }
+
+        var authState = string.IsNullOrWhiteSpace(settings?.SyncAuthToken)
+            ? "neautentificat"
+            : $"autentificat ca {settings?.SyncEmail ?? "cont sincronizat"}";
+        var deviceState = string.IsNullOrWhiteSpace(settings?.SyncDeviceId)
+            ? "device server lipsa"
+            : $"device {settings!.SyncDeviceId![..Math.Min(8, settings.SyncDeviceId.Length)]}";
+
+        SyncServerLabel = $"{ServerSync.BuildSyncEndpointPreview(normalizedAddress)} · {authState} · {deviceState}";
+        LastServerSyncLabel = FormatLastSyncLabel(settings?.SyncLastServerTimeUtc);
     }
 
-    private void MergeRemoteDevices(IEnumerable<DeviceDto> remoteDevices)
+    private SettingsDto EnsureSettingsRecord()
     {
-        var now = DateTime.UtcNow;
-
-        foreach (var device in remoteDevices
-                     .Where(device => !string.IsNullOrWhiteSpace(device.Fingerprint))
-                     .GroupBy(device => device.Fingerprint, StringComparer.OrdinalIgnoreCase)
-                     .Select(group => group.Last()))
+        return _db.GetSettings(DefaultUserId) ?? new SettingsDto
         {
-            device.DeviceId = 0;
-            device.UserId = DefaultUserId;
-            device.Name = string.IsNullOrWhiteSpace(device.Name) ? "Dispozitiv sincronizat" : device.Name.Trim();
-            device.DeviceType = string.IsNullOrWhiteSpace(device.DeviceType) ? "Desktop" : device.DeviceType.Trim();
-            device.Platform = string.IsNullOrWhiteSpace(device.Platform) ? "Necunoscut" : device.Platform.Trim();
-            device.Status = string.IsNullOrWhiteSpace(device.Status) ? "Active" : device.Status.Trim();
-            device.AppVersion = NormalizeOptionalValue(device.AppVersion);
-            device.Fingerprint = device.Fingerprint.Trim();
-            device.CreatedAt = device.CreatedAt == default ? now : device.CreatedAt;
-            device.LastSeenAt = device.LastSeenAt == default ? now : device.LastSeenAt;
-            device.IsCurrentDevice = string.Equals(device.Fingerprint, _currentFingerprint, StringComparison.OrdinalIgnoreCase);
-            if (device.IsCurrentDevice)
+            UserId = DefaultUserId,
+            DeltaTimeSeconds = 10
+        };
+    }
+
+    private bool TryValidateSyncConfiguration(
+        SettingsDto settings,
+        out string normalizedAddress,
+        out string bearerToken,
+        out string error)
+    {
+        normalizedAddress = string.Empty;
+        bearerToken = string.Empty;
+        error = string.Empty;
+
+        if (string.IsNullOrWhiteSpace(settings.SyncServerAddress))
+        {
+            error = "Configureaza mai intai serverul de sincronizare din pagina Setari.";
+            return false;
+        }
+
+        if (!ServerSync.TryNormalizeServerAddress(settings.SyncServerAddress, out normalizedAddress, out error))
+        {
+            return false;
+        }
+
+        bearerToken = settings.SyncAuthToken?.Trim() ?? string.Empty;
+        if (string.IsNullOrWhiteSpace(bearerToken))
+        {
+            error = "Autentifica-te in pagina Setari inainte sa pornesti sincronizarea.";
+            return false;
+        }
+
+        return true;
+    }
+
+    private SyncRequest BuildSyncRequest(SettingsDto settings, string deviceId)
+    {
+        var categories = _db.GetAllCategories().ToList();
+        var applications = _db.GetAllApplications().ToList();
+        var sessions = _db.GetSessionsForUser(DefaultUserId).ToList();
+        var activities = _db.GetAllBrowserActivity()
+            .Where(activity => activity.UserId == DefaultUserId)
+            .ToList();
+        var thresholds = _db.GetAllThresholds()
+            .Where(threshold => threshold != null)
+            .Select(threshold => threshold!)
+            .ToList();
+
+        var categoryIds = categories.ToDictionary(category => category.CategoryId, GetCategorySyncId);
+        var applicationIds = applications
+            .Where(app => app.Id.HasValue)
+            .ToDictionary(app => app.Id!.Value, GetApplicationSyncId);
+
+        return new SyncRequest
+        {
+            LastSyncAt = settings.SyncLastServerTimeUtc ?? DateTime.UnixEpoch,
+            DeviceId = deviceId,
+            Categories = categories
+                .Select(category => new SyncCategoryRecord
+                {
+                    Id = GetCategorySyncId(category),
+                    Name = category.Name,
+                    Description = NormalizeOptionalValue(category.Description)
+                })
+                .ToList(),
+            Applications = applications
+                .Select(app => new SyncApplicationRecord
+                {
+                    Id = GetApplicationSyncId(app),
+                    CategoryId = app.CategoryId.HasValue && app.CategoryId.Value > 0 && categoryIds.TryGetValue(app.CategoryId.Value, out var categoryId)
+                        ? categoryId
+                        : null,
+                    WindowTitle = NormalizeOptionalValue(app.WindowTitle),
+                    ClassName = NormalizeOptionalValue(app.ClassName),
+                    ProcessName = NormalizeOptionalValue(app.ProcessName),
+                    PositionX = app.PositionX,
+                    PositionY = app.PositionY,
+                    Width = app.Width,
+                    Height = app.Height,
+                    WindowId = app.WindowId
+                })
+                .ToList(),
+            Sessions = sessions
+                .Where(session => session.StartTime.HasValue && session.AppId.HasValue && applicationIds.ContainsKey(session.AppId.Value))
+                .Select(session => new SyncSessionRecord
+                {
+                    Id = GetSessionSyncId(session),
+                    DeviceId = deviceId,
+                    ApplicationId = applicationIds[session.AppId!.Value],
+                    StartTime = session.StartTime!.Value.ToUniversalTime(),
+                    EndTime = session.EndTime?.ToUniversalTime(),
+                    Duration = CalculateDurationSeconds(session.StartTime, session.EndTime),
+                    CreatedAt = (session.EndTime ?? session.StartTime ?? DateTime.UtcNow).ToUniversalTime()
+                })
+                .ToList(),
+            Activities = activities
+                .Where(activity => applicationIds.ContainsKey(activity.AppId))
+                .Select(activity => new SyncActivityRecord
+                {
+                    Id = GetActivitySyncId(activity),
+                    DeviceId = deviceId,
+                    ApplicationId = applicationIds[activity.AppId],
+                    CategoryId = activity.CategoryId.HasValue && activity.CategoryId.Value > 0 && categoryIds.TryGetValue(activity.CategoryId.Value, out var categoryId)
+                        ? categoryId
+                        : null,
+                    Url = NormalizeOptionalValue(activity.Url),
+                    CreatedAt = DateTime.UnixEpoch.AddSeconds(Math.Max(1, activity.ActivityId)).ToUniversalTime()
+                })
+                .ToList(),
+            Thresholds = thresholds
+                .Select(threshold => new SyncThresholdRecord
+                {
+                    Id = GetThresholdSyncId(threshold),
+                    DeviceId = deviceId,
+                    CategoryId = threshold.CategoryId > 0 && categoryIds.TryGetValue(threshold.CategoryId, out var categoryId)
+                        ? categoryId
+                        : null,
+                    ApplicationId = threshold.AppId > 0 && applicationIds.TryGetValue(threshold.AppId, out var applicationId)
+                        ? applicationId
+                        : null,
+                    Active = threshold.Active,
+                    TargetType = threshold.TargetType,
+                    InterventionType = threshold.InterventionType,
+                    DurationType = threshold.DurationType,
+                    SessionLimitSec = threshold.SessionLimitSec,
+                    DailyLimitSec = threshold.DailyLimitSec,
+                    CreatedAt = DateTime.UnixEpoch.AddSeconds(Math.Max(1, threshold.Id)).ToUniversalTime()
+                })
+                .ToList(),
+            Settings =
+            [
+                new SyncSettingRecord
+                {
+                    Id = GetSettingsSyncId(settings),
+                    DeviceId = deviceId,
+                    DeltaTimeSeconds = settings.DeltaTimeSeconds,
+                    UpdatedAt = (settings.SyncLastServerTimeUtc ?? DateTime.UtcNow).ToUniversalTime()
+                }
+            ]
+        };
+    }
+
+    private void MergeSyncResponse(SyncResponse response)
+    {
+        var categoryMap = MergeCategories(response.Categories);
+        var applicationMap = MergeApplications(response.Applications, categoryMap);
+        MergeThresholds(response.Thresholds, categoryMap, applicationMap);
+        MergeSessions(response.Sessions, applicationMap);
+        MergeActivities(response.Activities, categoryMap, applicationMap);
+        MergeSettings(response.Settings);
+    }
+
+    private Dictionary<string, int> MergeCategories(IEnumerable<SyncCategoryRecord> remoteCategories)
+    {
+        var localCategories = _db.GetAllCategories().ToList();
+        var map = localCategories.ToDictionary(GetCategorySyncId, category => category.CategoryId, StringComparer.OrdinalIgnoreCase);
+
+        foreach (var remoteCategory in remoteCategories.Where(category => !string.IsNullOrWhiteSpace(category.Id) && !string.IsNullOrWhiteSpace(category.Name)))
+        {
+            if (map.ContainsKey(remoteCategory.Id))
             {
-                device.Status = "Active";
-                device.RevokedAt = null;
+                continue;
             }
 
-            _db.UpsertDevice(device);
+            var existing = localCategories.FirstOrDefault(category =>
+                string.Equals(category.Name, remoteCategory.Name.Trim(), StringComparison.OrdinalIgnoreCase));
+
+            if (existing == null)
+            {
+                var categoryId = _db.InsertCategory(new CategoryDto
+                {
+                    Name = remoteCategory.Name.Trim(),
+                    Description = NormalizeOptionalValue(remoteCategory.Description)
+                });
+
+                existing = new CategoryDto
+                {
+                    CategoryId = categoryId,
+                    Name = remoteCategory.Name.Trim(),
+                    Description = NormalizeOptionalValue(remoteCategory.Description)
+                };
+                localCategories.Add(existing);
+            }
+
+            map[remoteCategory.Id] = existing.CategoryId;
         }
+
+        return map;
+    }
+
+    private Dictionary<string, int> MergeApplications(
+        IEnumerable<SyncApplicationRecord> remoteApplications,
+        IReadOnlyDictionary<string, int> categoryMap)
+    {
+        var localApplications = _db.GetAllApplications().ToList();
+        var map = localApplications
+            .Where(app => app.Id.HasValue)
+            .ToDictionary(GetApplicationSyncId, app => app.Id!.Value, StringComparer.OrdinalIgnoreCase);
+
+        foreach (var remoteApp in remoteApplications.Where(app => !string.IsNullOrWhiteSpace(app.Id)))
+        {
+            if (map.ContainsKey(remoteApp.Id))
+            {
+                continue;
+            }
+
+            var dto = new ApplicationDto
+            {
+                WindowTitle = NormalizeOptionalValue(remoteApp.WindowTitle),
+                ClassName = NormalizeOptionalValue(remoteApp.ClassName),
+                ProcessName = NormalizeOptionalValue(remoteApp.ProcessName),
+                CategoryId = TryResolveLocalId(remoteApp.CategoryId, categoryMap),
+                PositionX = remoteApp.PositionX,
+                PositionY = remoteApp.PositionY,
+                Width = remoteApp.Width,
+                Height = remoteApp.Height,
+                WindowId = remoteApp.WindowId
+            };
+
+            var existingId = _db.IsInDb(dto);
+            if (existingId.HasValue)
+            {
+                dto.Id = existingId.Value;
+                _db.UpdateApplication(dto);
+                map[remoteApp.Id] = existingId.Value;
+                continue;
+            }
+
+            var insertedId = _db.UpsertApplication(dto);
+            map[remoteApp.Id] = insertedId;
+        }
+
+        return map;
+    }
+
+    private void MergeThresholds(
+        IEnumerable<SyncThresholdRecord> remoteThresholds,
+        IReadOnlyDictionary<string, int> categoryMap,
+        IReadOnlyDictionary<string, int> applicationMap)
+    {
+        var localThresholds = _db.GetAllThresholds()
+            .Where(threshold => threshold != null)
+            .Select(threshold => threshold!)
+            .ToList();
+
+        foreach (var remoteThreshold in remoteThresholds.Where(threshold => !string.IsNullOrWhiteSpace(threshold.Id)))
+        {
+            var dto = new ThresholdDto
+            {
+                UserId = DefaultUserId,
+                CategoryId = TryResolveLocalId(remoteThreshold.CategoryId, categoryMap),
+                AppId = TryResolveLocalId(remoteThreshold.ApplicationId, applicationMap),
+                Active = remoteThreshold.Active,
+                TargetType = string.IsNullOrWhiteSpace(remoteThreshold.TargetType) ? "Category" : remoteThreshold.TargetType.Trim(),
+                InterventionType = string.IsNullOrWhiteSpace(remoteThreshold.InterventionType) ? "Notification" : remoteThreshold.InterventionType.Trim(),
+                DurationType = string.IsNullOrWhiteSpace(remoteThreshold.DurationType) ? "Daily" : remoteThreshold.DurationType.Trim(),
+                SessionLimitSec = Math.Max(0, remoteThreshold.SessionLimitSec),
+                DailyLimitSec = Math.Max(0, remoteThreshold.DailyLimitSec)
+            };
+
+            var existing = localThresholds.FirstOrDefault(threshold =>
+                threshold.UserId == DefaultUserId &&
+                string.Equals(threshold.TargetType, dto.TargetType, StringComparison.OrdinalIgnoreCase) &&
+                threshold.CategoryId == dto.CategoryId &&
+                threshold.AppId == dto.AppId);
+
+            if (existing != null)
+            {
+                dto.Id = existing.Id;
+            }
+
+            _db.UpsertThreshold(dto);
+        }
+    }
+
+    private void MergeSessions(
+        IEnumerable<SyncSessionRecord> remoteSessions,
+        IReadOnlyDictionary<string, int> applicationMap)
+    {
+        foreach (var remoteSession in remoteSessions.Where(session =>
+                     !string.IsNullOrWhiteSpace(session.ApplicationId) &&
+                     applicationMap.ContainsKey(session.ApplicationId) &&
+                     session.StartTime != default))
+        {
+            var dto = new SessionDto
+            {
+                AppId = applicationMap[remoteSession.ApplicationId],
+                UserId = DefaultUserId,
+                StartTime = DateTime.SpecifyKind(remoteSession.StartTime, DateTimeKind.Utc),
+                EndTime = remoteSession.EndTime == default ? null : DateTime.SpecifyKind(remoteSession.EndTime.Value, DateTimeKind.Utc)
+            };
+
+            _db.UpsertSession(dto);
+        }
+    }
+
+    private void MergeActivities(
+        IEnumerable<SyncActivityRecord> remoteActivities,
+        IReadOnlyDictionary<string, int> categoryMap,
+        IReadOnlyDictionary<string, int> applicationMap)
+    {
+        foreach (var remoteActivity in remoteActivities.Where(activity =>
+                     !string.IsNullOrWhiteSpace(activity.ApplicationId) &&
+                     applicationMap.ContainsKey(activity.ApplicationId)))
+        {
+            var dto = new BrowserActivityDto
+            {
+                UserId = DefaultUserId,
+                AppId = applicationMap[remoteActivity.ApplicationId],
+                CategoryId = TryResolveNullableLocalId(remoteActivity.CategoryId, categoryMap),
+                Url = NormalizeOptionalValue(remoteActivity.Url)
+            };
+
+            if (!_db.IsInDb(dto).HasValue)
+            {
+                _db.InsertBrowserActivity(dto);
+            }
+        }
+    }
+
+    private void MergeSettings(IEnumerable<SyncSettingRecord> remoteSettings)
+    {
+        var latestSetting = remoteSettings
+            .Where(setting => setting.DeltaTimeSeconds > 0)
+            .OrderByDescending(setting => setting.UpdatedAt)
+            .FirstOrDefault();
+
+        if (latestSetting == null)
+        {
+            return;
+        }
+
+        var settings = EnsureSettingsRecord();
+        settings.DeltaTimeSeconds = latestSetting.DeltaTimeSeconds;
+        SaveSettings(settings);
+    }
+
+    private void SaveSettings(SettingsDto settings)
+    {
+        if (settings.Id > 0)
+        {
+            _db.UpdateSettings(settings);
+        }
+        else
+        {
+            settings.Id = _db.InsertSettings(settings);
+        }
+    }
+
+    private static string BuildSyncSummary(SyncResponse response, bool registeredDevice, string message)
+    {
+        var importedCount = response.Categories.Count +
+                            response.Applications.Count +
+                            response.Sessions.Count +
+                            response.Activities.Count +
+                            response.Thresholds.Count +
+                            response.Settings.Count;
+
+        if (registeredDevice)
+        {
+            return $"{message} Dispozitivul curent a fost inregistrat pe server. Au fost procesate {importedCount} entitati din raspuns.";
+        }
+
+        return $"{message} Au fost procesate {importedCount} entitati din raspuns.";
+    }
+
+    private static int CalculateDurationSeconds(DateTime? startTime, DateTime? endTime)
+    {
+        if (!startTime.HasValue || !endTime.HasValue)
+        {
+            return 0;
+        }
+
+        return Math.Max(0, (int)(endTime.Value - startTime.Value).TotalSeconds);
+    }
+
+    private static int TryResolveLocalId(string? remoteId, IReadOnlyDictionary<string, int> map)
+    {
+        return string.IsNullOrWhiteSpace(remoteId) || !map.TryGetValue(remoteId, out var localId)
+            ? 0
+            : localId;
+    }
+
+    private static int? TryResolveNullableLocalId(string? remoteId, IReadOnlyDictionary<string, int> map)
+    {
+        return string.IsNullOrWhiteSpace(remoteId) || !map.TryGetValue(remoteId, out var localId)
+            ? null
+            : localId;
+    }
+
+    private static string GetCategorySyncId(CategoryDto category)
+    {
+        return SyncIdentity.Create("category", category.CategoryId, category.Name, category.Description);
+    }
+
+    private static string GetApplicationSyncId(ApplicationDto app)
+    {
+        return SyncIdentity.Create(
+            "application",
+            app.Id ?? 0,
+            app.WindowTitle,
+            app.ClassName,
+            app.ProcessName);
+    }
+
+    private static string GetSessionSyncId(SessionDto session)
+    {
+        return SyncIdentity.Create(
+            "session",
+            session.UserId ?? DefaultUserId,
+            session.AppId ?? 0,
+            session.StartTime ?? DateTime.UnixEpoch);
+    }
+
+    private static string GetActivitySyncId(BrowserActivityDto activity)
+    {
+        return SyncIdentity.Create(
+            "activity",
+            activity.ActivityId,
+            activity.UserId,
+            activity.AppId,
+            activity.Url);
+    }
+
+    private static string GetThresholdSyncId(ThresholdDto threshold)
+    {
+        return SyncIdentity.Create(
+            "threshold",
+            threshold.Id,
+            threshold.UserId,
+            threshold.TargetType,
+            threshold.CategoryId,
+            threshold.AppId,
+            threshold.InterventionType,
+            threshold.DurationType,
+            threshold.SessionLimitSec,
+            threshold.DailyLimitSec);
+    }
+
+    private static string GetSettingsSyncId(SettingsDto settings)
+    {
+        return SyncIdentity.Create("settings", settings.UserId, settings.Id);
+    }
+
+    private static string FormatLastSyncLabel(DateTime? timestampUtc)
+    {
+        return timestampUtc.HasValue
+            ? $"Ultima sincronizare la {timestampUtc.Value.ToLocalTime():dd MMM yyyy, HH:mm:ss}"
+            : "Nicio sincronizare remota";
     }
 
     private static string BuildCurrentFingerprint()
@@ -759,11 +1217,13 @@ public sealed class AccountDeviceRow
 
     public string StatusChip => IsActive ? "Activ" : "Revocat";
 
-    public string TrustChip => IsTrusted ? "Sigur" : "Review";
+    public string TrustChip => IsTrusted ? "De incredere" : "Review";
 
-    public string VersionSummary => string.IsNullOrWhiteSpace(AppVersion) ? "versiune necunoscuta" : AppVersion;
+    public string VersionSummary => string.IsNullOrWhiteSpace(AppVersion)
+        ? $"Amprenta: {Fingerprint[..Math.Min(12, Fingerprint.Length)]}"
+        : $"Versiune {AppVersion} · amprenta {Fingerprint[..Math.Min(12, Fingerprint.Length)]}";
 
-    public string TrustActionLabel => IsTrusted ? "Scoate trust" : "Marcheaza sigur";
+    public string TrustActionLabel => IsTrusted ? "Scoate increderea" : "Marcheaza sigur";
 
-    public string ActionLabel => IsCurrentDevice && IsActive ? "Protejat" : IsActive ? "Revoca" : "Reactiveaza";
+    public string ActionLabel => IsActive ? "Revoca" : "Reactiveaza";
 }

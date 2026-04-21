@@ -165,7 +165,18 @@ public sealed class ServerSync
 
         if (Guid.TryParse(existingDeviceId, out var existingGuid) && existingGuid != Guid.Empty)
         {
-            return DeviceRegistrationResult.Succeeded(existingGuid.ToString(), false, "Dispozitivul server este deja configurat.");
+            var lookupResult = await GetDevicesAsync(normalizedAddress, bearerToken, cancellationToken);
+            if (!lookupResult.Success)
+            {
+                return DeviceRegistrationResult.Failed(lookupResult.Message);
+            }
+
+            var existing = lookupResult.Devices.FirstOrDefault(device =>
+                string.Equals(device.DeviceId, existingGuid.ToString(), StringComparison.OrdinalIgnoreCase));
+            if (existing != null)
+            {
+                return DeviceRegistrationResult.Succeeded(existingGuid.ToString(), false, "Dispozitivul server este deja configurat.");
+            }
         }
 
         if (string.IsNullOrWhiteSpace(deviceName))
@@ -311,6 +322,27 @@ public sealed class ServerSync
         string deviceName,
         CancellationToken cancellationToken)
     {
+        var lookupResult = await GetDevicesAsync(normalizedAddress, bearerToken, cancellationToken);
+        if (!lookupResult.Success)
+        {
+            return DeviceRegistrationResult.Failed(lookupResult.Message);
+        }
+
+        var devices = lookupResult.Devices;
+        var match = devices.LastOrDefault(device =>
+            string.Equals(device.Name, deviceName, StringComparison.OrdinalIgnoreCase) &&
+            Guid.TryParse(device.DeviceId, out _));
+
+        return match == null
+            ? DeviceRegistrationResult.Failed("Serverul nu a returnat un deviceId pentru dispozitivul nou creat.")
+            : DeviceRegistrationResult.Succeeded(match.DeviceId, true, "Dispozitivul curent a fost inregistrat pe server.");
+    }
+
+    private async Task<DeviceLookupResult> GetDevicesAsync(
+        string normalizedAddress,
+        string bearerToken,
+        CancellationToken cancellationToken)
+    {
         using var request = new HttpRequestMessage(HttpMethod.Get, BuildDevicesEndpointUri(normalizedAddress));
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", bearerToken);
 
@@ -319,17 +351,10 @@ public sealed class ServerSync
 
         if (!response.IsSuccessStatusCode)
         {
-            return DeviceRegistrationResult.Failed(BuildErrorMessage(response.StatusCode, responseBody, "Citirea dispozitivelor de pe server a esuat"));
+            return DeviceLookupResult.Failed(BuildErrorMessage(response.StatusCode, responseBody, "Citirea dispozitivelor de pe server a esuat"));
         }
 
-        var devices = ParseDevices(responseBody);
-        var match = devices.LastOrDefault(device =>
-            string.Equals(device.Name, deviceName, StringComparison.OrdinalIgnoreCase) &&
-            Guid.TryParse(device.DeviceId, out _));
-
-        return match == null
-            ? DeviceRegistrationResult.Failed("Serverul nu a returnat un deviceId pentru dispozitivul nou creat.")
-            : DeviceRegistrationResult.Succeeded(match.DeviceId, true, "Dispozitivul curent a fost inregistrat pe server.");
+        return DeviceLookupResult.Succeeded(ParseDevices(responseBody));
     }
 
     private static IReadOnlyList<Uri> BuildHealthEndpointCandidates(string normalizedAddress)
@@ -664,3 +689,10 @@ internal sealed class CreateDeviceRequest
 }
 
 internal sealed record ServerDeviceDescriptor(string DeviceId, string Name);
+
+internal sealed record DeviceLookupResult(bool Success, IReadOnlyList<ServerDeviceDescriptor> Devices, string Message)
+{
+    public static DeviceLookupResult Failed(string message) => new(false, [], message);
+
+    public static DeviceLookupResult Succeeded(IReadOnlyList<ServerDeviceDescriptor> devices) => new(true, devices, string.Empty);
+}

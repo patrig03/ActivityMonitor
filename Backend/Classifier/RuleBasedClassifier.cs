@@ -1,11 +1,17 @@
 using System.Text.RegularExpressions;
 using Backend.DataCollector.Models;
+using Backend.Classifier.Models;
 using Backend.Models;
 
 namespace Backend.Classifier;
 
 public class RuleBasedClassifier : IClassifier
 {
+    private readonly ClassifierRuleStore _ruleStore = new();
+    private List<CompiledCategoryRule> _customApplicationRules = [];
+    private List<CompiledCategoryRule> _customWebsiteRules = [];
+    private DateTime? _rulesLastWriteUtc;
+
     private readonly List<(int Category, Regex Pattern)> _applicationRules = new()
     {
         (2, R("(chrome|chromium|firefox|librewolf|brave|edge|opera|vivaldi|waterfox|palemoon)")),
@@ -110,8 +116,18 @@ public class RuleBasedClassifier : IClassifier
 
     public int? ClassifyAsync(ApplicationRecord record)
     {
+        EnsureCustomRulesLoaded();
+
         var text = $"{record.ClassName} {record.ProcessName}"
             .ToLowerInvariant();
+
+        foreach (var rule in _customApplicationRules)
+        {
+            if (rule.IsMatch(record))
+            {
+                return rule.CategoryId;
+            }
+        }
 
         foreach (var (category, pattern) in _applicationRules)
         {
@@ -130,10 +146,20 @@ public class RuleBasedClassifier : IClassifier
 
     public int? ClassifyAsync(BrowserRecord record)
     {
+        EnsureCustomRulesLoaded();
+
         var text = BuildBrowserText(record);
         if (string.IsNullOrWhiteSpace(text))
         {
             return null;
+        }
+
+        foreach (var rule in _customWebsiteRules)
+        {
+            if (rule.IsMatch(record))
+            {
+                return rule.CategoryId;
+            }
         }
 
         foreach (var (category, pattern) in _websiteRules)
@@ -168,4 +194,79 @@ public class RuleBasedClassifier : IClassifier
 
     private static Regex R(string pattern) =>
         new(pattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+    private void EnsureCustomRulesLoaded()
+    {
+        DateTime? currentTimestamp = File.Exists(ClassifierRuleStore.RulesFilePath)
+            ? File.GetLastWriteTimeUtc(ClassifierRuleStore.RulesFilePath)
+            : null;
+
+        if (_rulesLastWriteUtc == currentTimestamp)
+        {
+            return;
+        }
+
+        var rules = _ruleStore.LoadRules()
+            .Where(rule => rule.Enabled)
+            .ToList();
+
+        _customApplicationRules = rules
+            .Where(rule => rule.Target == CategoryRuleTarget.Application)
+            .Select(CompiledCategoryRule.Create)
+            .ToList();
+
+        _customWebsiteRules = rules
+            .Where(rule => rule.Target == CategoryRuleTarget.Website)
+            .Select(CompiledCategoryRule.Create)
+            .ToList();
+
+        _rulesLastWriteUtc = currentTimestamp;
+    }
+
+    private sealed class CompiledCategoryRule
+    {
+        private readonly CategoryRule _rule;
+        private readonly Regex? _regex;
+
+        private CompiledCategoryRule(CategoryRule rule, Regex? regex)
+        {
+            _rule = rule;
+            _regex = regex;
+        }
+
+        public int CategoryId => _rule.CategoryId;
+
+        public static CompiledCategoryRule Create(CategoryRule rule)
+        {
+            var regex = rule.MatchType == CategoryRuleMatchType.Regex
+                ? new Regex(
+                    rule.Pattern,
+                    RegexOptions.Compiled | (rule.IgnoreCase ? RegexOptions.IgnoreCase : RegexOptions.None))
+                : null;
+
+            return new CompiledCategoryRule(rule, regex);
+        }
+
+        public bool IsMatch(ApplicationRecord record)
+        {
+            return CategoryRuleMatcher.GetApplicationCandidates(_rule.Field, record)
+                .Any(Matches);
+        }
+
+        public bool IsMatch(BrowserRecord record)
+        {
+            return CategoryRuleMatcher.GetBrowserCandidates(_rule.Field, record)
+                .Any(Matches);
+        }
+
+        private bool Matches(string candidate)
+        {
+            if (_regex != null)
+            {
+                return _regex.IsMatch(candidate);
+            }
+
+            return CategoryRuleMatcher.Matches(_rule, candidate);
+        }
+    }
 }

@@ -61,8 +61,39 @@
       </Border>
     </DataTemplate>
 
-    <DataTemplate x:Key="CategoryOptionTemplate" DataType="viewModels:CategoryAssignmentOption">
-      <TextBlock Text="{Binding Label}" />
+    <DataTemplate x:Key="RuleCardTemplate" DataType="viewModels:CategoryRuleListItem">
+      <Border Classes="panel-card panel-card--muted"
+              Margin="0,0,0,12"
+              Padding="16">
+        <StackPanel Spacing="6">
+          <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+            <TextBlock Text="{Binding Title}"
+                       FontSize="16"
+                       FontWeight="Bold"
+                       Foreground="{StaticResource BrushTextSecondary}"
+                       TextWrapping="Wrap"/>
+            <Border Grid.Column="1"
+                    Classes="chip chip--overlay"
+                    Padding="10,4">
+              <TextBlock Text="{Binding StatusLabel}"
+                         Foreground="{StaticResource BrushTextOnSoft}"
+                         FontSize="11"
+                         FontWeight="SemiBold"/>
+            </Border>
+          </Grid>
+          <TextBlock Text="{Binding Rule.Pattern}"
+                     Foreground="{StaticResource BrushTextPrimary}"
+                     TextWrapping="Wrap"/>
+          <TextBlock Text="{Binding Summary}"
+                     Foreground="{StaticResource BrushTextMuted}"
+                     FontSize="12"
+                     TextWrapping="Wrap"/>
+          <TextBlock Text="{Binding MatchPreview}"
+                     Foreground="{StaticResource BrushTextSubtle}"
+                     FontSize="12"
+                     TextWrapping="Wrap"/>
+        </StackPanel>
+      </Border>
     </DataTemplate>
   </UserControl.Resources>
 
@@ -70,7 +101,7 @@
     <StackPanel Margin="20" Spacing="18">
 
       <Border Classes="page-hero">
-        <Grid ColumnDefinitions="*,340" ColumnSpacing="18">
+        <Grid ColumnDefinitions="*,360" ColumnSpacing="18">
           <StackPanel Spacing="10">
             <TextBlock Text="Categorii" Classes="page-title"/>
             <TextBlock Text="{Binding PageSubtitle}" Classes="page-subtitle"/>
@@ -79,8 +110,11 @@
               <Border Classes="chip chip--overlay" Margin="0,10,10,0">
                 <TextBlock Text="{Binding LastRefreshLabel}" Foreground="{StaticResource BrushTextOnSoft}"/>
               </Border>
-              <Border Classes="chip chip--overlay" Margin="0,10,0,0">
+              <Border Classes="chip chip--overlay" Margin="0,10,10,0">
                 <TextBlock Text="{Binding AssignmentStatus}" Foreground="{StaticResource BrushTextOnSoft}"/>
+              </Border>
+              <Border Classes="chip chip--overlay" Margin="0,10,0,0">
+                <TextBlock Text="{Binding RuleStatusMessage}" Foreground="{StaticResource BrushTextOnSoft}"/>
               </Border>
             </WrapPanel>
           </StackPanel>
@@ -120,7 +154,7 @@
           </StackPanel>
         </Border>
 
-        <Border Classes="stat-card" Margin="0,0,0,14">
+        <Border Classes="stat-card">
           <StackPanel Spacing="6">
             <TextBlock Text="Aplicatii neasignate" Classes="metric-label"/>
             <TextBlock Text="{Binding UncategorizedApplications}" Classes="metric-value"/>
@@ -129,21 +163,87 @@
         </Border>
       </WrapPanel>
 
-      <StackPanel Spacing="18">
-        <Border Classes="panel-card panel-card--success">
+      <Grid ColumnDefinitions="0.95*,1.05*" ColumnSpacing="18">
+        <StackPanel Spacing="18">
+          <Border Classes="panel-card panel-card--success">
+            <StackPanel Spacing="16">
+              <TextBlock Text="Categorii existente" Classes="section-title"/>
+              <TextBlock Text="Selecteaza o categorie pentru a vedea impactul ei, pentru a filtra lista de aplicatii si pentru a administra regulile personalizate care o alimenteaza."
+                         Classes="section-subtitle"/>
+
+              <ListBox ItemsSource="{Binding Categories}"
+                       SelectedItem="{Binding SelectedCategory}"
+                       ItemTemplate="{StaticResource CategoryCardTemplate}"
+                       Background="Transparent"
+                       BorderThickness="0"
+                       MaxHeight="420"/>
+
+              <Border Classes="panel-card panel-card--muted"
+                      Padding="16">
+                <StackPanel Spacing="8">
+                  <TextBlock Text="{Binding SelectedCategoryTitle}"
+                             FontSize="18"
+                             FontWeight="Bold"
+                             Foreground="{StaticResource BrushTextSecondary}"
+                             TextWrapping="Wrap"/>
+                  <TextBlock Text="{Binding SelectedCategoryDescription}"
+                             Foreground="{StaticResource BrushTextPrimary}"
+                             TextWrapping="Wrap"/>
+                  <TextBlock Text="{Binding SelectedCategoryUsage}"
+                             Foreground="{StaticResource BrushTextMuted}"
+                             TextWrapping="Wrap"/>
+                  <TextBlock Text="{Binding SelectedCategoryRuleSummary}"
+                             Foreground="{StaticResource BrushTextPrimary}"
+                             TextWrapping="Wrap"/>
+                  <TextBlock Text="{Binding SelectedCategoryAutomationSummary}"
+                             Foreground="{StaticResource BrushTextSubtle}"
+                             FontSize="12"
+                             TextWrapping="Wrap"/>
+                  <Button Command="{Binding DeleteSelectedCategoryCommand}"
+                          IsEnabled="{Binding HasSelectedCategory}"
+                          Classes="action-button warning-button"
+                          Content="Sterge categoria selectata"/>
+                </StackPanel>
+              </Border>
+            </StackPanel>
+          </Border>
+
+          <Border Classes="panel-card">
+            <StackPanel Spacing="16">
+              <TextBlock Text="Adauga o categorie" Classes="section-title"/>
+              <TextBlock Text="Defineste o denumire clara si, optional, o descriere care sa explice ce tip de activitate va include categoria."
+                         Classes="section-subtitle"/>
+
+              <StackPanel Spacing="8">
+                <TextBlock Text="Nume categorie" Classes="field-label"/>
+                <TextBox Text="{Binding NewCategoryName}"
+                         Watermark="Ex: Productivitate, Comunicare, Gaming"/>
+              </StackPanel>
+
+              <StackPanel Spacing="8">
+                <TextBlock Text="Descriere" Classes="field-label"/>
+                <TextBox Text="{Binding NewCategoryDescription}"
+                         AcceptsReturn="True"
+                         TextWrapping="Wrap"
+                         MinHeight="110"
+                         Watermark="Descrie scopul categoriei sau modul in care va fi folosita."/>
+              </StackPanel>
+
+              <Button Command="{Binding AddCategoryCommand}"
+                      Classes="action-button success-button"
+                      Content="Salveaza categoria"/>
+            </StackPanel>
+          </Border>
+        </StackPanel>
+
+        <Border Grid.Column="1"
+                Classes="panel-card panel-card--warning">
           <StackPanel Spacing="16">
-            <TextBlock Text="Categorii existente" Classes="section-title"/>
-            <TextBlock Text="Verifica descrierea fiecarei categorii si pregateste stergerea doar dupa ce ai revizuit impactul asupra aplicatiilor deja clasificate."
+            <TextBlock Text="Automatizare pentru categoria selectata" Classes="section-title"/>
+            <TextBlock Text="Transforma asignarile manuale recurente in reguli. Regulile personalizate sunt evaluate inaintea setului implicit de clasificare din backend."
                        Classes="section-subtitle"/>
 
-            <ListBox ItemsSource="{Binding Categories}"
-                     SelectedItem="{Binding SelectedCategory}"
-                     ItemTemplate="{StaticResource CategoryCardTemplate}"
-                     Background="Transparent"
-                     BorderThickness="0"
-                     MaxHeight="420"/>
-
-            <Border Classes="panel-card panel-card--muted"
+            <Border Classes="panel-card panel-card--overlay"
                     Padding="16">
               <StackPanel Spacing="8">
                 <TextBlock Text="{Binding SelectedCategoryTitle}"
@@ -151,124 +251,231 @@
                            FontWeight="Bold"
                            Foreground="{StaticResource BrushTextSecondary}"
                            TextWrapping="Wrap"/>
-                <TextBlock Text="{Binding SelectedCategoryDescription}"
+                <TextBlock Text="{Binding SelectedCategoryRuleSummary}"
                            Foreground="{StaticResource BrushTextPrimary}"
                            TextWrapping="Wrap"/>
-                <TextBlock Text="{Binding SelectedCategoryUsage}"
+                <TextBlock Text="{Binding SelectedCategoryAutomationSummary}"
                            Foreground="{StaticResource BrushTextMuted}"
                            TextWrapping="Wrap"/>
-                <Button Command="{Binding DeleteSelectedCategoryCommand}"
-                        IsEnabled="{Binding HasSelectedCategory}"
-                        Classes="action-button warning-button"
-                        Content="Sterge categoria selectata"/>
               </StackPanel>
             </Border>
-          </StackPanel>
-        </Border>
 
-        <Border Classes="panel-card">
-          <StackPanel Spacing="16">
-            <TextBlock Text="Adauga o categorie" Classes="section-title"/>
-            <TextBlock Text="Defineste o denumire clara si, optional, o descriere care sa explice ce tip de activitate va include categoria."
-                       Classes="section-subtitle"/>
+            <ListBox ItemsSource="{Binding CategoryRules}"
+                     SelectedItem="{Binding SelectedCategoryRule}"
+                     ItemTemplate="{StaticResource RuleCardTemplate}"
+                     Background="Transparent"
+                     BorderThickness="0"
+                     MaxHeight="280"/>
+
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="14">
+              <StackPanel Spacing="8">
+                <TextBlock Text="Nume regula" Classes="field-label"/>
+                <TextBox Text="{Binding RuleName}"
+                         IsEnabled="{Binding HasSelectedCategory}"
+                         Watermark="Ex: Browser de lucru, Teams corporate"/>
+              </StackPanel>
+
+              <StackPanel Grid.Column="1" Spacing="8">
+                <TextBlock Text="Prioritate" Classes="field-label"/>
+                <TextBox Text="{Binding RulePriorityText}"
+                         IsEnabled="{Binding HasSelectedCategory}"
+                         Watermark="Numar mic = evaluare mai devreme"/>
+              </StackPanel>
+            </Grid>
+
+            <Grid ColumnDefinitions="*,*,*" ColumnSpacing="14">
+              <StackPanel Spacing="8">
+                <TextBlock Text="Tinta" Classes="field-label"/>
+                <ComboBox ItemsSource="{Binding RuleTargetOptions}"
+                          SelectedItem="{Binding SelectedRuleTarget}"
+                          IsEnabled="{Binding HasSelectedCategory}"/>
+              </StackPanel>
+
+              <StackPanel Grid.Column="1" Spacing="8">
+                <TextBlock Text="Camp verificat" Classes="field-label"/>
+                <ComboBox ItemsSource="{Binding RuleFieldOptions}"
+                          SelectedItem="{Binding SelectedRuleField}"
+                          IsEnabled="{Binding HasSelectedCategory}"/>
+              </StackPanel>
+
+              <StackPanel Grid.Column="2" Spacing="8">
+                <TextBlock Text="Potrivire" Classes="field-label"/>
+                <ComboBox ItemsSource="{Binding RuleMatchTypeOptions}"
+                          SelectedItem="{Binding SelectedRuleMatchType}"
+                          IsEnabled="{Binding HasSelectedCategory}"/>
+              </StackPanel>
+            </Grid>
 
             <StackPanel Spacing="8">
-              <TextBlock Text="Nume categorie" Classes="field-label"/>
-              <TextBox Text="{Binding NewCategoryName}"
-                       Watermark="Ex: Productivitate, Comunicare, Gaming"/>
+              <TextBlock Text="Model de potrivire" Classes="field-label"/>
+              <TextBox Text="{Binding RulePattern}"
+                       IsEnabled="{Binding HasSelectedCategory}"
+                       Watermark="Ex: slack, chrome.exe, JetBrains Rider, ^https://intranet\\."/>
             </StackPanel>
 
+            <WrapPanel Orientation="Horizontal">
+              <CheckBox IsChecked="{Binding RuleEnabled}"
+                        IsEnabled="{Binding HasSelectedCategory}"
+                        Margin="0,0,16,0"
+                        Content="Regula activa"/>
+              <CheckBox IsChecked="{Binding RuleIgnoreCase}"
+                        IsEnabled="{Binding HasSelectedCategory}"
+                        Content="Ignora litere mari/mici"/>
+            </WrapPanel>
+
             <StackPanel Spacing="8">
-              <TextBlock Text="Descriere" Classes="field-label"/>
-              <TextBox Text="{Binding NewCategoryDescription}"
+              <TextBlock Text="Note interne" Classes="field-label"/>
+              <TextBox Text="{Binding RuleNotes}"
                        AcceptsReturn="True"
                        TextWrapping="Wrap"
-                       MinHeight="110"
-                       Watermark="Descrie regulile sau scopul categoriei."/>
+                       MinHeight="90"
+                       IsEnabled="{Binding HasSelectedCategory}"
+                       Watermark="Optional: de ce exista regula sau ce varianta acopera."/>
             </StackPanel>
 
-            <Button Command="{Binding AddCategoryCommand}"
-                    Classes="action-button success-button"
-                    Content="Salveaza categoria"/>
+            <Border Classes="panel-card panel-card--muted"
+                    Padding="14">
+              <TextBlock Text="{Binding RulePreviewSummary}"
+                         Foreground="{StaticResource BrushTextSecondary}"
+                         TextWrapping="Wrap"/>
+            </Border>
+
+            <Grid ColumnDefinitions="*,*,*" ColumnSpacing="10">
+              <Button Grid.Column="0"
+                      Command="{Binding NewRuleCommand}"
+                      IsEnabled="{Binding HasSelectedCategory}"
+                      Classes="action-button subtle-button"
+                      Content="Regula noua"/>
+              <Button Grid.Column="1"
+                      Command="{Binding SaveRuleCommand}"
+                      IsEnabled="{Binding HasSelectedCategory}"
+                      Classes="action-button success-button"
+                      Content="Salveaza regula"/>
+              <Button Grid.Column="2"
+                      Command="{Binding DeleteSelectedRuleCommand}"
+                      IsEnabled="{Binding HasSelectedCategoryRule}"
+                      Classes="action-button warning-button"
+                      Content="Sterge regula"/>
+            </Grid>
           </StackPanel>
         </Border>
+      </Grid>
 
-        <Border Classes="panel-card panel-card--warning">
-          <StackPanel Spacing="16">
-            <TextBlock Text="Asignare categorii pe aplicatii" Classes="section-title"/>
-            <TextBlock Text="Selecteaza o aplicatie detectata de monitorizare, apoi decide daca ramane neasignata sau intra intr-o categorie existenta."
-                       Classes="section-subtitle"/>
+      <Border Classes="panel-card panel-card--warning">
+        <StackPanel Spacing="16">
+          <TextBlock Text="Asignare categorii pe aplicatii" Classes="section-title"/>
+          <TextBlock Text="Revizuieste aplicatiile detectate, aplica rapid categoria selectata si genereaza reguli din exemple reale de ferestre pentru a reduce munca manuala pe viitor."
+                     Classes="section-subtitle"/>
 
+          <Grid ColumnDefinitions="1.2*,0.8*" ColumnSpacing="14">
             <StackPanel Spacing="8">
               <TextBlock Text="Cauta aplicatii" Classes="field-label"/>
               <TextBox Text="{Binding ApplicationSearchText}"
                        Watermark="Filtreaza dupa proces, titlu, clasa sau categorie"/>
             </StackPanel>
 
-            <Grid ColumnDefinitions="1.05*,0.95*" ColumnSpacing="16">
-              <Border Classes="panel-card panel-card--muted"
-                      Padding="12">
-                <StackPanel Spacing="10">
-                  <TextBlock Text="Aplicatii monitorizate"
-                             FontWeight="Bold"
-                             Foreground="{StaticResource BrushTextSecondary}"/>
-                  <ListBox ItemsSource="{Binding Applications}"
-                           SelectedItem="{Binding SelectedApplication}"
-                           ItemTemplate="{StaticResource ApplicationCardTemplate}"
-                           Background="Transparent"
-                           BorderThickness="0"
-                           MaxHeight="560"/>
-                </StackPanel>
-              </Border>
+            <StackPanel Grid.Column="1" Spacing="8">
+              <TextBlock Text="Arata in lista" Classes="field-label"/>
+              <ComboBox ItemsSource="{Binding ApplicationScopeOptions}"
+                        SelectedItem="{Binding SelectedApplicationScope}"/>
+            </StackPanel>
+          </Grid>
 
-              <Border Grid.Column="1"
-                      Classes="panel-card panel-card--muted"
-                      Padding="18">
-                <StackPanel Spacing="14">
-                  <TextBlock Text="{Binding SelectedApplicationTitle}"
-                             FontSize="20"
-                             FontWeight="Bold"
+          <Grid ColumnDefinitions="1.05*,0.95*" ColumnSpacing="16">
+            <Border Classes="panel-card panel-card--muted"
+                    Padding="12">
+              <StackPanel Spacing="10">
+                <TextBlock Text="Aplicatii monitorizate"
+                           FontWeight="Bold"
+                           Foreground="{StaticResource BrushTextSecondary}"/>
+                <ListBox ItemsSource="{Binding Applications}"
+                         SelectedItem="{Binding SelectedApplication}"
+                         ItemTemplate="{StaticResource ApplicationCardTemplate}"
+                         Background="Transparent"
+                         BorderThickness="0"
+                         MaxHeight="560"/>
+              </StackPanel>
+            </Border>
+
+            <Border Grid.Column="1"
+                    Classes="panel-card panel-card--muted"
+                    Padding="18">
+              <StackPanel Spacing="14">
+                <TextBlock Text="{Binding SelectedApplicationTitle}"
+                           FontSize="20"
+                           FontWeight="Bold"
+                           Foreground="{StaticResource BrushTextSecondary}"
+                           TextWrapping="Wrap"/>
+                <TextBlock Text="{Binding SelectedApplicationDetail}"
+                           Foreground="{StaticResource BrushTextPrimary}"
+                           TextWrapping="Wrap"/>
+                <TextBlock Text="{Binding SelectedApplicationIdentity}"
+                           Foreground="{StaticResource BrushTextMuted}"
+                           TextWrapping="Wrap"/>
+                <Border Classes="panel-card panel-card--overlay"
+                        Padding="14">
+                  <TextBlock Text="{Binding SelectedApplicationCategoryLabel}"
                              Foreground="{StaticResource BrushTextSecondary}"
                              TextWrapping="Wrap"/>
-                  <TextBlock Text="{Binding SelectedApplicationDetail}"
-                             Foreground="{StaticResource BrushTextPrimary}"
-                             TextWrapping="Wrap"/>
-                  <TextBlock Text="{Binding SelectedApplicationIdentity}"
-                             Foreground="{StaticResource BrushTextMuted}"
-                             TextWrapping="Wrap"/>
-                  <Border Classes="panel-card panel-card--overlay"
-                          Padding="14">
-                    <TextBlock Text="{Binding SelectedApplicationCategoryLabel}"
-                               Foreground="{StaticResource BrushTextSecondary}"
-                               TextWrapping="Wrap"/>
-                  </Border>
+                </Border>
 
-                  <StackPanel Spacing="8">
-                    <TextBlock Text="Categorie noua"
-                               Classes="field-label"/>
-                    <ComboBox ItemsSource="{Binding CategoryOptions}"
-                              SelectedItem="{Binding SelectedApplicationCategory}"
-                              ItemTemplate="{StaticResource CategoryOptionTemplate}"
-                              IsEnabled="{Binding HasSelectedApplication}"/>
-                  </StackPanel>
-
-                  <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
-                    <Button Grid.Column="0"
-                            Command="{Binding SaveApplicationCategoryCommand}"
-                            IsEnabled="{Binding HasSelectedApplication}"
-                            Classes="action-button warning-button"
-                            Content="Salveaza asignarea"/>
-                    <Button Grid.Column="1"
-                            Command="{Binding ClearApplicationSelectionCommand}"
-                            Classes="action-button subtle-button"
-                            Content="Reseteaza selectia"/>
-                  </Grid>
+                <StackPanel Spacing="8">
+                  <TextBlock Text="Categorie noua"
+                             Classes="field-label"/>
+                  <ComboBox ItemsSource="{Binding CategoryOptions}"
+                            SelectedItem="{Binding SelectedApplicationCategory}"
+                            IsEnabled="{Binding HasSelectedApplication}"/>
                 </StackPanel>
-              </Border>
-            </Grid>
-          </StackPanel>
-        </Border>
-      </StackPanel>
+
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                  <Button Grid.Column="0"
+                          Command="{Binding AssignSelectedCategoryToApplicationCommand}"
+                          IsEnabled="{Binding CanBuildRuleFromSelectedApplication}"
+                          Classes="action-button success-button"
+                          Content="Aplica categoria selectata"/>
+                  <Button Grid.Column="1"
+                          Command="{Binding SaveApplicationCategoryCommand}"
+                          IsEnabled="{Binding HasSelectedApplication}"
+                          Classes="action-button warning-button"
+                          Content="Salveaza asignarea"/>
+                </Grid>
+
+                <Button Command="{Binding ClearApplicationSelectionCommand}"
+                        Classes="action-button subtle-button"
+                        Content="Reseteaza selectia"/>
+
+                <Border Classes="panel-card panel-card--overlay"
+                        Padding="16">
+                  <StackPanel Spacing="10">
+                    <TextBlock Text="Genereaza regula din aplicatia selectata"
+                               FontWeight="Bold"
+                               Foreground="{StaticResource BrushTextSecondary}"/>
+                    <TextBlock Text="Butonul potrivit depinde de semnalul cel mai stabil: procesul si clasa sunt mai sigure, titlul ferestrei e util pentru cazuri specifice."
+                               Foreground="{StaticResource BrushTextMuted}"
+                               TextWrapping="Wrap"/>
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                      <Button Grid.Column="0"
+                              Command="{Binding CreateRuleFromProcessCommand}"
+                              IsEnabled="{Binding CanBuildRuleFromSelectedApplication}"
+                              Classes="action-button subtle-button"
+                              Content="Foloseste procesul"/>
+                      <Button Grid.Column="1"
+                              Command="{Binding CreateRuleFromClassCommand}"
+                              IsEnabled="{Binding CanBuildRuleFromSelectedApplication}"
+                              Classes="action-button subtle-button"
+                              Content="Foloseste clasa"/>
+                    </Grid>
+                    <Button Command="{Binding CreateRuleFromWindowTitleCommand}"
+                            IsEnabled="{Binding CanBuildRuleFromSelectedApplication}"
+                            Classes="action-button subtle-button"
+                            Content="Foloseste titlul ferestrei"/>
+                  </StackPanel>
+                </Border>
+              </StackPanel>
+            </Border>
+          </Grid>
+        </StackPanel>
+      </Border>
     </StackPanel>
   </ScrollViewer>
 </UserControl>

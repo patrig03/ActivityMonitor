@@ -115,7 +115,12 @@ public sealed class DatabaseManager : IDatabaseManager
         {
             UserId = settings.UserId,
             RefreshTimeSeconds = settings.DeltaTimeSeconds,
-            SyncServerAddress = settings.SyncServerAddress
+            SyncServerAddress = settings.SyncServerAddress,
+            SyncEmail = settings.SyncEmail,
+            SyncAuthToken = settings.SyncAuthToken,
+            SyncRemoteUserId = settings.SyncRemoteUserId,
+            SyncDeviceId = settings.SyncDeviceId,
+            SyncLastServerTimeUtc = settings.SyncLastServerTimeUtc
         };
 
         context.Settings.Add(entity);
@@ -135,6 +140,11 @@ public sealed class DatabaseManager : IDatabaseManager
         entity.UserId = settings.UserId;
         entity.RefreshTimeSeconds = settings.DeltaTimeSeconds;
         entity.SyncServerAddress = settings.SyncServerAddress;
+        entity.SyncEmail = settings.SyncEmail;
+        entity.SyncAuthToken = settings.SyncAuthToken;
+        entity.SyncRemoteUserId = settings.SyncRemoteUserId;
+        entity.SyncDeviceId = settings.SyncDeviceId;
+        entity.SyncLastServerTimeUtc = settings.SyncLastServerTimeUtc;
         return context.SaveChanges();
     }
 
@@ -672,7 +682,12 @@ public sealed class DatabaseManager : IDatabaseManager
             Id = entity.SettingsId,
             UserId = entity.UserId,
             DeltaTimeSeconds = entity.RefreshTimeSeconds,
-            SyncServerAddress = entity.SyncServerAddress
+            SyncServerAddress = entity.SyncServerAddress,
+            SyncEmail = entity.SyncEmail,
+            SyncAuthToken = entity.SyncAuthToken,
+            SyncRemoteUserId = entity.SyncRemoteUserId,
+            SyncDeviceId = entity.SyncDeviceId,
+            SyncLastServerTimeUtc = entity.SyncLastServerTimeUtc
         };
     }
 

@@ -8,7 +8,7 @@ using Database.Manager;
 
 namespace ActivityMonitor.ViewModels;
 
-public class SettingsViewModel : ObservableObject
+public class SettingsViewModel : ViewModelBase
 {
     private const int DefaultUserId = 1;
     private const int DefaultIntervalSeconds = 10;
@@ -281,15 +281,23 @@ public class SettingsViewModel : ObservableObject
         {
             SaveStatus = error;
             SyncAuthStatus = error;
+            ShowErrorToast(error);
             return;
         }
 
         SaveStatus = $"Se verifica serverul {normalizedAddress}...";
         var result = await _serverSync.CheckHealthAsync(normalizedAddress);
         SaveStatus = result.Message;
-        SyncAuthStatus = result.Success
-            ? $"Server disponibil ({result.Status})"
-            : result.Message;
+        if (result.Success)
+        {
+            SyncAuthStatus = $"Server disponibil ({result.Status})";
+            ShowSuccessToast(SyncAuthStatus);
+        }
+        else
+        {
+            SyncAuthStatus = result.Message;
+            ShowErrorToast(result.Message);
+        }
         RefreshSyncState();
     }
 
@@ -299,6 +307,7 @@ public class SettingsViewModel : ObservableObject
         {
             SaveStatus = error;
             SyncAuthStatus = error;
+            ShowErrorToast(error);
             return;
         }
 
@@ -306,6 +315,7 @@ public class SettingsViewModel : ObservableObject
         {
             SaveStatus = "Configureaza mai intai adresa serverului de sincronizare.";
             SyncAuthStatus = SaveStatus;
+            ShowWarningToast(SaveStatus);
             return;
         }
 
@@ -313,6 +323,7 @@ public class SettingsViewModel : ObservableObject
         {
             SaveStatus = "Emailul si parola sunt obligatorii pentru autentificarea la server.";
             SyncAuthStatus = SaveStatus;
+            ShowWarningToast(SaveStatus);
             return;
         }
 
@@ -328,6 +339,7 @@ public class SettingsViewModel : ObservableObject
         {
             SaveStatus = authResult.Message;
             SyncAuthStatus = authResult.Message;
+            ShowErrorToast(authResult.Message);
             return;
         }
 
@@ -341,6 +353,7 @@ public class SettingsViewModel : ObservableObject
 
         PersistSettings("Credentialele SyncServer au fost salvate");
         SaveStatus = authResult.Message;
+        ShowSuccessToast(authResult.Message);
         RefreshSyncState();
     }
 
@@ -349,6 +362,7 @@ public class SettingsViewModel : ObservableObject
         if (!TryApplyEditorValuesToSettings(out var error))
         {
             SaveStatus = error;
+            ShowErrorToast(error);
             return;
         }
 
@@ -356,6 +370,7 @@ public class SettingsViewModel : ObservableObject
         SyncPassword = string.Empty;
         PersistSettings("Sesiunea SyncServer a fost eliminata");
         SaveStatus = "Tokenul local a fost sters. Va trebui sa te autentifici din nou.";
+        ShowWarningToast("Sesiunea SyncServer a fost stearsa");
         RefreshSyncState();
     }
 

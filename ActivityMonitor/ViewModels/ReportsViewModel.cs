@@ -174,18 +174,28 @@ public class ReportsViewModel : ViewModelBase
     {
         Directory.CreateDirectory(ExportDirectory);
         var success = _maker.WriteCsvReport(EnsureTrailingSeparator(ExportDirectory));
-        ReportStatus = success
-            ? $"Raportul CSV a fost scris in {Path.Combine(ExportDirectory, "report.csv")}"
+        var message = success
+            ? $"CSV exportat: {Path.Combine(ExportDirectory, "report.csv")}"
             : "Exportul CSV a esuat.";
+        ReportStatus = message;
+        if (success)
+            ShowSuccessToast(message);
+        else
+            ShowErrorToast(message);
     }
 
     private void ExportPdf()
     {
         Directory.CreateDirectory(ExportDirectory);
         var success = _maker.WritePdfReport(EnsureTrailingSeparator(ExportDirectory));
-        ReportStatus = success
-            ? $"Raportul PDF a fost scris in {Path.Combine(ExportDirectory, "report.pdf")}"
+        var message = success
+            ? $"PDF exportat: {Path.Combine(ExportDirectory, "report.pdf")}"
             : "Exportul PDF a esuat.";
+        ReportStatus = message;
+        if (success)
+            ShowSuccessToast(message);
+        else
+            ShowErrorToast(message);
     }
 
     private static TimeSpan GetCategoryDuration(ReportData report)

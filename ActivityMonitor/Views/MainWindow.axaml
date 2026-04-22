@@ -17,7 +17,6 @@
   <Window.Resources>
     <views:ActiveViewTemplateSelector x:Key="ActiveViewSelector"/>
   </Window.Resources>
-  
 
   <Grid ColumnDefinitions="280,*" RowDefinitions="*" Margin="12">
     <views:Navbar Grid.Column="0" Margin="0,0,12,0"/>
@@ -26,5 +25,20 @@
                     Content="{Binding CurrentView,
                           RelativeSource={RelativeSource AncestorType=Window}}"
                     ContentTemplate="{StaticResource ActiveViewSelector}"/>
+
+    <Border Grid.Column="0" Grid.ColumnSpan="2"
+            IsVisible="{Binding IsToastVisible, RelativeSource={RelativeSource AncestorType=Window}}"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Top"
+            Margin="0,20,0,0"
+            Padding="20,14"
+            Background="{Binding ToastType, RelativeSource={RelativeSource AncestorType=Window}, Converter={x:Static views:MainWindow.ToastBackgroundConverter}}"
+            CornerRadius="8"
+            Effect="{x:Null}">
+      <TextBlock Text="{Binding ToastMessage, RelativeSource={RelativeSource AncestorType=Window}}"
+                 FontSize="16"
+                 FontWeight="SemiBold"
+                 Foreground="White"/>
+    </Border>
   </Grid>
 </Window>

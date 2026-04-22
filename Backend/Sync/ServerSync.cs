@@ -165,7 +165,7 @@ public sealed class ServerSync
 
         if (Guid.TryParse(existingDeviceId, out var existingGuid) && existingGuid != Guid.Empty)
         {
-            var lookupResult = await GetDevicesAsync(normalizedAddress, bearerToken, cancellationToken);
+            var lookupResult = await GetDevicesCoreAsync(normalizedAddress, bearerToken, cancellationToken);
             if (!lookupResult.Success)
             {
                 return DeviceRegistrationResult.Failed(lookupResult.Message);
@@ -322,7 +322,7 @@ public sealed class ServerSync
         string deviceName,
         CancellationToken cancellationToken)
     {
-        var lookupResult = await GetDevicesAsync(normalizedAddress, bearerToken, cancellationToken);
+        var lookupResult = await GetDevicesCoreAsync(normalizedAddress, bearerToken, cancellationToken);
         if (!lookupResult.Success)
         {
             return DeviceRegistrationResult.Failed(lookupResult.Message);
@@ -338,7 +338,27 @@ public sealed class ServerSync
             : DeviceRegistrationResult.Succeeded(match.DeviceId, true, "Dispozitivul curent a fost inregistrat pe server.");
     }
 
-    private async Task<DeviceLookupResult> GetDevicesAsync(
+    public async Task<DeviceLookupResult> GetDevicesAsync(
+        string serverAddress,
+        string bearerToken,
+        CancellationToken cancellationToken = default)
+    {
+        if (!TryNormalizeServerAddress(serverAddress, out var normalizedAddress, out var validationMessage))
+        {
+            return DeviceLookupResult.Failed(validationMessage);
+        }
+
+        try
+        {
+            return await GetDevicesCoreAsync(normalizedAddress, bearerToken, cancellationToken);
+        }
+        catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or JsonException)
+        {
+            return DeviceLookupResult.Failed($"Citirea dispozitivelor de pe server a esuat: {ex.Message}");
+        }
+    }
+
+    private async Task<DeviceLookupResult> GetDevicesCoreAsync(
         string normalizedAddress,
         string bearerToken,
         CancellationToken cancellationToken)
@@ -458,7 +478,10 @@ public sealed class ServerSync
         using var document = JsonDocument.Parse(json);
         var result = new List<ServerDeviceDescriptor>();
         CollectDevices(document.RootElement, result);
-        return result;
+        return result
+            .GroupBy(device => device.DeviceId, StringComparer.OrdinalIgnoreCase)
+            .Select(group => group.Last())
+            .ToList();
     }
 
     private static void CollectDevices(JsonElement element, ICollection<ServerDeviceDescriptor> devices)
@@ -497,10 +520,42 @@ public sealed class ServerSync
 
         var id = TryExtractGuid(element, "deviceId") ?? TryExtractGuid(element, "id");
         var name = TryExtractString(element, "name");
+        var status = TryExtractString(element, "status")
+                     ?? TryExtractString(element, "state");
+        var deviceType = TryExtractString(element, "deviceType")
+                         ?? TryExtractString(element, "type");
+        var platform = TryExtractString(element, "platform")
+                       ?? TryExtractString(element, "os");
+        var appVersion = TryExtractString(element, "appVersion")
+                         ?? TryExtractString(element, "clientVersion")
+                         ?? TryExtractString(element, "version");
+        var isTrusted = TryExtractBool(element, "isTrusted")
+                        ?? TryExtractBool(element, "trusted");
+        var isCurrentDevice = TryExtractBool(element, "isCurrentDevice")
+                              ?? TryExtractBool(element, "current");
+        var createdAt = TryExtractDateTime(element, "createdAt")
+                        ?? TryExtractDateTime(element, "created_at");
+        var lastSeenAt = TryExtractDateTime(element, "lastSeenAt")
+                         ?? TryExtractDateTime(element, "lastSeen")
+                         ?? TryExtractDateTime(element, "lastActiveAt")
+                         ?? TryExtractDateTime(element, "updatedAt");
+        var revokedAt = TryExtractDateTime(element, "revokedAt")
+                        ?? TryExtractDateTime(element, "deactivatedAt");
 
         return string.IsNullOrWhiteSpace(id)
             ? null
-            : new ServerDeviceDescriptor(id, name ?? string.Empty);
+            : new ServerDeviceDescriptor(
+                id,
+                name ?? string.Empty,
+                status,
+                deviceType,
+                platform,
+                appVersion,
+                isTrusted,
+                isCurrentDevice,
+                createdAt,
+                lastSeenAt,
+                revokedAt);
     }
 
     private static string? TryExtractString(JsonElement element, string propertyName)
@@ -516,6 +571,56 @@ public sealed class ServerSync
                 property.Value.ValueKind == JsonValueKind.String)
             {
                 return property.Value.GetString();
+            }
+        }
+
+        return null;
+    }
+
+    private static bool? TryExtractBool(JsonElement element, string propertyName)
+    {
+        if (element.ValueKind != JsonValueKind.Object)
+        {
+            return null;
+        }
+
+        foreach (var property in element.EnumerateObject())
+        {
+            if (!string.Equals(property.Name, propertyName, StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
+            return property.Value.ValueKind switch
+            {
+                JsonValueKind.True => true,
+                JsonValueKind.False => false,
+                JsonValueKind.String when bool.TryParse(property.Value.GetString(), out var value) => value,
+                _ => null
+            };
+        }
+
+        return null;
+    }
+
+    private static DateTime? TryExtractDateTime(JsonElement element, string propertyName)
+    {
+        if (element.ValueKind != JsonValueKind.Object)
+        {
+            return null;
+        }
+
+        foreach (var property in element.EnumerateObject())
+        {
+            if (!string.Equals(property.Name, propertyName, StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
+            if (property.Value.ValueKind == JsonValueKind.String &&
+                DateTime.TryParse(property.Value.GetString(), out var parsed))
+            {
+                return parsed;
             }
         }
 
@@ -688,9 +793,20 @@ internal sealed class CreateDeviceRequest
     public string Name { get; set; } = string.Empty;
 }
 
-internal sealed record ServerDeviceDescriptor(string DeviceId, string Name);
+public sealed record ServerDeviceDescriptor(
+    string DeviceId,
+    string Name,
+    string? Status,
+    string? DeviceType,
+    string? Platform,
+    string? AppVersion,
+    bool? IsTrusted,
+    bool? IsCurrentDevice,
+    DateTime? CreatedAt,
+    DateTime? LastSeenAt,
+    DateTime? RevokedAt);
 
-internal sealed record DeviceLookupResult(bool Success, IReadOnlyList<ServerDeviceDescriptor> Devices, string Message)
+public sealed record DeviceLookupResult(bool Success, IReadOnlyList<ServerDeviceDescriptor> Devices, string Message)
 {
     public static DeviceLookupResult Failed(string message) => new(false, [], message);
 

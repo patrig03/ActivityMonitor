@@ -20,7 +20,7 @@
                 <Border IsVisible="{Binding IsCurrentDevice}"
                         Classes="chip chip--success"
                         Padding="10,4">
-                  <TextBlock Text="Acest dispozitiv"
+                  <TextBlock Text="Dispozitivul curent"
                              Foreground="{StaticResource BrushTextSecondary}"
                              FontSize="11"
                              FontWeight="Bold"/>
@@ -57,23 +57,6 @@
           </Grid>
 
           <TextBlock Text="{Binding VersionSummary}" Foreground="{StaticResource BrushTextMuted}"/>
-
-          <Grid ColumnDefinitions="*,*,*" ColumnSpacing="10">
-            <Button Grid.Column="0"
-                    CommandParameter="{Binding}"
-                    Classes="action-button subtle-button"
-                    Content="Detalii"/>
-
-            <Button Grid.Column="1"
-                    CommandParameter="{Binding}"
-                    Classes="action-button success-button"
-                    Content="{Binding TrustActionLabel}"/>
-
-            <Button Grid.Column="2"
-                    CommandParameter="{Binding}"
-                    Classes="action-button warning-button"
-                    Content="{Binding ActionLabel}"/>
-          </Grid>
         </StackPanel>
       </Border>
     </DataTemplate>
@@ -121,19 +104,15 @@
                          Foreground="{StaticResource BrushTextMuted}"
                          TextWrapping="Wrap"/>
 
-              <Grid ColumnDefinitions="*,*,*" ColumnSpacing="10">
+              <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
                 <Button Grid.Column="0"
-                        Command="{Binding RegisterCurrentDeviceCommand}"
-                        Classes="action-button success-button"
-                        Content="Inregistreaza desktopul"/>
-                <Button Grid.Column="1"
                         Command="{Binding SyncWithServerCommand}"
                         Classes="action-button primary-button"
-                        Content="Sincronizeaza cu serverul"/>
-                <Button Grid.Column="2"
+                        Content="Sincronizeaza acum"/>
+                <Button Grid.Column="1"
                         Command="{Binding RefreshCommand}"
                         Classes="action-button subtle-button"
-                        Content="Reincarca"/>
+                        Content="Reincarca din server"/>
               </Grid>
             </StackPanel>
           </Border>
@@ -145,167 +124,135 @@
           <StackPanel Spacing="6">
             <TextBlock Text="Total dispozitive" Classes="metric-label"/>
             <TextBlock Text="{Binding TotalDevices}" Classes="metric-value"/>
-            <TextBlock Text="Inregistrate pe cont" Classes="metric-detail"/>
+            <TextBlock Text="Raportate de contul server" Classes="metric-detail"/>
           </StackPanel>
         </Border>
         <Border Classes="stat-card">
           <StackPanel Spacing="6">
             <TextBlock Text="Active" Classes="metric-label"/>
             <TextBlock Text="{Binding ActiveDevices}" Classes="metric-value"/>
-            <TextBlock Text="Cu acces valid" Classes="metric-detail"/>
+            <TextBlock Text="Cu status activ" Classes="metric-detail"/>
           </StackPanel>
         </Border>
         <Border Classes="stat-card">
           <StackPanel Spacing="6">
-            <TextBlock Text="De incredere" Classes="metric-label"/>
-            <TextBlock Text="{Binding TrustedDevices}" Classes="metric-value"/>
-            <TextBlock Text="Nu necesita review" Classes="metric-detail"/>
+            <TextBlock Text="Revocate" Classes="metric-label"/>
+            <TextBlock Text="{Binding RevokedDevices}" Classes="metric-value"/>
+            <TextBlock Text="Acces retras de server" Classes="metric-detail"/>
           </StackPanel>
         </Border>
         <Border Classes="stat-card" Margin="0,0,0,14">
           <StackPanel Spacing="6">
-            <TextBlock Text="Revocate" Classes="metric-label"/>
-            <TextBlock Text="{Binding RevokedDevices}" Classes="metric-value"/>
-            <TextBlock Text="Scoase din acces" Classes="metric-detail"/>
+            <TextBlock Text="Status necunoscut" Classes="metric-label"/>
+            <TextBlock Text="{Binding UnknownDevices}" Classes="metric-value"/>
+            <TextBlock Text="Fara stare explicita" Classes="metric-detail"/>
           </StackPanel>
         </Border>
       </WrapPanel>
 
-      <Grid ColumnDefinitions="1.2*,0.8*" ColumnSpacing="18">
-        <StackPanel Spacing="18">
+      <Grid ColumnDefinitions="1.1*,0.9*" ColumnSpacing="18">
+        <Border Classes="panel-card panel-card--success">
+          <StackPanel Spacing="14">
+            <TextBlock Text="Dispozitive conectate pe server" Classes="section-title"/>
+            <TextBlock Text="Lista de mai jos vine din contul autentificat pe serverul de sincronizare, nu din inventarul local al aplicatiei."
+                       Classes="section-subtitle"/>
 
-          <Border Classes="panel-card panel-card--success">
-            <StackPanel Spacing="14">
-              <TextBlock Text="Dispozitive conectate" Classes="section-title"/>
-              <TextBlock Text="Monitorizeaza dispozitivele care au acces la cont si actioneaza rapid cand unul nu mai trebuie sa fie conectat."
-                         Classes="section-subtitle"/>
-
-              <ItemsControl ItemsSource="{Binding Devices}" ItemTemplate="{StaticResource DeviceCardTemplate}"/>
-            </StackPanel>
-          </Border>
-
-          <Border Classes="panel-card panel-card--warning">
-            <StackPanel Spacing="16">
-              <TextBlock Text="Adauga un dispozitiv" Classes="section-title"/>
-              <TextBlock Text="Inregistreaza manual un dispozitiv companion pentru a-i urmari accesul si a-l putea revoca din acelasi loc."
-                         Classes="section-subtitle"/>
-
-              <Grid ColumnDefinitions="*,*" ColumnSpacing="14">
-                <StackPanel Spacing="8">
-                  <TextBlock Text="Nume dispozitiv" Classes="field-label"/>
-                  <TextBox Text="{Binding NewDeviceName}"
-                           Watermark="Ex: Laptop birou"/>
-                </StackPanel>
-
-                <StackPanel Grid.Column="1" Spacing="8">
-                  <TextBlock Text="Tip" Classes="field-label"/>
-                  <ComboBox ItemsSource="{Binding AvailableDeviceTypes}"
-                            SelectedItem="{Binding NewDeviceType}"/>
-                </StackPanel>
-              </Grid>
-
-              <Grid ColumnDefinitions="*,*" ColumnSpacing="14">
-                <StackPanel Spacing="8">
-                  <TextBlock Text="Platforma" Classes="field-label"/>
-                  <TextBox Text="{Binding NewDevicePlatform}"
-                           Watermark="Windows, macOS, Android..."/>
-                </StackPanel>
-
-                <StackPanel Grid.Column="1" Spacing="8">
-                  <TextBlock Text="Versiune aplicatie" Classes="field-label"/>
-                  <TextBox Text="{Binding NewDeviceVersion}"
-                           Watermark="Optional"/>
-                </StackPanel>
-              </Grid>
-
-              <Button Command="{Binding AddDeviceCommand}"
-                      Classes="action-button warning-button"
-                      Content="Adauga dispozitivul"/>
-            </StackPanel>
-          </Border>
-        </StackPanel>
+            <ListBox ItemsSource="{Binding Devices}"
+                     SelectedItem="{Binding SelectedDevice}"
+                     ItemTemplate="{StaticResource DeviceCardTemplate}"
+                     Background="Transparent"
+                     BorderThickness="0"
+                     MaxHeight="720"
+                     SelectionMode="Single"/>
+          </StackPanel>
+        </Border>
 
         <StackPanel Grid.Column="1" Spacing="18">
           <Border Classes="panel-card">
             <StackPanel Spacing="14">
-              <TextBlock Text="Panou de administrare"
+              <TextBlock Text="Detalii dispozitiv"
                          Classes="section-title"/>
 
               <StackPanel IsVisible="{Binding HasSelectedDevice}" Spacing="14">
                 <TextBlock Text="{Binding SelectedDeviceState}"
                            Foreground="{StaticResource BrushTextSecondary}"
                            FontWeight="SemiBold"
-                           FontSize="16"/>
+                           FontSize="16"
+                           TextWrapping="Wrap"/>
                 <TextBlock Text="{Binding SelectedDeviceTimeline}"
                            Foreground="{StaticResource BrushTextMuted}"
                            TextWrapping="Wrap"/>
                 <TextBlock Text="{Binding SelectedDeviceTrust}"
                            Foreground="{StaticResource BrushTextMuted}"
                            TextWrapping="Wrap"/>
+                <TextBlock Text="{Binding SelectedDeviceServerStatus}"
+                           Foreground="{StaticResource BrushTextPrimary}"
+                           TextWrapping="Wrap"/>
 
-                <StackPanel Spacing="8">
-                  <TextBlock Text="Nume dispozitiv" Classes="field-label"/>
-                  <TextBox Text="{Binding SelectedDeviceName}"/>
-                </StackPanel>
-
-                <StackPanel Spacing="8">
-                  <TextBlock Text="Tip dispozitiv" Classes="field-label"/>
-                  <ComboBox ItemsSource="{Binding AvailableDeviceTypes}"
-                            SelectedItem="{Binding SelectedDeviceType}"/>
-                </StackPanel>
-
-                <StackPanel Spacing="8">
-                  <TextBlock Text="Platforma" Classes="field-label"/>
-                  <TextBox Text="{Binding SelectedDevicePlatform}"/>
-                </StackPanel>
-
-                <StackPanel Spacing="8">
-                  <TextBlock Text="Versiune aplicatie" Classes="field-label"/>
-                  <TextBox Text="{Binding SelectedDeviceVersion}"/>
-                </StackPanel>
-
-                <StackPanel Spacing="8">
-                  <TextBlock Text="Amprenta dispozitiv" Classes="field-label"/>
-                  <TextBox Text="{Binding SelectedDeviceFingerprint}"
-                           IsReadOnly="True"/>
-                </StackPanel>
+                <Border Classes="panel-card panel-card--overlay"
+                        Padding="14">
+                  <StackPanel Spacing="6">
+                    <TextBlock Text="ID server" Classes="field-label"/>
+                    <TextBlock Text="{Binding SelectedDeviceIdentifier}"
+                               Foreground="{StaticResource BrushTextSecondary}"
+                               TextWrapping="Wrap"/>
+                  </StackPanel>
+                </Border>
 
                 <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
-                  <Button Grid.Column="0"
-                          Command="{Binding SaveSelectedDeviceCommand}"
-                          Classes="action-button success-button"
-                          Content="Salveaza"/>
-                  <Button Grid.Column="1"
-                          Command="{Binding ClearSelectionCommand}"
-                          Classes="action-button subtle-button"
-                          Content="Goleste selectia"/>
+                  <Border Classes="panel-card panel-card--overlay"
+                          Padding="14">
+                    <StackPanel Spacing="6">
+                      <TextBlock Text="Tip dispozitiv" Classes="field-label"/>
+                      <TextBlock Text="{Binding SelectedDeviceType}"
+                                 Foreground="{StaticResource BrushTextSecondary}"
+                                 TextWrapping="Wrap"/>
+                    </StackPanel>
+                  </Border>
+
+                  <Border Grid.Column="1"
+                          Classes="panel-card panel-card--overlay"
+                          Padding="14">
+                    <StackPanel Spacing="6">
+                      <TextBlock Text="Platforma" Classes="field-label"/>
+                      <TextBlock Text="{Binding SelectedDevicePlatform}"
+                                 Foreground="{StaticResource BrushTextSecondary}"
+                                 TextWrapping="Wrap"/>
+                    </StackPanel>
+                  </Border>
                 </Grid>
 
-                <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
-                  <Button Grid.Column="0"
-                          Command="{Binding ToggleTrustedCommand}"
-                          Classes="action-button success-button"
-                          Content="{Binding SelectedTrustActionLabel}"/>
-                  <Button Grid.Column="1"
-                          Command="{Binding ToggleDeviceStatusCommand}"
-                          Classes="action-button warning-button"
-                          Content="{Binding SelectedStatusActionLabel}"/>
-                </Grid>
+                <Border Classes="panel-card panel-card--overlay"
+                        Padding="14">
+                  <StackPanel Spacing="6">
+                    <TextBlock Text="Versiune client" Classes="field-label"/>
+                    <TextBlock Text="{Binding SelectedDeviceVersion}"
+                               Foreground="{StaticResource BrushTextSecondary}"
+                               TextWrapping="Wrap"/>
+                  </StackPanel>
+                </Border>
+
+                <Button Command="{Binding ClearSelectionCommand}"
+                        Classes="action-button subtle-button"
+                        Content="Curata selectia"/>
               </StackPanel>
 
-              <Border IsVisible="{Binding NoSelectedDevice}"
-                      Classes="panel-card panel-card--muted"
-                      Padding="16">
-                <StackPanel Spacing="8">
-                  <TextBlock Text="Niciun dispozitiv selectat"
-                             Foreground="{StaticResource BrushTextSecondary}"
-                             FontWeight="SemiBold"
-                             FontSize="16"/>
-                  <TextBlock Text="Alege un card din lista pentru a edita numele, platforma sau pentru a revoca rapid accesul."
-                             Foreground="{StaticResource BrushTextMuted}"
-                             TextWrapping="Wrap"/>
-                </StackPanel>
-              </Border>
+              <StackPanel IsVisible="{Binding NoSelectedDevice}" Spacing="10">
+                <TextBlock Text="Niciun dispozitiv selectat"
+                           FontWeight="SemiBold"
+                           Foreground="{StaticResource BrushTextSecondary}"/>
+                <TextBlock Text="Selecteaza un dispozitiv din lista pentru a vedea statusul, identificatorul si activitatea raportata de server."
+                           Foreground="{StaticResource BrushTextMuted}"
+                           TextWrapping="Wrap"/>
+              </StackPanel>
+            </StackPanel>
+          </Border>
+
+          <Border Classes="panel-card panel-card--warning">
+            <StackPanel Spacing="12">
+              <TextBlock Text="Cum apare un dispozitiv aici" Classes="section-title"/>
+              <TextBlock Text="Un dispozitiv apare in aceasta pagina dupa ce sesiunea locala este autentificata si rulezi o sincronizare. Pagina afiseaza exact ceea ce raporteaza endpoint-ul /api/devices pentru contul curent."
+                         Classes="section-subtitle"/>
             </StackPanel>
           </Border>
         </StackPanel>

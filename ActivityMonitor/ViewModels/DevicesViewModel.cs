@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Security.Cryptography;
-using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using Backend.Models;
 using Backend.Sync;
@@ -19,77 +18,55 @@ public sealed class DevicesViewModel : ObservableObject
     private const int DefaultUserId = 1;
 
     private readonly IDatabaseManager _db = new DatabaseManager(Settings.DatabaseConnectionString);
-    private readonly string _currentFingerprint = BuildCurrentFingerprint();
     private readonly ServerSync _serverSync = new();
 
-    private int _selectedDeviceId;
-    private string _pageSubtitle = "Se incarca inventarul dispozitivelor...";
-    private string _deviceStatus = "Sincronizare in curs";
+    private string? _selectedDeviceId;
+    private string _pageSubtitle = "Se incarca inventarul de dispozitive din server...";
+    private string _deviceStatus = "Citire in curs";
     private string _lastRefreshLabel = "Actualizare in curs";
-    private string _accountLabel = "Cont local";
+    private string _accountLabel = "Cont sincronizat";
     private string _currentDeviceLabel = "--";
     private string _currentDeviceDetail = "Detectam dispozitivul curent.";
     private string _totalDevices = "0";
     private string _activeDevices = "0";
-    private string _trustedDevices = "0";
     private string _revokedDevices = "0";
+    private string _unknownDevices = "0";
     private string _selectedDeviceName = string.Empty;
-    private string _selectedDeviceType = DeviceTypeOptions[0];
-    private string _selectedDevicePlatform = string.Empty;
-    private string _selectedDeviceVersion = string.Empty;
-    private string _selectedDeviceFingerprint = string.Empty;
+    private string _selectedDeviceType = "Necunoscut";
+    private string _selectedDevicePlatform = "Necunoscut";
+    private string _selectedDeviceVersion = "Necunoscut";
+    private string _selectedDeviceIdentifier = string.Empty;
     private string _selectedDeviceState = "Selecteaza un dispozitiv";
     private string _selectedDeviceTimeline = "Detaliile de activitate vor aparea aici.";
-    private string _selectedDeviceTrust = "Alege un dispozitiv pentru editare.";
+    private string _selectedDeviceTrust = "Alege un dispozitiv pentru a vedea increderea si statusul serverului.";
+    private string _selectedDeviceServerStatus = "Statusul complet va aparea aici.";
     private bool _hasSelectedDevice;
-    private string _newDeviceName = string.Empty;
-    private string _newDeviceType = DeviceTypeOptions[0];
-    private string _newDevicePlatform = string.Empty;
-    private string _newDeviceVersion = string.Empty;
+    private AccountDeviceRow? _selectedDevice;
     private string _syncServerLabel = "Server sincronizare neconfigurat";
     private string _lastServerSyncLabel = "Nicio sincronizare remota";
 
     public DevicesViewModel()
     {
-        RefreshCommand = new RelayCommand(_ => Load());
-        RegisterCurrentDeviceCommand = new RelayCommand(_ => RegisterCurrentDevice());
+        RefreshCommand = new RelayCommand(_ => LoadServerDevicesAsync());
         SyncWithServerCommand = new RelayCommand(_ => SyncWithServerAsync());
-        AddDeviceCommand = new RelayCommand(_ => AddDevice());
-        SelectDeviceCommand = new RelayCommand(SelectDevice);
-        SaveSelectedDeviceCommand = new RelayCommand(_ => SaveSelectedDevice());
-        ToggleTrustedCommand = new RelayCommand(ToggleTrusted);
-        ToggleDeviceStatusCommand = new RelayCommand(ToggleDeviceStatus);
         ClearSelectionCommand = new RelayCommand(_ => ClearSelection());
 
         var user = _db.GetUser(DefaultUserId);
-        AccountLabel = string.IsNullOrWhiteSpace(user?.DisplayName) ? "Cont local" : user!.DisplayName!;
-        NewDevicePlatform = DetectPlatformLabel();
+        AccountLabel = !string.IsNullOrWhiteSpace(user?.DisplayName)
+            ? user!.DisplayName!
+            : "Cont sincronizat";
 
-        Load();
+        CurrentDeviceLabel = DetectCurrentDeviceName();
+        CurrentDeviceDetail = $"{DetectCurrentDeviceType()} · {DetectPlatformLabel()}";
+
+        LoadServerDevicesAsync();
     }
-
-    public static IReadOnlyList<string> DeviceTypeOptions { get; } =
-        ["Desktop", "Laptop", "Telefon", "Tableta", "Browser", "TV"];
-
-    public IReadOnlyList<string> AvailableDeviceTypes => DeviceTypeOptions;
 
     public ObservableCollection<AccountDeviceRow> Devices { get; } = [];
 
     public ICommand RefreshCommand { get; }
 
-    public ICommand RegisterCurrentDeviceCommand { get; }
-
     public ICommand SyncWithServerCommand { get; }
-
-    public ICommand AddDeviceCommand { get; }
-
-    public ICommand SelectDeviceCommand { get; }
-
-    public ICommand SaveSelectedDeviceCommand { get; }
-
-    public ICommand ToggleTrustedCommand { get; }
-
-    public ICommand ToggleDeviceStatusCommand { get; }
 
     public ICommand ClearSelectionCommand { get; }
 
@@ -141,16 +118,16 @@ public sealed class DevicesViewModel : ObservableObject
         set => SetProperty(ref _activeDevices, value);
     }
 
-    public string TrustedDevices
-    {
-        get => _trustedDevices;
-        set => SetProperty(ref _trustedDevices, value);
-    }
-
     public string RevokedDevices
     {
         get => _revokedDevices;
         set => SetProperty(ref _revokedDevices, value);
+    }
+
+    public string UnknownDevices
+    {
+        get => _unknownDevices;
+        set => SetProperty(ref _unknownDevices, value);
     }
 
     public string SelectedDeviceName
@@ -177,10 +154,10 @@ public sealed class DevicesViewModel : ObservableObject
         set => SetProperty(ref _selectedDeviceVersion, value);
     }
 
-    public string SelectedDeviceFingerprint
+    public string SelectedDeviceIdentifier
     {
-        get => _selectedDeviceFingerprint;
-        set => SetProperty(ref _selectedDeviceFingerprint, value);
+        get => _selectedDeviceIdentifier;
+        set => SetProperty(ref _selectedDeviceIdentifier, value);
     }
 
     public string SelectedDeviceState
@@ -201,6 +178,32 @@ public sealed class DevicesViewModel : ObservableObject
         set => SetProperty(ref _selectedDeviceTrust, value);
     }
 
+    public string SelectedDeviceServerStatus
+    {
+        get => _selectedDeviceServerStatus;
+        set => SetProperty(ref _selectedDeviceServerStatus, value);
+    }
+
+    public AccountDeviceRow? SelectedDevice
+    {
+        get => _selectedDevice;
+        set
+        {
+            if (!SetProperty(ref _selectedDevice, value))
+            {
+                return;
+            }
+
+            if (value == null)
+            {
+                ClearSelection();
+                return;
+            }
+
+            PopulateSelection(value);
+        }
+    }
+
     public bool HasSelectedDevice
     {
         get => _hasSelectedDevice;
@@ -212,58 +215,10 @@ public sealed class DevicesViewModel : ObservableObject
             }
 
             OnPropertyChanged(nameof(NoSelectedDevice));
-            OnPropertyChanged(nameof(SelectedTrustActionLabel));
-            OnPropertyChanged(nameof(SelectedStatusActionLabel));
         }
     }
 
     public bool NoSelectedDevice => !HasSelectedDevice;
-
-    public string NewDeviceName
-    {
-        get => _newDeviceName;
-        set => SetProperty(ref _newDeviceName, value);
-    }
-
-    public string NewDeviceType
-    {
-        get => _newDeviceType;
-        set => SetProperty(ref _newDeviceType, value);
-    }
-
-    public string NewDevicePlatform
-    {
-        get => _newDevicePlatform;
-        set => SetProperty(ref _newDevicePlatform, value);
-    }
-
-    public string NewDeviceVersion
-    {
-        get => _newDeviceVersion;
-        set => SetProperty(ref _newDeviceVersion, value);
-    }
-
-    public string SelectedTrustActionLabel
-    {
-        get
-        {
-            var device = GetSelectedRow();
-            return device == null
-                ? "Marcheaza ca sigur"
-                : device.IsTrusted ? "Scoate din lista de incredere" : "Marcheaza ca sigur";
-        }
-    }
-
-    public string SelectedStatusActionLabel
-    {
-        get
-        {
-            var device = GetSelectedRow();
-            return device == null
-                ? "Revoca"
-                : device.IsActive ? "Revoca accesul" : "Reactiveaza accesul";
-        }
-    }
 
     public string SyncServerLabel
     {
@@ -277,104 +232,110 @@ public sealed class DevicesViewModel : ObservableObject
         set => SetProperty(ref _lastServerSyncLabel, value);
     }
 
-    private void Load(int? preferredSelectionId = null)
+    private async void LoadServerDevicesAsync(string? preferredDeviceId = null)
     {
-        RegisterCurrentDevice();
+        await LoadServerDevicesInternalAsync(preferredDeviceId);
+    }
+
+    private async Task LoadServerDevicesInternalAsync(string? preferredDeviceId = null, string? completionStatus = null)
+    {
         RefreshSyncServerStatus();
 
-        var devices = _db.GetDevicesForUser(DefaultUserId).ToList();
+        var settings = EnsureSettingsRecord();
+        AccountLabel = !string.IsNullOrWhiteSpace(settings.SyncEmail)
+            ? settings.SyncEmail!
+            : AccountLabel;
+        CurrentDeviceLabel = DetectCurrentDeviceName();
+        CurrentDeviceDetail = $"{DetectCurrentDeviceType()} · {DetectPlatformLabel()}";
+        DeviceStatus = "Se citesc dispozitivele asociate contului de pe server...";
+
+        if (!TryValidateSyncConfiguration(settings, out var normalizedAddress, out var bearerToken, out var error))
+        {
+            Devices.Clear();
+            TotalDevices = "0";
+            ActiveDevices = "0";
+            RevokedDevices = "0";
+            UnknownDevices = "0";
+            PageSubtitle = "Pagina afiseaza dispozitivele de pe server pentru contul sincronizat. Configureaza si autentifica mai intai sesiunea de sync.";
+            LastRefreshLabel = "Fara date server";
+            DeviceStatus = error;
+            ClearSelection();
+            return;
+        }
+
+        var result = await _serverSync.GetDevicesAsync(normalizedAddress, bearerToken);
+        if (!result.Success)
+        {
+            Devices.Clear();
+            TotalDevices = "0";
+            ActiveDevices = "0";
+            RevokedDevices = "0";
+            UnknownDevices = "0";
+            PageSubtitle = "Nu am putut incarca dispozitivele de pe server pentru acest cont.";
+            LastRefreshLabel = "Citire server esuata";
+            DeviceStatus = result.Message;
+            ClearSelection();
+            return;
+        }
+
+        var currentServerDeviceId = settings.SyncDeviceId?.Trim();
+        var rows = result.Devices
+            .Select(device => ToRow(device, currentServerDeviceId))
+            .OrderByDescending(device => device.IsCurrentDevice)
+            .ThenByDescending(device => device.LastSeenAt ?? DateTime.MinValue)
+            .ThenBy(device => device.Name, StringComparer.CurrentCultureIgnoreCase)
+            .ToList();
 
         Devices.Clear();
-        foreach (var device in devices.Select(ToRow))
+        foreach (var row in rows)
         {
-            Devices.Add(device);
+            Devices.Add(row);
         }
 
         var activeCount = Devices.Count(device => device.IsActive);
-        var trustedCount = Devices.Count(device => device.IsTrusted);
-        var revokedCount = Devices.Count(device => !device.IsActive);
+        var revokedCount = Devices.Count(device => device.IsRevoked);
+        var unknownCount = Devices.Count - activeCount - revokedCount;
         var currentDevice = Devices.FirstOrDefault(device => device.IsCurrentDevice);
-        var newest = Devices.FirstOrDefault();
+        var mostRecent = Devices
+            .Where(device => device.LastSeenAt.HasValue)
+            .OrderByDescending(device => device.LastSeenAt)
+            .FirstOrDefault();
 
         TotalDevices = Devices.Count.ToString();
         ActiveDevices = activeCount.ToString();
-        TrustedDevices = trustedCount.ToString();
         RevokedDevices = revokedCount.ToString();
-        PageSubtitle =
-            $"Ai {Devices.Count} dispozitive inregistrate pentru contul local, dintre care {activeCount} active si {trustedCount} marcate ca sigure.";
-        DeviceStatus = revokedCount == 0
-            ? "Toate dispozitivele active sunt in stare buna"
-            : $"{revokedCount} dispozitive au accesul revocat";
-        LastRefreshLabel = newest == null
-            ? "Fara activitate recenta"
-            : $"Actualizat {FormatRelativeTime(newest.LastSeenAt)}";
+        UnknownDevices = unknownCount.ToString();
+        PageSubtitle = Devices.Count == 0
+            ? "Contul autentificat nu are inca dispozitive inregistrate pe server. Ruleaza o sincronizare pentru a adauga dispozitivul curent."
+            : $"Serverul raporteaza {Devices.Count} dispozitive pentru acest cont, dintre care {activeCount} active si {revokedCount} revocate.";
+        LastRefreshLabel = mostRecent == null
+            ? "Actualizat acum"
+            : $"Activitate recenta {FormatRelativeTime(mostRecent.LastSeenAt!.Value)}";
         CurrentDeviceLabel = currentDevice?.Name ?? DetectCurrentDeviceName();
         CurrentDeviceDetail = currentDevice == null
-            ? DetectPlatformLabel()
-            : $"{currentDevice.DeviceType} · {currentDevice.Platform} · vazut {currentDevice.LastSeenLabel}";
+            ? "Dispozitivul curent nu este inca asociat pe server. Ruleaza o sincronizare pentru a-l inregistra."
+            : currentDevice.ActivitySummary;
+        DeviceStatus = completionStatus ?? (Devices.Count == 0
+            ? "Nu exista dispozitive pe server pentru acest cont."
+            : "Inventarul de dispozitive de pe server a fost actualizat.");
 
-        var selectionId = preferredSelectionId ?? _selectedDeviceId;
-        var selectedRow = Devices.FirstOrDefault(device => device.DeviceId == selectionId)
-                          ?? currentDevice;
+        var selectedId = preferredDeviceId ?? _selectedDeviceId ?? currentServerDeviceId;
+        var selectedRow = !string.IsNullOrWhiteSpace(selectedId)
+            ? Devices.FirstOrDefault(device => string.Equals(device.DeviceId, selectedId, StringComparison.OrdinalIgnoreCase))
+            : null;
 
+        selectedRow ??= currentDevice ?? Devices.FirstOrDefault();
         if (selectedRow == null)
         {
             ClearSelection();
             return;
         }
 
-        PopulateSelection(selectedRow);
-    }
-
-    private void RegisterCurrentDevice()
-    {
-        var now = DateTime.UtcNow;
-        var devices = _db.GetDevicesForUser(DefaultUserId).ToList();
-
-        foreach (var staleCurrent in devices.Where(device => device.IsCurrentDevice && device.Fingerprint != _currentFingerprint))
-        {
-            staleCurrent.IsCurrentDevice = false;
-            _db.UpdateDevice(staleCurrent);
-        }
-
-        var current = devices.FirstOrDefault(device => device.Fingerprint == _currentFingerprint);
-        var currentName = DetectCurrentDeviceName();
-        var currentPlatform = DetectPlatformLabel();
-        var version = DetectAppVersion();
-
-        if (current == null)
-        {
-            _db.InsertDevice(new DeviceDto
-            {
-                UserId = DefaultUserId,
-                Name = currentName,
-                DeviceType = DetectCurrentDeviceType(),
-                Platform = currentPlatform,
-                Fingerprint = _currentFingerprint,
-                Status = "Active",
-                AppVersion = version,
-                IsTrusted = true,
-                IsCurrentDevice = true,
-                CreatedAt = now,
-                LastSeenAt = now
-            });
-            return;
-        }
-
-        current.Name = string.IsNullOrWhiteSpace(current.Name) ? currentName : current.Name;
-        current.DeviceType = string.IsNullOrWhiteSpace(current.DeviceType) ? DetectCurrentDeviceType() : current.DeviceType;
-        current.Platform = currentPlatform;
-        current.Status = "Active";
-        current.AppVersion = version;
-        current.IsCurrentDevice = true;
-        current.LastSeenAt = now;
-        current.RevokedAt = null;
-        _db.UpdateDevice(current);
+        SelectedDevice = selectedRow;
     }
 
     private async void SyncWithServerAsync()
     {
-        RegisterCurrentDevice();
         var settings = EnsureSettingsRecord();
 
         if (!TryValidateSyncConfiguration(settings, out var normalizedAddress, out var bearerToken, out var error))
@@ -384,20 +345,12 @@ public sealed class DevicesViewModel : ObservableObject
             return;
         }
 
-        var devices = _db.GetDevicesForUser(DefaultUserId).ToList();
-        var currentDevice = devices.FirstOrDefault(device => device.Fingerprint == _currentFingerprint);
-        if (currentDevice == null)
-        {
-            DeviceStatus = "Dispozitivul curent nu a putut fi inregistrat local inainte de sincronizare.";
-            return;
-        }
-
         DeviceStatus = $"Se inregistreaza dispozitivul curent pe {normalizedAddress}...";
         var deviceRegistration = await _serverSync.EnsureDeviceAsync(
             normalizedAddress,
             bearerToken,
             settings.SyncDeviceId,
-            currentDevice.Name);
+            DetectCurrentDeviceName());
 
         if (!deviceRegistration.Success || string.IsNullOrWhiteSpace(deviceRegistration.DeviceId))
         {
@@ -424,126 +377,11 @@ public sealed class DevicesViewModel : ObservableObject
 
         settings.SyncLastServerTimeUtc = result.Data.ServerTime?.ToUniversalTime() ?? DateTime.UtcNow;
         SaveSettings(settings);
-
-        Load(currentDevice.DeviceId);
+        RefreshSyncServerStatus();
         LastServerSyncLabel = FormatLastSyncLabel(settings.SyncLastServerTimeUtc);
-        DeviceStatus = BuildSyncSummary(result.Data, deviceRegistration.Created, result.Message);
-    }
 
-    private void AddDevice()
-    {
-        if (string.IsNullOrWhiteSpace(NewDeviceName) || string.IsNullOrWhiteSpace(NewDevicePlatform))
-        {
-            DeviceStatus = "Completeaza numele si platforma pentru dispozitivul nou.";
-            return;
-        }
-
-        var now = DateTime.UtcNow;
-        var deviceId = _db.InsertDevice(new DeviceDto
-        {
-            UserId = DefaultUserId,
-            Name = NewDeviceName.Trim(),
-            DeviceType = NewDeviceType,
-            Platform = NewDevicePlatform.Trim(),
-            Fingerprint = $"manual:{Guid.NewGuid():N}",
-            Status = "Active",
-            AppVersion = NormalizeOptionalValue(NewDeviceVersion),
-            IsTrusted = false,
-            IsCurrentDevice = false,
-            CreatedAt = now,
-            LastSeenAt = now
-        });
-
-        DeviceStatus = $"Dispozitivul \"{NewDeviceName.Trim()}\" a fost adaugat.";
-        NewDeviceName = string.Empty;
-        NewDeviceType = DeviceTypeOptions[0];
-        NewDevicePlatform = DetectPlatformLabel();
-        NewDeviceVersion = string.Empty;
-
-        Load(deviceId);
-    }
-
-    private void SaveSelectedDevice()
-    {
-        var device = GetSelectedDto();
-        if (device == null)
-        {
-            DeviceStatus = "Selecteaza un dispozitiv inainte sa salvezi.";
-            return;
-        }
-
-        if (string.IsNullOrWhiteSpace(SelectedDeviceName) || string.IsNullOrWhiteSpace(SelectedDevicePlatform))
-        {
-            DeviceStatus = "Numele si platforma dispozitivului sunt obligatorii.";
-            return;
-        }
-
-        device.Name = SelectedDeviceName.Trim();
-        device.DeviceType = SelectedDeviceType;
-        device.Platform = SelectedDevicePlatform.Trim();
-        device.AppVersion = NormalizeOptionalValue(SelectedDeviceVersion);
-        _db.UpdateDevice(device);
-
-        DeviceStatus = $"Modificarile pentru \"{device.Name}\" au fost salvate.";
-        Load(device.DeviceId);
-    }
-
-    private void ToggleTrusted(object? parameter)
-    {
-        var device = ResolveDevice(parameter);
-        if (device == null)
-        {
-            DeviceStatus = "Nu exista un dispozitiv selectat pentru schimbarea nivelului de incredere.";
-            return;
-        }
-
-        device.IsTrusted = !device.IsTrusted;
-        _db.UpdateDevice(device);
-
-        DeviceStatus = device.IsTrusted
-            ? $"\"{device.Name}\" este acum marcat ca sigur."
-            : $"\"{device.Name}\" necesita reverificare.";
-        Load(device.DeviceId);
-    }
-
-    private void ToggleDeviceStatus(object? parameter)
-    {
-        var device = ResolveDevice(parameter);
-        if (device == null)
-        {
-            DeviceStatus = "Nu exista un dispozitiv selectat pentru actualizarea accesului.";
-            return;
-        }
-
-        if (device.Fingerprint == _currentFingerprint &&
-            string.Equals(device.Status, "Active", StringComparison.OrdinalIgnoreCase))
-        {
-            DeviceStatus = "Dispozitivul curent nu poate fi revocat din sesiunea activa.";
-            Load(device.DeviceId);
-            return;
-        }
-
-        var activate = !string.Equals(device.Status, "Active", StringComparison.OrdinalIgnoreCase);
-        device.Status = activate ? "Active" : "Revoked";
-        device.RevokedAt = activate ? null : DateTime.UtcNow;
-        device.LastSeenAt = activate ? DateTime.UtcNow : device.LastSeenAt;
-        device.IsCurrentDevice = activate && device.Fingerprint == _currentFingerprint;
-        _db.UpdateDevice(device);
-
-        DeviceStatus = activate
-            ? $"Accesul pentru \"{device.Name}\" a fost reactivat."
-            : $"Accesul pentru \"{device.Name}\" a fost revocat.";
-        Load(device.DeviceId);
-    }
-
-    private void SelectDevice(object? parameter)
-    {
-        if (parameter is not AccountDeviceRow row)
-        {
-            return;
-        }
-
-        PopulateSelection(row);
+        var summary = BuildSyncSummary(result.Data, deviceRegistration.Created, result.Message);
+        await LoadServerDevicesInternalAsync(settings.SyncDeviceId, summary);
     }
 
     private void PopulateSelection(AccountDeviceRow row)
@@ -553,68 +391,47 @@ public sealed class DevicesViewModel : ObservableObject
         SelectedDeviceType = row.DeviceType;
         SelectedDevicePlatform = row.Platform;
         SelectedDeviceVersion = row.AppVersion;
-        SelectedDeviceFingerprint = row.Fingerprint;
+        SelectedDeviceIdentifier = row.DeviceId;
         SelectedDeviceState = row.StatusSummary;
-        SelectedDeviceTimeline = $"{row.ActivitySummary} · inregistrat {row.CreatedLabel}";
+        SelectedDeviceTimeline = row.ActivityTimeline;
         SelectedDeviceTrust = row.TrustSummary;
+        SelectedDeviceServerStatus = row.ServerStatusSummary;
         HasSelectedDevice = true;
-        OnPropertyChanged(nameof(SelectedTrustActionLabel));
-        OnPropertyChanged(nameof(SelectedStatusActionLabel));
     }
 
     private void ClearSelection()
     {
-        _selectedDeviceId = 0;
-        SelectedDeviceName = string.Empty;
-        SelectedDeviceType = DeviceTypeOptions[0];
-        SelectedDevicePlatform = string.Empty;
-        SelectedDeviceVersion = string.Empty;
-        SelectedDeviceFingerprint = string.Empty;
-        SelectedDeviceState = "Selecteaza un dispozitiv";
-        SelectedDeviceTimeline = "Alege din lista din stanga pentru a edita numele, platforma si increderea.";
-        SelectedDeviceTrust = "Nu este selectat niciun dispozitiv.";
-        HasSelectedDevice = false;
-        OnPropertyChanged(nameof(SelectedTrustActionLabel));
-        OnPropertyChanged(nameof(SelectedStatusActionLabel));
-    }
-
-    private DeviceDto? ResolveDevice(object? parameter)
-    {
-        if (parameter is AccountDeviceRow row)
+        _selectedDeviceId = null;
+        if (_selectedDevice != null)
         {
-            return _db.GetDevicesForUser(DefaultUserId).SingleOrDefault(device => device.DeviceId == row.DeviceId);
+            SetProperty(ref _selectedDevice, null, nameof(SelectedDevice));
         }
-
-        return GetSelectedDto();
+        SelectedDeviceName = string.Empty;
+        SelectedDeviceType = "Necunoscut";
+        SelectedDevicePlatform = "Necunoscut";
+        SelectedDeviceVersion = "Necunoscut";
+        SelectedDeviceIdentifier = string.Empty;
+        SelectedDeviceState = "Selecteaza un dispozitiv";
+        SelectedDeviceTimeline = "Alege un dispozitiv din lista pentru a vedea istoricul serverului.";
+        SelectedDeviceTrust = "Nu este selectat niciun dispozitiv.";
+        SelectedDeviceServerStatus = "Statusul complet va aparea aici.";
+        HasSelectedDevice = false;
     }
 
-    private DeviceDto? GetSelectedDto()
-    {
-        return _selectedDeviceId == 0
-            ? null
-            : _db.GetDevicesForUser(DefaultUserId).SingleOrDefault(device => device.DeviceId == _selectedDeviceId);
-    }
-
-    private AccountDeviceRow? GetSelectedRow()
-    {
-        return _selectedDeviceId == 0
-            ? null
-            : Devices.FirstOrDefault(device => device.DeviceId == _selectedDeviceId);
-    }
-
-    private static AccountDeviceRow ToRow(DeviceDto device)
+    private static AccountDeviceRow ToRow(ServerDeviceDescriptor device, string? currentServerDeviceId)
     {
         return new AccountDeviceRow
         {
             DeviceId = device.DeviceId,
-            Name = device.Name,
-            DeviceType = device.DeviceType,
-            Platform = device.Platform,
-            Fingerprint = device.Fingerprint,
-            Status = device.Status,
-            AppVersion = device.AppVersion ?? string.Empty,
+            Name = string.IsNullOrWhiteSpace(device.Name) ? $"Device {device.DeviceId[..Math.Min(8, device.DeviceId.Length)]}" : device.Name.Trim(),
+            DeviceType = string.IsNullOrWhiteSpace(device.DeviceType) ? "Necunoscut" : device.DeviceType.Trim(),
+            Platform = string.IsNullOrWhiteSpace(device.Platform) ? "Platforma necunoscuta" : device.Platform.Trim(),
+            Status = string.IsNullOrWhiteSpace(device.Status) ? "Necunoscut" : device.Status.Trim(),
+            AppVersion = string.IsNullOrWhiteSpace(device.AppVersion) ? "Necunoscut" : device.AppVersion.Trim(),
             IsTrusted = device.IsTrusted,
-            IsCurrentDevice = device.IsCurrentDevice,
+            IsCurrentDevice = device.IsCurrentDevice == true ||
+                              (!string.IsNullOrWhiteSpace(currentServerDeviceId) &&
+                               string.Equals(device.DeviceId, currentServerDeviceId, StringComparison.OrdinalIgnoreCase)),
             CreatedAt = device.CreatedAt,
             LastSeenAt = device.LastSeenAt,
             RevokedAt = device.RevokedAt
@@ -656,12 +473,6 @@ public sealed class DevicesViewModel : ObservableObject
         return RuntimeInformation.OSDescription.Trim();
     }
 
-    private static string DetectAppVersion()
-    {
-        var version = typeof(DevicesViewModel).Assembly.GetName().Version;
-        return version == null ? "dev-build" : $"v{version.Major}.{version.Minor}.{version.Build}";
-    }
-
     private void RefreshSyncServerStatus()
     {
         var settings = _db.GetSettings(DefaultUserId);
@@ -688,7 +499,7 @@ public sealed class DevicesViewModel : ObservableObject
             ? "device server lipsa"
             : $"device {settings!.SyncDeviceId![..Math.Min(8, settings.SyncDeviceId.Length)]}";
 
-        SyncServerLabel = $"{ServerSync.BuildSyncEndpointPreview(normalizedAddress)} · {authState} · {deviceState}";
+        SyncServerLabel = $"{ServerSync.BuildDevicesEndpointPreview(normalizedAddress)} · {authState} · {deviceState}";
         LastServerSyncLabel = FormatLastSyncLabel(settings?.SyncLastServerTimeUtc);
     }
 
@@ -725,7 +536,7 @@ public sealed class DevicesViewModel : ObservableObject
         bearerToken = settings.SyncAuthToken?.Trim() ?? string.Empty;
         if (string.IsNullOrWhiteSpace(bearerToken))
         {
-            error = "Autentifica-te in pagina Setari inainte sa pornesti sincronizarea.";
+            error = "Autentifica-te in pagina Setari inainte sa incarci dispozitivele contului.";
             return false;
         }
 
@@ -776,7 +587,7 @@ public sealed class DevicesViewModel : ObservableObject
                     PositionY = app.PositionY,
                     Width = app.Width,
                     Height = app.Height,
-                    WindowId = app.WindowId
+                    WindowId = (int?)app.WindowId
                 })
                 .ToList(),
             Sessions = sessions
@@ -908,7 +719,7 @@ public sealed class DevicesViewModel : ObservableObject
                 WindowTitle = NormalizeOptionalValue(remoteApp.WindowTitle),
                 ClassName = NormalizeOptionalValue(remoteApp.ClassName),
                 ProcessName = NormalizeOptionalValue(remoteApp.ProcessName),
-                CategoryId = TryResolveLocalId(remoteApp.CategoryId, categoryMap),
+                CategoryId = TryResolveNullableLocalId(remoteApp.CategoryId, categoryMap),
                 PositionX = remoteApp.PositionX,
                 PositionY = remoteApp.PositionY,
                 Width = remoteApp.Width,
@@ -1148,13 +959,6 @@ public sealed class DevicesViewModel : ObservableObject
             : "Nicio sincronizare remota";
     }
 
-    private static string BuildCurrentFingerprint()
-    {
-        var seed = $"{Environment.MachineName}|{RuntimeInformation.OSDescription}|{RuntimeInformation.ProcessArchitecture}";
-        var bytes = SHA256.HashData(Encoding.UTF8.GetBytes(seed));
-        return Convert.ToHexString(bytes);
-    }
-
     private static string? NormalizeOptionalValue(string? value)
     {
         return string.IsNullOrWhiteSpace(value) ? null : value.Trim();
@@ -1186,44 +990,78 @@ public sealed class DevicesViewModel : ObservableObject
 
 public sealed class AccountDeviceRow
 {
-    public int DeviceId { get; init; }
+    public string DeviceId { get; init; } = string.Empty;
     public string Name { get; init; } = string.Empty;
-    public string DeviceType { get; init; } = string.Empty;
-    public string Platform { get; init; } = string.Empty;
-    public string Fingerprint { get; init; } = string.Empty;
-    public string Status { get; init; } = string.Empty;
-    public string AppVersion { get; init; } = string.Empty;
-    public bool IsTrusted { get; init; }
+    public string DeviceType { get; init; } = "Necunoscut";
+    public string Platform { get; init; } = "Platforma necunoscuta";
+    public string Status { get; init; } = "Necunoscut";
+    public string AppVersion { get; init; } = "Necunoscut";
+    public bool? IsTrusted { get; init; }
     public bool IsCurrentDevice { get; init; }
-    public DateTime CreatedAt { get; init; }
-    public DateTime LastSeenAt { get; init; }
+    public DateTime? CreatedAt { get; init; }
+    public DateTime? LastSeenAt { get; init; }
     public DateTime? RevokedAt { get; init; }
 
-    public bool IsActive => string.Equals(Status, "Active", StringComparison.OrdinalIgnoreCase);
+    public bool IsActive => MatchesAny(Status, "active", "online", "connected", "enabled");
 
-    public string StatusSummary => IsActive ? "Activ si conectat" : $"Revocat la {RevokedLabel}";
+    public bool IsRevoked => MatchesAny(Status, "revoked", "inactive", "disabled", "blocked");
 
-    public string TrustSummary => IsTrusted ? "Dispozitiv de incredere" : "Necesita verificare manuala";
+    public string StatusSummary => IsActive
+        ? "Dispozitiv activ pe server"
+        : IsRevoked
+            ? $"Acces revocat {RevokedSuffix}"
+            : $"Status raportat de server: {Status}";
+
+    public string TrustSummary => IsTrusted switch
+    {
+        true => "Marcat de server ca dispozitiv de incredere",
+        false => "Dispozitivul nu este marcat ca sigur pe server",
+        _ => "Serverul nu a furnizat un indicator explicit de incredere"
+    };
 
     public string ActivitySummary => IsCurrentDevice
-        ? $"Acest dispozitiv este activ acum ({DeviceType.ToLowerInvariant()} · {Platform})"
-        : $"Ultima activitate: {LastSeenLabel}";
+        ? $"Acest dispozitiv este asociat sesiunii locale de sync ({DeviceType.ToLowerInvariant()} · {Platform})"
+        : LastSeenAt.HasValue
+            ? $"Ultima activitate pe server: {LastSeenLabel}"
+            : $"Fara timestamp de activitate raportat ({DeviceType.ToLowerInvariant()} · {Platform})";
 
-    public string LastSeenLabel => DevicesViewModel.FormatRelativeTime(LastSeenAt);
+    public string ActivityTimeline => CreatedAt.HasValue
+        ? $"Creat {CreatedLabel} · {ActivitySummary}"
+        : ActivitySummary;
 
-    public string CreatedLabel => CreatedAt.ToLocalTime().ToString("dd MMM yyyy");
+    public string ServerStatusSummary => $"Status server: {StatusChip} · ID {ShortId}";
 
-    public string RevokedLabel => RevokedAt?.ToLocalTime().ToString("dd MMM yyyy, HH:mm") ?? "nedefinit";
+    public string LastSeenLabel => LastSeenAt.HasValue
+        ? DevicesViewModel.FormatRelativeTime(LastSeenAt.Value)
+        : "necunoscut";
 
-    public string StatusChip => IsActive ? "Activ" : "Revocat";
+    public string CreatedLabel => CreatedAt?.ToLocalTime().ToString("dd MMM yyyy, HH:mm") ?? "necunoscut";
 
-    public string TrustChip => IsTrusted ? "De incredere" : "Review";
+    public string RevokedLabel => RevokedAt?.ToLocalTime().ToString("dd MMM yyyy, HH:mm") ?? "necunoscut";
 
-    public string VersionSummary => string.IsNullOrWhiteSpace(AppVersion)
-        ? $"Amprenta: {Fingerprint[..Math.Min(12, Fingerprint.Length)]}"
-        : $"Versiune {AppVersion} · amprenta {Fingerprint[..Math.Min(12, Fingerprint.Length)]}";
+    public string StatusChip => IsActive
+        ? "Activ"
+        : IsRevoked
+            ? "Revocat"
+            : Status;
 
-    public string TrustActionLabel => IsTrusted ? "Scoate increderea" : "Marcheaza sigur";
+    public string TrustChip => IsTrusted switch
+    {
+        true => "De incredere",
+        false => "Verificare",
+        _ => "Necunoscut"
+    };
 
-    public string ActionLabel => IsActive ? "Revoca" : "Reactiveaza";
+    public string VersionSummary => string.Equals(AppVersion, "Necunoscut", StringComparison.OrdinalIgnoreCase)
+        ? $"ID server {ShortId}"
+        : $"Versiune {AppVersion} · ID server {ShortId}";
+
+    private string ShortId => DeviceId[..Math.Min(12, DeviceId.Length)];
+
+    private string RevokedSuffix => RevokedAt.HasValue ? $"la {RevokedLabel}" : "de server";
+
+    private static bool MatchesAny(string value, params string[] candidates)
+    {
+        return candidates.Any(candidate => value.Contains(candidate, StringComparison.OrdinalIgnoreCase));
+    }
 }

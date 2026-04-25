@@ -7,150 +7,128 @@ using Database.Manager;
 
 namespace Backend.DataCollector;
 
-public class DataCollectorController : IDisposable
+public sealed class DataCollectorController : IDisposable
 {
-    private SessionRecord _previousRecord = new ();
+    private static readonly HashSet<string> FirefoxBrowsers = new(StringComparer.OrdinalIgnoreCase) { "firefox", "librewolf", "navigator" };
+    private static readonly HashSet<string> ChromiumBrowsers = new(StringComparer.OrdinalIgnoreCase) { "chrome", "chromium", "msedge", "brave", "opera", "vivaldi" };
 
+    private SessionRecord _previousRecord = new();
     private readonly IClassifier _classifier = new RuleBasedClassifier();
     private readonly FirefoxCollector _firefoxCollector = new();
     private readonly ChromiumCollector _chromiumCollector = new();
     private readonly IApplicationDataCollector _appCollector = new WindowsAppCollector();
-
-    private string? _lastBrowserProcessName = null;
+    private string? _lastBrowserProcessName;
 
     public ApplicationRecord? CheckActivity(IDatabaseManager db)
     {
         var app = _appCollector.GetActive();
-        if (app == null) { return null; }
+        if (app is null) return null;
 
         app.CategoryId = _classifier.ClassifyAsync(app);
-        var dto = app.ToDto();
-        var appid = db.UpsertApplication(dto);
+        var appId = db.UpsertApplication(app.ToDto());
 
         if (app.CategoryId == 2)
+            return HandleBrowserActivity(app, appId, db);
+
+        ClearBrowserState();
+        return HandleSessionTransition(app, appId, db);
+    }
+
+    private ApplicationRecord HandleBrowserActivity(ApplicationRecord app, int appId, IDatabaseManager db)
+    {
+        var processName = app.ProcessName?.ToLower();
+        var (browserCollector, browserType) = SelectBrowserCollector(processName);
+
+        if (browserCollector is null)
         {
-            var currentBrowserProcessName = app.ProcessName?.ToLower();
+            Console.WriteLine($"DataCollector: Unknown browser type: {processName}");
+            _lastBrowserProcessName = null;
+            return app;
+        }
 
-            // Detect browser type and select appropriate collector
-            IBrowserDataCollector? browserCollector = null;
-            string? browserType = null;
+        HandleBrowserSwitch(processName, browserType);
 
-            if (IsFirefox(currentBrowserProcessName))
-            {
-                browserCollector = _firefoxCollector;
-                browserType = "firefox";
-            }
-            else if (IsChromiumBased(currentBrowserProcessName))
-            {
-                browserCollector = _chromiumCollector;
-                browserType = "chromium";
-            }
+        var browserRecord = browserCollector.QueryTabs();
+        if (browserRecord is null)
+        {
+            Console.WriteLine($"DataCollector: No browser record available from {browserType} collector");
+            return app;
+        }
 
-            if (browserCollector == null)
-            {
-                Console.WriteLine($"DataCollector: Unknown browser type: {currentBrowserProcessName}");
-                _lastBrowserProcessName = null;
-                return app;
-            }
+        browserRecord.BrowserId = appId;
+        browserRecord.CategoryId = _classifier.ClassifyAsync(browserRecord);
+        var existingId = db.IsInDb(browserRecord.ToDto());
 
-            // If we switched browsers, clear the previous browser state
-            if (_lastBrowserProcessName != null && _lastBrowserProcessName != currentBrowserProcessName)
-            {
-                Console.WriteLine($"DataCollector: Browser switched from '{_lastBrowserProcessName}' to '{currentBrowserProcessName}'");
-
-                // Clear state from the old browser collector
-                if (IsFirefox(_lastBrowserProcessName))
-                {
-                    _firefoxCollector.ClearState();
-                }
-                else if (IsChromiumBased(_lastBrowserProcessName))
-                {
-                    _chromiumCollector.ClearState();
-                }
-            }
-            else if (_lastBrowserProcessName == null)
-            {
-                Console.WriteLine($"DataCollector: Browser detected: {browserType} ({currentBrowserProcessName})");
-            }
-
-            _lastBrowserProcessName = currentBrowserProcessName;
-
-            var browserRecord = browserCollector.QueryTabs();
-            if (browserRecord != null)
-            {
-                browserRecord.BrowserId = appid;
-                browserRecord.CategoryId = _classifier.ClassifyAsync(browserRecord);
-                var existingId = db.IsInDb(browserRecord.ToDto());
-                if (existingId == null)
-                {
-                    db.InsertBrowserActivity(browserRecord.ToDto());
-                    Console.WriteLine($"DataCollector: Inserted browser activity - URL: {browserRecord.Url}");
-                }
-                else
-                {
-                    Console.WriteLine($"DataCollector: Browser activity already in DB - URL: {browserRecord.Url}");
-                }
-            }
-            else
-            {
-                Console.WriteLine($"DataCollector: No browser record available from {browserType} collector");
-            }
+        if (existingId is null)
+        {
+            db.InsertBrowserActivity(browserRecord.ToDto());
+            Console.WriteLine($"DataCollector: Inserted browser activity - URL: {browserRecord.Url}");
         }
         else
         {
-            // Not a browser, clear the last browser process name
-            if (_lastBrowserProcessName != null)
-            {
-                Console.WriteLine($"DataCollector: Switched from browser to non-browser app");
-                _lastBrowserProcessName = null;
-            }
+            Console.WriteLine($"DataCollector: Browser activity already in DB - URL: {browserRecord.Url}");
         }
 
-        // switch app → close previous session (if any) and start a new one
-        if (_previousRecord == null || _previousRecord.ApplicationId != appid)
+        return HandleSessionTransition(app, appId, db);
+    }
+
+    private (IBrowserDataCollector? collector, string? type) SelectBrowserCollector(string? processName)
+    {
+        if (string.IsNullOrEmpty(processName)) return (null, null);
+
+        if (ChromiumBrowsers.Any(b => processName.Contains(b)))
+            return (_chromiumCollector, "chromium");
+
+        if (FirefoxBrowsers.Any(b => processName.Contains(b)))
+            return (_firefoxCollector, "firefox");
+
+        return (null, null);
+    }
+
+    private void HandleBrowserSwitch(string? newBrowser, string? browserType)
+    {
+        if (_lastBrowserProcessName != null && _lastBrowserProcessName != newBrowser)
         {
-            if (_previousRecord != null)
+            Console.WriteLine($"DataCollector: Browser switched from '{_lastBrowserProcessName}' to '{newBrowser}'");
+            ClearBrowserState();
+        }
+        else if (_lastBrowserProcessName is null)
+        {
+            Console.WriteLine($"DataCollector: Browser detected: {browserType} ({newBrowser})");
+        }
+        _lastBrowserProcessName = newBrowser;
+    }
+
+    private void ClearBrowserState()
+    {
+        _firefoxCollector.ClearState();
+        _chromiumCollector.ClearState();
+    }
+
+    private ApplicationRecord HandleSessionTransition(ApplicationRecord app, int appId, IDatabaseManager db)
+    {
+        if (_previousRecord is null || _previousRecord.ApplicationId != appId)
+        {
+            if (_previousRecord is not null)
             {
                 _previousRecord.EndTime = DateTime.Now;
                 db.UpdateSession(_previousRecord.ToDto());
             }
 
-            var newSession = new SessionRecord
+            _previousRecord = new SessionRecord
             {
-                ApplicationId = appid,
+                ApplicationId = appId,
                 UserId = 1,
                 StartTime = DateTime.Now,
                 EndTime = DateTime.Now
             };
-
-            newSession.Id = db.InsertSession(newSession.ToDto());
-            _previousRecord = newSession;
-
+            _previousRecord.Id = db.InsertSession(_previousRecord.ToDto());
             return app;
         }
 
-        // same app → extend current session
         _previousRecord.EndTime = DateTime.Now;
         db.UpdateSession(_previousRecord.ToDto());
-
         return app;
-    }
-
-    private bool IsFirefox(string? processName)
-    {
-        if (string.IsNullOrEmpty(processName)) return false;
-        return processName.Contains("firefox") || processName.Contains("librewolf") || processName.Contains("navigator");
-    }
-
-    private bool IsChromiumBased(string? processName)
-    {
-        if (string.IsNullOrEmpty(processName)) return false;
-        return processName.Contains("chrome") ||
-               processName.Contains("chromium") ||
-               processName.Contains("msedge") ||
-               processName.Contains("brave") ||
-               processName.Contains("opera") ||
-               processName.Contains("vivaldi");
     }
 
     public void Dispose()

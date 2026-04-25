@@ -165,7 +165,7 @@ public sealed class CategoriesViewModel : ObservableObject
     private bool _isUpdatingRuleDraft;
 
     private string _pageSubtitle = "Administrarea categoriilor si clasificarea aplicatiilor monitorizate.";
-    private string _statusMessage = "Se incarca categoriile...";
+    private string _statusMessage = "Se încarcă categoriile...";
     private string _assignmentStatus = "Selecteaza o aplicatie pentru a-i modifica categoria.";
     private string _ruleStatusMessage = "Regulile personalizate se aplica inaintea clasificarii implicite.";
     private string _lastRefreshLabel = "Actualizare in curs";
@@ -650,8 +650,8 @@ public sealed class CategoriesViewModel : ObservableObject
         UncategorizedApplications = _allApplications.Count(app => !app.CategoryId.HasValue).ToString();
         LastRefreshLabel = $"Actualizat la {DateTime.Now:HH:mm}";
         PageSubtitle = _allApplications.Count == 0
-            ? "Nu exista aplicatii monitorizate in baza de date. Categoriile si regulile pot fi pregatite anticipat."
-            : "Revizuieste categoriile existente, curata asignarile manuale si transforma deciziile repetate in reguli reutilizabile.";
+            ? "Nu există aplicații monitorizate în baza de date. Categoriile și regulile pot fi pregătite anticipat."
+            : "Revizuiește categoriile existente, curată asignările manuale și transformă deciziile repetate în reguli reutilizabile.";
 
         SelectedCategory = currentCategoryId.HasValue
             ? Categories.FirstOrDefault(category => category.Id == currentCategoryId.Value)
@@ -675,8 +675,8 @@ public sealed class CategoriesViewModel : ObservableObject
         }
 
         StatusMessage = Categories.Count == 0
-            ? "Nu exista categorii definite. Adauga prima categorie pentru a incepe clasificarea."
-            : $"Sunt disponibile {Categories.Count} categorii, {_allApplications.Count} aplicatii si {_allRules.Count} reguli personalizate.";
+            ? "Nu există categorii definite. Adaugă prima categorie pentru a începe clasificarea."
+            : $"Sunt disponibile {Categories.Count} categorii, {_allApplications.Count} aplicații și {_allRules.Count} reguli personalizate.";
     }
 
     private void AddCategory()
@@ -692,7 +692,7 @@ public sealed class CategoriesViewModel : ObservableObject
 
         if (Categories.Any(category => string.Equals(category.Name, name, StringComparison.CurrentCultureIgnoreCase)))
         {
-            StatusMessage = $"Categoria \"{name}\" exista deja.";
+            StatusMessage = $"Categoria \"{name}\" există deja.";
             return;
         }
 
@@ -813,8 +813,8 @@ public sealed class CategoriesViewModel : ObservableObject
     {
         SelectedCategoryRule = null;
         RuleStatusMessage = SelectedCategory == null
-            ? "Selecteaza mai intai categoria pentru care creezi regula."
-            : $"Configureaza o regula noua pentru categoria \"{SelectedCategory.Name}\".";
+            ? "Selectează mai întâi categoria pentru care creezi regula."
+            : $"Configurează o regulă nouă pentru categoria \"{SelectedCategory.Name}\".";
     }
 
     private void SaveRule()

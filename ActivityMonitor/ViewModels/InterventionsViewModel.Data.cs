@@ -158,10 +158,10 @@ public partial class InterventionsViewModel
         RecentAlertCount = recentAlerts.ToString();
         SnoozedAlertCount = snoozedAlerts.ToString();
         MostTriggeredTarget = mostTriggered == null
-            ? "Nu exista inca interventii"
-            : $"{mostTriggered.Key} ({mostTriggered.Count()} declansari)";
+            ? "Nu există încă intervenții"
+            : $"{mostTriggered.Key} ({mostTriggered.Count()} declanșări)";
         ThresholdStatus = ThresholdRows.Count == 0
-            ? "Nu exista inca praguri configurate."
+            ? "Nu există încă praguri configurate."
             : $"Sunt monitorizate {ThresholdRows.Count} praguri din {coveredCategories} categorii si {ThresholdRows.Count(row => row.Threshold.TargetType == Threshold.AppTargetType)} reguli pe aplicatii.";
     }
 

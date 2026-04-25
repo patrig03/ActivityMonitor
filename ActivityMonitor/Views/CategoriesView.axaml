@@ -168,8 +168,8 @@
           <Border Classes="panel-card panel-card--success">
             <StackPanel Spacing="16">
               <TextBlock Text="Categorii existente" Classes="section-title"/>
-              <TextBlock Text="Selecteaza o categorie pentru a vedea impactul ei, pentru a filtra lista de aplicatii si pentru a administra regulile personalizate care o alimenteaza."
-                         Classes="section-subtitle"/>
+<TextBlock Text="Selectează o categorie pentru a vedea impactul ei, pentru a filtra lista de aplicații și pentru a administra regulile personalizate care o alimentează."
+                       Classes="section-subtitle"/>
 
               <ListBox ItemsSource="{Binding Categories}"
                        SelectedItem="{Binding SelectedCategory}"
@@ -330,7 +330,7 @@
                        TextWrapping="Wrap"
                        MinHeight="90"
                        IsEnabled="{Binding HasSelectedCategory}"
-                       Watermark="Optional: de ce exista regula sau ce varianta acopera."/>
+                       Watermark="Optional: de ce există regula sau ce variantă acoperă."/>
             </StackPanel>
 
             <Border Classes="panel-card panel-card--muted"

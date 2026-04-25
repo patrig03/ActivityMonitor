@@ -107,7 +107,7 @@ public partial class Navbar : UserControl
 
         if (_startBackendButton != null)
         {
-            _startBackendButton.Content = isRunning ? "Opreste" : "Porneste";
+            _startBackendButton.Content = isRunning ? "Oprește" : "Pornește";
         }
 
     }

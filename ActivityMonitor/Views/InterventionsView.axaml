@@ -15,8 +15,8 @@
       <Border Classes="page-hero">
         <Grid ColumnDefinitions="*,320" ColumnSpacing="18">
           <StackPanel Spacing="10">
-            <TextBlock Text="Interventii" Classes="page-title"/>
-            <TextBlock Text="Configureaza limitele, revizuieste istoricul declansarilor si pastreaza comportamentul monitorului aliniat cu modul tau real de lucru."
+            <TextBlock Text="Intervenții" Classes="page-title"/>
+            <TextBlock Text="Configurează limitele, revizuiește istoricul declanșărilor și păstrează comportamentul monitorului aliniat cu modul tău real de lucru."
                        Classes="page-subtitle"/>
             <WrapPanel Orientation="Horizontal">
               <Border Classes="chip chip--overlay" Margin="0,10,10,0">
@@ -33,10 +33,10 @@
                   Padding="18">
             <StackPanel Spacing="12">
               <TextBlock Text="Mentenanta" Foreground="{StaticResource BrushTextMuted}"/>
-              <TextBlock Text="Reincarca limitele si istoricul interventiilor din baza de date MySQL." Foreground="{StaticResource BrushTextSecondary}" FontWeight="SemiBold" TextWrapping="Wrap"/>
+              <TextBlock Text="Reîncarcă limitele și istoricul intervențiilor din baza de date MySQL." Foreground="{StaticResource BrushTextSecondary}" FontWeight="SemiBold" TextWrapping="Wrap"/>
               <Button Command="{Binding RefreshCommand}"
                       Classes="action-button success-button"
-                      Content="Reincarca datele"/>
+                      Content="Reîncarcă datele"/>
             </StackPanel>
           </Border>
         </Grid>
@@ -75,7 +75,7 @@
           <StackPanel Spacing="6">
             <TextBlock Text="Alerte amanate" Classes="metric-label"/>
             <TextBlock Text="{Binding SnoozedAlertCount}" Classes="metric-value"/>
-            <TextBlock Text="Interventii amanate de utilizator" Classes="metric-detail"/>
+            <TextBlock Text="Intervenții amânate de utilizator" Classes="metric-detail"/>
           </StackPanel>
         </Border>
       </WrapPanel>

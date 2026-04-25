@@ -108,11 +108,11 @@
                 <Button Grid.Column="0"
                         Command="{Binding SyncWithServerCommand}"
                         Classes="action-button primary-button"
-                        Content="Sincronizeaza acum"/>
+                        Content="Sincronizează"/>
                 <Button Grid.Column="1"
                         Command="{Binding RefreshCommand}"
                         Classes="action-button subtle-button"
-                        Content="Reincarca din server"/>
+                        Content="Reîncarcă"/>
               </Grid>
             </StackPanel>
           </Border>
@@ -154,7 +154,7 @@
         <Border Classes="panel-card panel-card--success">
           <StackPanel Spacing="14">
             <TextBlock Text="Dispozitive conectate pe server" Classes="section-title"/>
-            <TextBlock Text="Lista de mai jos vine din contul autentificat pe serverul de sincronizare, nu din inventarul local al aplicatiei."
+            <TextBlock Text="Lista de mai jos vine din contul autentificat pe serverul de sincronizare, nu din inventarul local al aplicației."
                        Classes="section-subtitle"/>
 
             <ListBox ItemsSource="{Binding Devices}"

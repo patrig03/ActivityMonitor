@@ -244,7 +244,7 @@
 
         <Border Grid.Column="1" Classes="panel-card">
           <StackPanel Spacing="12">
-            <TextBlock Text="Interventii recente" Classes="section-title"/>
+            <TextBlock Text="Intervenții recente" Classes="section-title"/>
             <TextBlock Text="Cele mai noi evenimente de prag si tipul lor configurat de actiune." Classes="section-subtitle"/>
             <ItemsControl ItemsSource="{Binding RecentInterventions}" ItemTemplate="{StaticResource InterventionTemplate}"/>
           </StackPanel>

@@ -140,7 +140,7 @@
         </Border>
         <Border Classes="stat-card">
           <StackPanel Spacing="6">
-            <TextBlock Text="Interventii" Classes="metric-label"/>
+            <TextBlock Text="Intervenții" Classes="metric-label"/>
             <TextBlock Text="{Binding InterventionCount}" Classes="metric-value"/>
             <TextBlock Text="Declansari de prag din aria raportului" Classes="metric-detail"/>
           </StackPanel>

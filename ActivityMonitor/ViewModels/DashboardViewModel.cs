@@ -41,11 +41,11 @@ public partial class DashboardViewModel : ObservableObject
 
     private string _displayName = "Utilizator implicit";
     private string _profileInitials = "DU";
-    private string _dashboardSubtitle = "Nu exista inca activitate monitorizata";
+    private string _dashboardSubtitle = "Nu există încă activitate monitorizată";
     private string _monitoringCadence = "Intervalul de esantionare nu este disponibil";
     private string _lastRefreshLabel = "Nu a fost reincarcat";
     private string _attentionBadge = "0";
-    private string _snapshotSummary = "Nu exista categorii active";
+    private string _snapshotSummary = "Nu există categorii active";
     private string _totalUsage = "--";
     private string _focusScore = "--";
     private string _topApplication = "Fara activitate";
@@ -267,7 +267,7 @@ public partial class DashboardViewModel : ObservableObject
         DisplayName = string.IsNullOrWhiteSpace(user?.DisplayName) ? "Utilizator implicit" : user.DisplayName!;
         ProfileInitials = BuildInitials(DisplayName);
         DashboardSubtitle = reports.Count == 0
-            ? "Nu exista inca sesiuni monitorizate. Lasa monitorul sa ruleze pentru a popula panoul."
+            ? "Nu există încă sesiuni monitorizate. Lasă monitorul să ruleze pentru a popula panoul."
             : $"{DateTime.Now:dddd, MMMM d} | {categorySummaries.Count} categorii active | {browserRecords.Count} evenimente browser";
         MonitoringCadence = settings == null
             ? "Ritmul de esantionare nu este disponibil"
@@ -293,7 +293,7 @@ public partial class DashboardViewModel : ObservableObject
             ? "Saptamana linistita"
             : $"{interventions.Count(intervention => intervention.TriggeredAt >= DateTime.Now.AddDays(-7))} alerte in 7z";
         SnapshotSummary = categorySummaries.Count == 0
-            ? "Nu exista inca praguri sau categorii active"
+            ? "Nu există încă praguri sau categorii active"
             : $"{categorySummaries.First().Category.Name} conduce cu {FormatDuration(categorySummaries.First().Duration)}";
 
         BuildInsights(
@@ -337,7 +337,7 @@ public partial class DashboardViewModel : ObservableObject
             Insights.Add(new DashboardInsight
             {
                 Title = "In asteptarea activitatii",
-                Detail = "Monitorul nu a capturat inca nicio sesiune. Dupa ce sesiunile aplicatiilor ajung in baza de date, aceasta pagina va afisa tendinte si presiunea asupra limitelor."
+                Detail = "Monitorul nu a capturat încă nicio sesiune. După ce sesiunile aplicațiilor ajung în baza de date, această pagină va afișa tendințe și presiunea asupra limitelor."
             });
             return;
         }
@@ -385,8 +385,8 @@ public partial class DashboardViewModel : ObservableObject
             {
                 Title = "Limitele arata bine",
                 Detail = thresholds.Count == 0
-                    ? "Nu exista inca praguri de interventie configurate."
-                    : "Pragurile configurate sunt inca sub zona lor de avertizare."
+                    ? "Nu există încă praguri de intervenție configurate."
+                    : "Pragurile configurate sunt încă sub zona lor de avertizare."
             });
         }
 
@@ -444,7 +444,7 @@ public partial class DashboardViewModel : ObservableObject
         {
             CategoryBreakdown.Add(new DashboardBreakdownItem
             {
-                Label = "Nu exista categorii inca",
+                Label = "Nu există categorii încă",
                 Duration = "--",
                 Secondary = "Sesiunile monitorizate vor popula aceasta lista."
             });
@@ -471,7 +471,7 @@ public partial class DashboardViewModel : ObservableObject
             TopDomains.Add(new DashboardDomainItem
             {
                 Domain = group.Key,
-                Visits = $"{group.Count()} inregistrari",
+                Visits = $"{group.Count()} înregistrări",
                 Share = $"{Math.Round(share):0}% pondere"
             });
         }
@@ -480,9 +480,9 @@ public partial class DashboardViewModel : ObservableObject
         {
             TopDomains.Add(new DashboardDomainItem
             {
-                Domain = "Nu exista detalii browser",
-                Visits = "0 inregistrari",
-                Share = "Monitorizarea URL-urilor nu a populat inca date."
+                Domain = "Nu există detalii browser",
+                Visits = "0 înregistrări",
+                Share = "Monitorizarea URL-urilor nu a populat încă date."
             });
         }
     }
@@ -508,9 +508,9 @@ public partial class DashboardViewModel : ObservableObject
         {
             ThresholdStatuses.Add(new DashboardThresholdState
             {
-                TargetName = "Nu exista praguri configurate",
-                UsageSummary = "Adauga limite zilnice sau pe sesiune in Interventii pentru a monitoriza presiunea aici.",
-                LimitSummary = "Nu exista limite active",
+                TargetName = "Nu există praguri configurate",
+                UsageSummary = "Adaugă limite zilnice sau pe sesiune în Intervenții pentru a monitoriza presiunea aici.",
+                LimitSummary = "Nu există limite active",
                 StateLabel = "Info",
                 ProgressValue = 0,
                 RequiresAttention = false
@@ -616,10 +616,10 @@ public partial class DashboardViewModel : ObservableObject
         {
             RecentInterventions.Add(new DashboardInterventionItem
             {
-                TargetName = "Nu exista inca interventii",
-                Status = "Fara probleme",
-                TriggeredAt = "Nu exista declansari recente",
-                Detail = "Evenimentele de prag vor aparea aici cand utilizarea depaseste o limita configurata.",
+                TargetName = "Nu există încă intervenții",
+                Status = "Fără probleme",
+                TriggeredAt = "Nu există declanșări recente",
+                Detail = "Evenimentele de prag vor apărea aici când utilizarea depășește o limită configurată.",
                 IsRecent = false
             });
         }

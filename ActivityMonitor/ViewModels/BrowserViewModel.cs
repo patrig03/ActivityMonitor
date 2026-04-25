@@ -16,11 +16,11 @@ public class BrowserViewModel : ViewModelBase
     private readonly IDatabaseManager _db = new DatabaseManager(Settings.DatabaseConnectionString);
     private readonly IClassifier _classifier = new RuleBasedClassifier();
 
-    private string _browserStatus = "Se incarca activitatea browserului";
+    private string _browserStatus = "Se încarcă activitatea browserului";
     private string _totalEvents = "0";
     private string _uniqueDomains = "0";
     private string _trackedBrowsers = "0";
-    private string _topDomain = "Nu exista inregistrari browser";
+    private string _topDomain = "Nu există înregistrări browser";
 
     public BrowserViewModel()
     {
@@ -148,10 +148,10 @@ public class BrowserViewModel : ViewModelBase
         TotalEvents = records.Count.ToString();
         UniqueDomains = domainGroups.Count.ToString();
         TrackedBrowsers = records.Select(record => record.BrowserId).Distinct().Count().ToString();
-        TopDomain = domainGroups.FirstOrDefault()?.Key ?? "Nu exista inregistrari browser";
+        TopDomain = domainGroups.FirstOrDefault()?.Key ?? "Nu există înregistrări browser";
         BrowserStatus = records.Count == 0
-            ? "Nu a fost stocata inca activitate de browser."
-            : $"Au fost incarcate {records.Count} inregistrari de activitate browser din MySQL.";
+            ? "Nu a fost stocată încă activitate de browser."
+            : $"Au fost încărcate {records.Count} înregistrări de activitate browser din MySQL.";
     }
 
     private static string? TryGetDomain(string url)

@@ -15,8 +15,8 @@ public class ReportsViewModel : ViewModelBase
 {
     private readonly ReportMaker _maker = new(new DatabaseManager(Settings.DatabaseConnectionString));
 
-    private string _reportStatus = "Se pregateste raportul de activitate";
-    private string _lastGenerated = "Nu a fost generat inca";
+    private string _reportStatus = "Se pregătește raportul de activitate";
+    private string _lastGenerated = "Nu a fost generat încă";
     private string _exportDirectory = BuildExportDirectory();
     private string _categoryCount = "0";
     private string _totalTrackedTime = "--";
@@ -142,18 +142,18 @@ public class ReportsViewModel : ViewModelBase
             {
                 CategoryName = report.Category.Name,
                 Description = string.IsNullOrWhiteSpace(report.Category.Description)
-                    ? "Nu exista descriere pentru categorie."
+                    ? "Nu există descriere pentru categorie."
                     : report.Category.Description!,
                 TotalDuration = FormatDuration(categoryDuration),
                 ApplicationCount = $"{report.Applications.Count()} procese monitorizate",
                 WindowCount = $"{report.Applications.Sum(app => app.Windows.Count())} ferestre capturate",
                 ThresholdCount = $"{report.Thresholds.Count()} praguri asociate",
-                InterventionCount = $"{interventionsForCategory.Count} interventii asociate",
+                InterventionCount = $"{interventionsForCategory.Count} intervenții asociate",
                 BrowserActivityCount = report.BrowserDetails.Any()
-                    ? $"{report.BrowserDetails.Count()} inregistrari browser asociate"
-                    : "Fara activitate browser asociata",
+                    ? $"{report.BrowserDetails.Count()} înregistrări browser asociate"
+                    : "Fără activitate browser asociată",
                 TopProcesses = new ObservableCollection<ReportProcessSummary>(topProcesses),
-                Highlight = topProcesses.FirstOrDefault()?.ProcessName ?? "Nu exista activitate de proces"
+                Highlight = topProcesses.FirstOrDefault()?.ProcessName ?? "Nu există activitate de proces"
             });
         }
 
@@ -166,8 +166,8 @@ public class ReportsViewModel : ViewModelBase
         BrowserEventCount = browserEventCount.ToString();
         LastGenerated = $"Generat la {DateTime.Now:HH:mm}";
         ReportStatus = reportData.Count == 0
-            ? "Nu exista inca activitate raportabila. Lasa monitorul sa ruleze pentru a captura mai intai sesiuni."
-            : $"Au fost incarcate {reportData.Count} rapoarte de categorie din datele de activitate MySQL.";
+            ? "Nu există încă activitate raportabilă. Lasă monitorul să ruleze pentru a captura mai întâi sesiuni."
+            : $"Au fost încărcate {reportData.Count} rapoarte de categorie din datele de activitate MySQL.";
     }
 
     private void ExportCsv()

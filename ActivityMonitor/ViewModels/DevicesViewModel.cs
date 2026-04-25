@@ -21,7 +21,7 @@ public sealed class DevicesViewModel : ObservableObject
     private readonly ServerSync _serverSync = new();
 
     private string? _selectedDeviceId;
-    private string _pageSubtitle = "Se incarca inventarul de dispozitive din server...";
+    private string _pageSubtitle = "Se încarcă inventarul de dispozitive din server...";
     private string _deviceStatus = "Citire in curs";
     private string _lastRefreshLabel = "Actualizare in curs";
     private string _accountLabel = "Cont sincronizat";
@@ -256,7 +256,7 @@ public sealed class DevicesViewModel : ObservableObject
             ActiveDevices = "0";
             RevokedDevices = "0";
             UnknownDevices = "0";
-            PageSubtitle = "Pagina afiseaza dispozitivele de pe server pentru contul sincronizat. Configureaza si autentifica mai intai sesiunea de sync.";
+            PageSubtitle = "Pagina afișează dispozitivele de pe server pentru contul sincronizat. Configurează și autentifică mai întâi sesiunea de sync.";
             LastRefreshLabel = "Fara date server";
             DeviceStatus = error;
             ClearSelection();
@@ -271,8 +271,8 @@ public sealed class DevicesViewModel : ObservableObject
             ActiveDevices = "0";
             RevokedDevices = "0";
             UnknownDevices = "0";
-            PageSubtitle = "Nu am putut incarca dispozitivele de pe server pentru acest cont.";
-            LastRefreshLabel = "Citire server esuata";
+            PageSubtitle = "Nu am putut încărca dispozitivele de pe server pentru acest cont.";
+            LastRefreshLabel = "Citire server eșuată";
             DeviceStatus = result.Message;
             ClearSelection();
             return;
@@ -306,17 +306,17 @@ public sealed class DevicesViewModel : ObservableObject
         RevokedDevices = revokedCount.ToString();
         UnknownDevices = unknownCount.ToString();
         PageSubtitle = Devices.Count == 0
-            ? "Contul autentificat nu are inca dispozitive inregistrate pe server. Ruleaza o sincronizare pentru a adauga dispozitivul curent."
-            : $"Serverul raporteaza {Devices.Count} dispozitive pentru acest cont, dintre care {activeCount} active si {revokedCount} revocate.";
+            ? "Contul autentificat nu are încă dispozitive înregistrate pe server. Rulează o sincronizare pentru a adăuga dispozitivul curent."
+            : $"Serverul raportează {Devices.Count} dispozitive pentru acest cont, dintre care {activeCount} active și {revokedCount} revocate.";
         LastRefreshLabel = mostRecent == null
             ? "Actualizat acum"
             : $"Activitate recenta {FormatRelativeTime(mostRecent.LastSeenAt!.Value)}";
         CurrentDeviceLabel = currentDevice?.Name ?? DetectCurrentDeviceName();
         CurrentDeviceDetail = currentDevice == null
-            ? "Dispozitivul curent nu este inca asociat pe server. Ruleaza o sincronizare pentru a-l inregistra."
+            ? "Dispozitivul curent nu este încă asociat pe server. Rulează o sincronizare pentru a-l înregistra."
             : currentDevice.ActivitySummary;
         DeviceStatus = completionStatus ?? (Devices.Count == 0
-            ? "Nu exista dispozitive pe server pentru acest cont."
+            ? "Nu există dispozitive pe server pentru acest cont."
             : "Inventarul de dispozitive de pe server a fost actualizat.");
 
         var selectedId = preferredDeviceId ?? _selectedDeviceId ?? currentServerDeviceId;
@@ -524,7 +524,7 @@ public sealed class DevicesViewModel : ObservableObject
 
         if (string.IsNullOrWhiteSpace(settings.SyncServerAddress))
         {
-            error = "Configureaza mai intai serverul de sincronizare din pagina Setari.";
+            error = "Configurează mai întâi serverul de sincronizare din pagina Setări.";
             return false;
         }
 
@@ -536,7 +536,7 @@ public sealed class DevicesViewModel : ObservableObject
         bearerToken = settings.SyncAuthToken?.Trim() ?? string.Empty;
         if (string.IsNullOrWhiteSpace(bearerToken))
         {
-            error = "Autentifica-te in pagina Setari inainte sa incarci dispozitivele contului.";
+            error = "Autentifică-te în pagina Setări înainte să încarci dispozitivele contului.";
             return false;
         }
 

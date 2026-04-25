@@ -44,7 +44,7 @@
 
           <Button Name="StartBackendButton"
                   Classes="action-button primary-button"
-                  Content="Porneste"
+                  Content="Pornește"
                   Click="BackendStatus_OnClick"
                   Margin="0,10,0,0"/>
 
@@ -74,7 +74,7 @@
                 Click="Button_OnClick"
                 Classes="nav-button"/>
 
-        <Button Content="Interventii"
+        <Button Content="Intervenții"
                 Tag="Interventions"
                 Click="Button_OnClick"
                 Classes="nav-button"/>
@@ -89,7 +89,7 @@
                 Click="Button_OnClick"
                 Classes="nav-button"/>
         
-        <Button Content="Setari"
+        <Button Content="Setări"
                 Tag="Settings"
                 Click="Button_OnClick"
                 Classes="nav-button"/>

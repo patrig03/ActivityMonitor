@@ -10,7 +10,7 @@
       <Border Classes="page-hero">
         <Grid ColumnDefinitions="*,340" ColumnSpacing="16">
           <StackPanel Spacing="10">
-            <TextBlock Text="Setari" Classes="page-title"/>
+            <TextBlock Text="Setări" Classes="page-title"/>
             <TextBlock Text="Ajusteaza ritmul monitorizarii, verifica ce stocheaza colectorul local si salveaza valori implicite sigure pentru clientul desktop."
                        Classes="page-subtitle"/>
             <WrapPanel Orientation="Horizontal">
@@ -38,7 +38,7 @@
                 <Button Grid.Column="0"
                         Command="{Binding SaveCommand}"
                         Classes="action-button success-button"
-                        Content="Salveaza modificarile"/>
+                        Content="Salveaza"/>
                 <Button Grid.Column="1"
                         Command="{Binding ReloadCommand}"
                         Classes="action-button subtle-button"
@@ -75,11 +75,11 @@
 
               <Grid ColumnDefinitions="220,*" ColumnSpacing="16">
                 <StackPanel Spacing="8">
-                  <TextBlock Text="Interval de reimprospatare (secunde)" Classes="field-label"/>
+                  <TextBlock Text="Interval de reîmprospătare (secunde)" Classes="field-label"/>
                   <TextBox Text="{Binding RefreshIntervalSeconds}"
                            Watermark="10"
                            FontSize="18"/>
-                  <TextBlock Text="Interval acceptat: 1 pana la 600 secunde." Classes="section-subtitle"/>
+                  <TextBlock Text="Interval acceptat: 1 până la 600 secunde." Classes="section-subtitle"/>
                 </StackPanel>
 
                 <Border Grid.Column="1"
@@ -200,7 +200,7 @@
         <StackPanel Grid.Column="1" Spacing="18">
           <Border Classes="panel-card panel-card--warning">
             <StackPanel Spacing="16">
-              <TextBlock Text="Instantaneu acoperire" Classes="section-title"/>
+              <TextBlock Text="Date principale" Classes="section-title"/>
 
               <Border Classes="panel-card panel-card--muted" Padding="16">
                 <StackPanel Spacing="6">
@@ -235,12 +235,12 @@
           <Border Classes="panel-card">
             <StackPanel Spacing="14">
               <TextBlock Text="Gestionarea modificarilor" Classes="section-title"/>
-              <TextBlock Text="Foloseste profilul implicit daca vrei date de trend fiabile fara sa incarci stocarea. Treci la 5 secunde doar daca limitele de interventie au nevoie de sincronizare mai stricta."
+              <TextBlock Text="Folosește profilul implicit dacă vrei date de trend fiabile fără să încarci stocarea. Treci la 5 secunde doar dacă limitele de intervenție au nevoie de sincronizare mai strictă."
                          Classes="section-subtitle"/>
 
               <Button Command="{Binding ResetDefaultsCommand}"
                       Classes="action-button subtle-button"
-                      Content="Reseteaza intervalul la implicit"/>
+                      Content="Resetează intervalul la implicit"/>
             </StackPanel>
           </Border>
         </StackPanel>

@@ -19,9 +19,9 @@ public class SettingsViewModel : ViewModelBase
     private bool _isLoading;
 
     private string _refreshIntervalSeconds = DefaultIntervalSeconds.ToString();
-    private string _saveStatus = "Se incarca setarile...";
-    private string _validationMessage = "Cadenta echilibrata pentru majoritatea desktopurilor.";
-    private string _intervalProfile = "Monitorizare echilibrata";
+    private string _saveStatus = "Se încarcă setările...";
+    private string _validationMessage = "Cadență echilibrată pentru majoritatea desktopurilor.";
+    private string _intervalProfile = "Monitorizare echilibrată";
     private string _intervalImpact = "360 esantioane/ora | ~8,640 esantioane/zi";
     private string _databasePath = Settings.DatabaseEndpoint;
     private string _databaseStatus = "Endpoint MySQL configurat";
@@ -31,7 +31,7 @@ public class SettingsViewModel : ViewModelBase
     private string _interventionCoverage = "--";
     private string _browserCoverage = "--";
     private string _monitoringSummary = "--";
-    private string _lastSavedLabel = "Nu a fost salvat inca";
+    private string _lastSavedLabel = "Nu a fost salvat încă";
     private string _syncServerAddress = string.Empty;
     private string _syncEmail = string.Empty;
     private string _syncPassword = string.Empty;
@@ -253,8 +253,8 @@ public class SettingsViewModel : ViewModelBase
         DatabasePath = Settings.DatabaseEndpoint;
         DatabaseStatus = "Schema MySQL va fi creata automat cand conexiunea reuseste";
         ServiceMutexName = Settings.MutexName;
-        LastSavedLabel = dto == null ? "Se folosesc valorile implicite" : "Incarcate din MySQL";
-        SaveStatus = "Setari incarcate";
+        LastSavedLabel = dto == null ? "Se folosesc valorile implicite" : "Încărcate din MySQL";
+        SaveStatus = "Setări încărcate";
 
         RefreshDiagnostics();
 
@@ -270,7 +270,7 @@ public class SettingsViewModel : ViewModelBase
             return;
         }
 
-        PersistSettings("Persistate in tabelul MySQL de setari");
+        PersistSettings("Persistați în tabelul MySQL de setări");
         SaveStatus = $"Salvat la {DateTime.Now:HH:mm}";
         RefreshDiagnostics();
     }
@@ -313,7 +313,7 @@ public class SettingsViewModel : ViewModelBase
 
         if (string.IsNullOrWhiteSpace(_settings.SyncServerAddress))
         {
-            SaveStatus = "Configureaza mai intai adresa serverului de sincronizare.";
+            SaveStatus = "Configurează mai întâi adresa serverului de sincronizare.";
             SyncAuthStatus = SaveStatus;
             ShowWarningToast(SaveStatus);
             return;
@@ -329,7 +329,7 @@ public class SettingsViewModel : ViewModelBase
 
         SaveStatus = register
             ? $"Se creeaza contul {_settings.SyncEmail}..."
-            : $"Se autentifica {_settings.SyncEmail}...";
+            : $"Se autentifică {_settings.SyncEmail}...";
 
         var authResult = register
             ? await _serverSync.RegisterAsync(_settings.SyncServerAddress, _settings.SyncEmail, SyncPassword)
@@ -396,8 +396,8 @@ public class SettingsViewModel : ViewModelBase
         {
             ValidationMessage = error;
             IntervalProfile = "Valoare invalida";
-            IntervalImpact = "Introdu un numar intreg de secunde intre 1 si 600.";
-            MonitoringSummary = "Rezumatul esantionarii nu este disponibil";
+            IntervalImpact = "Introdu un număr întreg de secunde între 1 și 600.";
+            MonitoringSummary = "Rezumatul eșantionării nu este disponibil";
             return;
         }
 
@@ -406,12 +406,12 @@ public class SettingsViewModel : ViewModelBase
 
         if (seconds <= 5)
         {
-            IntervalProfile = "Monitorizare cu precizie ridicata";
+            IntervalProfile = "Monitorizare cu precizie ridicată";
             ValidationMessage = "Captura rapida pentru schimbari scurte de activitate si limite stricte de sesiune.";
         }
         else if (seconds <= 15)
         {
-            IntervalProfile = "Monitorizare echilibrata";
+            IntervalProfile = "Monitorizare echilibrată";
             ValidationMessage = "Compromis bun intre reactie rapida si volum de stocare.";
         }
         else if (seconds <= 60)
@@ -421,7 +421,7 @@ public class SettingsViewModel : ViewModelBase
         }
         else
         {
-            IntervalProfile = "Monitorizare grosiera";
+            IntervalProfile = "Monitorizare grosieră";
             ValidationMessage = "Potrivita doar daca vrei tendinte generale, nu interventii stricte.";
         }
 
@@ -438,7 +438,7 @@ public class SettingsViewModel : ViewModelBase
         }
 
         SyncEndpointPreview = string.IsNullOrWhiteSpace(normalizedSyncServerAddress)
-            ? "Configureaza un IP sau URL. Exemplu: http://localhost:5000"
+            ? "Configurează un IP sau URL. Exemplu: http://localhost:5000"
             : $"Health: {ServerSync.BuildHealthEndpointPreview(normalizedSyncServerAddress)}\nSync: {ServerSync.BuildSyncEndpointPreview(normalizedSyncServerAddress)}\nDevices: {ServerSync.BuildDevicesEndpointPreview(normalizedSyncServerAddress)}";
     }
 
@@ -457,9 +457,9 @@ public class SettingsViewModel : ViewModelBase
         var trackedSessions = _db.GetSessionsForUser(DefaultUserId).Count();
 
         ThresholdCoverage = $"{activeThresholds} praguri active din {thresholds.Count} limite configurate";
-        ActivityCoverage = $"{applications} aplicatii monitorizate, {trackedSessions} sesiuni capturate, {categories} categorii disponibile";
-        InterventionCoverage = $"{interventions} interventii inregistrate pentru utilizatorul curent";
-        BrowserCoverage = $"{browserEvents} evenimente browser stocate in MySQL";
+        ActivityCoverage = $"{applications} aplicații monitorizate, {trackedSessions} sesiuni capturate, {categories} categorii disponibile";
+        InterventionCoverage = $"{interventions} intervenții înregistrate pentru utilizatorul curent";
+        BrowserCoverage = $"{browserEvents} evenimente browser stocate în MySQL";
     }
 
     private void RefreshSyncState()
@@ -469,7 +469,7 @@ public class SettingsViewModel : ViewModelBase
             : $"Token activ pentru {_settings.SyncEmail ?? "cont necunoscut"}";
 
         SyncDeviceStatus = string.IsNullOrWhiteSpace(_settings.SyncDeviceId)
-            ? "Dispozitivul curent nu este inca inregistrat pe server"
+            ? "Dispozitivul curent nu este încă înregistrat pe server"
             : $"Device server: {ShortenGuid(_settings.SyncDeviceId)}";
 
         SyncServerTimeStatus = _settings.SyncLastServerTimeUtc.HasValue
@@ -525,7 +525,7 @@ public class SettingsViewModel : ViewModelBase
 
         if (string.IsNullOrWhiteSpace(_settings.SyncServerAddress))
         {
-            error = "Configureaza mai intai adresa serverului de sincronizare.";
+            error = "Configurează mai întâi adresa serverului de sincronizare.";
             return false;
         }
 
@@ -559,13 +559,13 @@ public class SettingsViewModel : ViewModelBase
     {
         if (!int.TryParse(RefreshIntervalSeconds, out seconds))
         {
-            error = "Intervalul de reimprospatare trebuie sa fie un numar intreg de secunde.";
+            error = "Intervalul de reîmprospătare trebuie să fie un număr întreg de secunde.";
             return false;
         }
 
         if (seconds < 1 || seconds > 600)
         {
-            error = "Intervalul de reimprospatare trebuie sa fie intre 1 si 600 de secunde.";
+            error = "Intervalul de reîmprospătare trebuie să fie între 1 și 600 de secunde.";
             return false;
         }
 

@@ -16,13 +16,13 @@ public partial class InterventionsViewModel : ViewModelBase
     private ThresholdEditData _editData = new();
     private Threshold? _observedEditThreshold;
     private bool _isScrollViewerVisible;
-    private string _thresholdStatus = "Se incarca pragurile";
+    private string _thresholdStatus = "Se încarcă pragurile";
     private string _activeThresholdCount = "0";
     private string _inactiveThresholdCount = "0";
     private string _categoryCoverage = "0";
     private string _recentAlertCount = "0";
     private string _snoozedAlertCount = "0";
-    private string _mostTriggeredTarget = "Nu exista inca interventii";
+    private string _mostTriggeredTarget = "Nu există încă intervenții";
 
     public ObservableCollection<ThresholdRow> ThresholdRows { get; } = new();
     public ObservableCollection<InterventionHistoryRow> InterventionHistory { get; } = new();

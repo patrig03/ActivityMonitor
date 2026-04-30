@@ -555,6 +555,7 @@ public sealed class ServerSync
                 isCurrentDevice,
                 createdAt,
                 lastSeenAt,
+                lastSeenAt, // Using lastSeenAt as LastKnownActivity for now
                 revokedAt);
     }
 
@@ -804,6 +805,7 @@ public sealed record ServerDeviceDescriptor(
     bool? IsCurrentDevice,
     DateTime? CreatedAt,
     DateTime? LastSeenAt,
+    DateTime? LastKnownActivity,
     DateTime? RevokedAt);
 
 public sealed record DeviceLookupResult(bool Success, IReadOnlyList<ServerDeviceDescriptor> Devices, string Message)

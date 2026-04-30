@@ -433,7 +433,7 @@ public sealed class DevicesViewModel : ObservableObject
                               (!string.IsNullOrWhiteSpace(currentServerDeviceId) &&
                                string.Equals(device.DeviceId, currentServerDeviceId, StringComparison.OrdinalIgnoreCase)),
             CreatedAt = device.CreatedAt,
-            LastSeenAt = device.LastSeenAt,
+            LastSeenAt = device.LastKnownActivity ?? device.LastSeenAt,
             RevokedAt = device.RevokedAt
         };
     }

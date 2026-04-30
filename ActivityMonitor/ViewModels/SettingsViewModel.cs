@@ -39,6 +39,7 @@ public class SettingsViewModel : ViewModelBase
     private string _syncAuthStatus = "Neautentificat";
     private string _syncDeviceStatus = "Niciun dispozitiv server configurat";
     private string _syncServerTimeStatus = "Nicio sincronizare confirmata de server";
+    private bool _isServerPopupOpen;
 
     public SettingsViewModel()
     {
@@ -52,6 +53,8 @@ public class SettingsViewModel : ViewModelBase
         LoginSyncCommand = new RelayCommand(_ => AuthenticateWithSyncServerAsync(register: false));
         RegisterSyncCommand = new RelayCommand(_ => AuthenticateWithSyncServerAsync(register: true));
         ClearSyncSessionCommand = new RelayCommand(_ => ClearSyncSession());
+        OpenServerPopupCommand = new RelayCommand(_ => IsServerPopupOpen = true);
+        CloseServerPopupCommand = new RelayCommand(_ => IsServerPopupOpen = false);
 
         Load();
     }
@@ -75,6 +78,16 @@ public class SettingsViewModel : ViewModelBase
     public ICommand RegisterSyncCommand { get; }
 
     public ICommand ClearSyncSessionCommand { get; }
+
+    public ICommand OpenServerPopupCommand { get; }
+
+    public ICommand CloseServerPopupCommand { get; }
+
+    public bool IsServerPopupOpen
+    {
+        get => _isServerPopupOpen;
+        set => SetProperty(ref _isServerPopupOpen, value);
+    }
 
     public string RefreshIntervalSeconds
     {

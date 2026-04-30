@@ -119,24 +119,6 @@
                   Classes="panel-card panel-card--overlay"
                   Padding="18">
             <StackPanel Spacing="14">
-              <StackPanel Orientation="Horizontal" Spacing="12">
-                <Border Width="56"
-                        Height="56"
-                        CornerRadius="18"
-                        Background="{StaticResource BrushSurfaceSecondary}">
-                  <TextBlock Text="{Binding ProfileInitials}"
-                             HorizontalAlignment="Center"
-                             VerticalAlignment="Center"
-                             FontWeight="Bold"
-                             FontSize="20"
-                             Foreground="{StaticResource BrushTextSecondary}"/>
-                </Border>
-                <StackPanel Spacing="2" VerticalAlignment="Center">
-                  <TextBlock Text="{Binding DisplayName}" FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource BrushTextSecondary}"/>
-                  <TextBlock Text="Profil principal de monitorizare" Foreground="{StaticResource BrushTextMuted}"/>
-                </StackPanel>
-              </StackPanel>
-
               <Grid ColumnDefinitions="*,Auto">
                 <StackPanel Spacing="4">
                   <TextBlock Text="Coada de atentie" Foreground="{StaticResource BrushTextMuted}"/>

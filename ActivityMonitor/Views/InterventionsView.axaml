@@ -1,19 +1,25 @@
 <UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:viewModels="clr-namespace:ActivityMonitor.ViewModels"
-             xmlns:views="using:ActivityMonitor.Views"
-             mc:Ignorable="d"
-             d:DesignWidth="1200"
-             d:DesignHeight="900"
-             x:Class="ActivityMonitor.Views.InterventionsView"
-             x:DataType="viewModels:InterventionsViewModel">
+              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+              xmlns:viewModels="clr-namespace:ActivityMonitor.ViewModels"
+              xmlns:views="using:ActivityMonitor.Views"
+              xmlns:converters="clr-namespace:ActivityMonitor.Converters"
+              mc:Ignorable="d"
+              d:DesignWidth="1200"
+              d:DesignHeight="900"
+              x:Class="ActivityMonitor.Views.InterventionsView"
+              x:DataType="viewModels:InterventionsViewModel">
+
+  <UserControl.Resources>
+    <converters:EqualsConverter x:Key="EqualsConverter"/>
+  </UserControl.Resources>
 
   <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-    <StackPanel Margin="20" Spacing="18">
-      <Border Classes="page-hero">
-        <Grid ColumnDefinitions="*,320" ColumnSpacing="18">
+    <Panel>
+      <StackPanel Margin="20" Spacing="18">
+        <Border Classes="page-hero">
+          <Grid ColumnDefinitions="*,320" ColumnSpacing="18">
           <StackPanel Spacing="10">
             <TextBlock Text="Intervenții" Classes="page-title"/>
             <TextBlock Text="Configurează limitele, revizuiește istoricul declanșărilor și păstrează comportamentul monitorului aliniat cu modul tău real de lucru."
@@ -81,7 +87,21 @@
       </WrapPanel>
 
       <StackPanel Spacing="18">
-        <views:AddThresholdView/>
+        <Border Classes="panel-card">
+          <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+            <StackPanel Spacing="4">
+              <TextBlock Text="Reguli de prag" Classes="section-title"/>
+              <TextBlock Text="Creeaza o limita pentru o categorie sau aplicatie, decide cat timp este permis si alege ce se intampla cand limita este depasita."
+                         Classes="section-subtitle"/>
+            </StackPanel>
+
+            <Button Grid.Column="1"
+                    Content="Adauga prag"
+                    VerticalAlignment="Center"
+                    Command="{Binding AddCommand}"
+                    Classes="action-button success-button"/>
+          </Grid>
+        </Border>
 
         <Border Classes="panel-card">
           <StackPanel Spacing="14">
@@ -104,7 +124,6 @@
                       FontSize="13"
                       MinHeight="280">
               <DataGrid.Columns>
-                <DataGridTextColumn Header="Id" Binding="{Binding Id}" Width="Auto"/>
                 <DataGridTextColumn Header="Declansat la" Binding="{Binding TriggeredAt}" Width="2*"/>
                 <DataGridTextColumn Header="Tinta" Binding="{Binding TargetName}" Width="2*"/>
                 <DataGridTextColumn Header="Tip tinta" Binding="{Binding TargetType}" Width="Auto"/>
@@ -118,5 +137,131 @@
         </Border>
       </StackPanel>
     </StackPanel>
+
+      <Border IsVisible="{Binding IsModalVisible}"
+              Background="#80000000"
+              HorizontalAlignment="Stretch"
+              VerticalAlignment="Stretch">
+        <Border Classes="panel-card"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Width="720"
+                Padding="24">
+          <StackPanel Spacing="18">
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
+              <TextBlock Text="{Binding ThresholdFormTitle}"
+                         FontSize="20"
+                         FontWeight="Bold"
+                         Foreground="{StaticResource BrushTextPrimary}"/>
+              <Button Grid.Column="1"
+                      Command="{Binding CancelCommand}"
+                      Classes="action-button subtle-button"
+                      Content="X"
+                      Padding="8,4"/>
+            </Grid>
+
+            <TextBlock Text="Ajusteaza tinta, tipul limitei si interventia inainte sa salvezi regula."
+                       Classes="section-subtitle"
+                       TextWrapping="Wrap"/>
+
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="16">
+              <Border Classes="panel-card panel-card--muted"
+                      Padding="16">
+                <StackPanel Spacing="12">
+                  <TextBlock Text="Tinta" FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource BrushTextSecondary}"/>
+
+                  <StackPanel Spacing="6">
+                    <TextBlock Text="Tip tinta" Classes="field-label"/>
+                    <ComboBox ItemsSource="{Binding TargetTypes}"
+                              SelectedItem="{Binding EditData.Threshold.TargetType}"/>
+                  </StackPanel>
+
+                  <StackPanel Spacing="6"
+                              IsVisible="{Binding EditData.Threshold.TargetType, Converter={StaticResource EqualsConverter}, ConverterParameter=Category}">
+                    <TextBlock Text="Categorie" Classes="field-label"/>
+                    <ComboBox ItemsSource="{Binding Categories}"
+                              SelectedValue="{Binding EditData.Threshold.CategoryId}"
+                              SelectedValueBinding="{Binding Id}"
+                              DisplayMemberBinding="{Binding Name}"/>
+                  </StackPanel>
+
+                  <StackPanel Spacing="6"
+                              IsVisible="{Binding EditData.Threshold.TargetType, Converter={StaticResource EqualsConverter}, ConverterParameter=App}">
+                    <TextBlock Text="Aplicatie" Classes="field-label"/>
+                    <ComboBox ItemsSource="{Binding Apps}"
+                              SelectedValue="{Binding EditData.Threshold.AppId}"
+                              SelectedValueBinding="{Binding Id}"
+                              DisplayMemberBinding="{Binding ProcessName}"/>
+                  </StackPanel>
+                </StackPanel>
+              </Border>
+
+              <Border Grid.Column="1"
+                      Classes="panel-card panel-card--muted"
+                      Padding="16">
+                <StackPanel Spacing="12">
+                  <TextBlock Text="Regula" FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource BrushTextSecondary}"/>
+
+                  <CheckBox Content="Pragul este activ"
+                            IsChecked="{Binding EditData.Threshold.Active}"/>
+
+                  <StackPanel Spacing="6">
+                    <TextBlock Text="Tip limita" Classes="field-label"/>
+                    <ComboBox ItemsSource="{Binding LimitTypes}"
+                              SelectedItem="{Binding EditData.Threshold.LimitType}"/>
+                  </StackPanel>
+
+                  <StackPanel Spacing="6"
+                              IsVisible="{Binding EditData.Threshold.LimitType, Converter={StaticResource EqualsConverter}, ConverterParameter=Daily}">
+                    <TextBlock Text="Limita zilnica (hh:mm:ss)" Classes="field-label"/>
+                    <TextBox Text="{Binding EditData.Threshold.DailyLimit}"/>
+                  </StackPanel>
+
+                  <StackPanel Spacing="6"
+                              IsVisible="{Binding EditData.Threshold.LimitType, Converter={StaticResource EqualsConverter}, ConverterParameter=Session}">
+                    <TextBlock Text="Limita sesiune (hh:mm:ss)" Classes="field-label"/>
+                    <TextBox Text="{Binding EditData.Threshold.SessionLimit}"/>
+                  </StackPanel>
+                </StackPanel>
+              </Border>
+            </Grid>
+
+            <Border Classes="panel-card panel-card--muted"
+                    Padding="16">
+              <StackPanel Spacing="12">
+                <TextBlock Text="Interventie" FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource BrushTextSecondary}"/>
+
+                <StackPanel Spacing="6">
+                  <TextBlock Text="Tip interventie" Classes="field-label"/>
+                  <ComboBox ItemsSource="{Binding InterventionTypes}"
+                            SelectedItem="{Binding EditData.Threshold.InterventionType}"/>
+                </StackPanel>
+
+                <TextBlock Text="Blocarea tastarii foloseste in prezent expresia implicita de deblocare."
+                           Foreground="{StaticResource BrushTextMuted}"
+                           TextWrapping="Wrap"
+                           IsVisible="{Binding EditData.Threshold.InterventionType, Converter={StaticResource EqualsConverter}, ConverterParameter=TypingLock}"/>
+
+                <TextBlock Text="Blocarea temporizata foloseste in prezent durata implicita de blocare."
+                           Foreground="{StaticResource BrushTextMuted}"
+                           TextWrapping="Wrap"
+                           IsVisible="{Binding EditData.Threshold.InterventionType, Converter={StaticResource EqualsConverter}, ConverterParameter=TimedLock}"/>
+              </StackPanel>
+            </Border>
+
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Right"
+                        Spacing="8">
+              <Button Content="Anuleaza"
+                      Command="{Binding CancelCommand}"
+                      Classes="action-button subtle-button"/>
+              <Button Content="Salveaza pragul"
+                      Command="{Binding SaveCommand}"
+                      Classes="action-button success-button"/>
+            </StackPanel>
+          </StackPanel>
+        </Border>
+      </Border>
+    </Panel>
   </ScrollViewer>
 </UserControl>

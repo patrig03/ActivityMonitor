@@ -19,7 +19,6 @@
             FontSize="13"
             MinHeight="260">
     <DataGrid.Columns>
-      <DataGridTextColumn Header="Id" Binding="{Binding Threshold.Id}" Width="Auto"/>
       <DataGridTextColumn Header="Tinta" Binding="{Binding TargetName}" Width="2*"/>
       <DataGridTextColumn Header="Tip tinta" Binding="{Binding Threshold.TargetType}" Width="Auto"/>
       <DataGridTextColumn Header="Activ" Binding="{Binding Threshold.Active}" Width="Auto"/>

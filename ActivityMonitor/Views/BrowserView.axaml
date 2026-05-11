@@ -120,12 +120,10 @@
                     CanUserSortColumns="True"
                     MinHeight="320">
             <DataGrid.Columns>
-              <DataGridTextColumn Header="Id" Binding="{Binding ActivityId}" Width="Auto"/>
               <DataGridTextColumn Header="Domeniu" Binding="{Binding Domain}" Width="1.5*"/>
               <DataGridTextColumn Header="URL" Binding="{Binding Url}" Width="*"/>
               <DataGridTextColumn Header="Proces" Binding="{Binding BrowserProcess}" Width="1.5*"/>
               <DataGridTextColumn Header="Categorie" Binding="{Binding CategoryName}" Width="1.5*"/>
-              <DataGridTextColumn Header="Utilizator" Binding="{Binding UserId}" Width="Auto"/>
             </DataGrid.Columns>
           </DataGrid>
         </StackPanel>

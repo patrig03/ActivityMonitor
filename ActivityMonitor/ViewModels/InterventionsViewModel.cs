@@ -16,6 +16,7 @@ public partial class InterventionsViewModel : ViewModelBase
     private ThresholdEditData _editData = new();
     private Threshold? _observedEditThreshold;
     private bool _isScrollViewerVisible;
+    private bool _isModalVisible;
     private string _thresholdStatus = "Se încarcă pragurile";
     private string _activeThresholdCount = "0";
     private string _inactiveThresholdCount = "0";
@@ -54,6 +55,12 @@ public partial class InterventionsViewModel : ViewModelBase
     {
         get => _isScrollViewerVisible;
         set => SetProperty(ref _isScrollViewerVisible, value);
+    }
+
+    public bool IsModalVisible
+    {
+        get => _isModalVisible;
+        set => SetProperty(ref _isModalVisible, value);
     }
 
     public string ThresholdStatus

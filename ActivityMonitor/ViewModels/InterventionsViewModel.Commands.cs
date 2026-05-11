@@ -7,7 +7,7 @@ public partial class InterventionsViewModel
     private void AddThreshold()
     {
         ResetEditData();
-        IsScrollViewerVisible = true;
+        IsModalVisible = true;
     }
 
     private void SaveThreshold()
@@ -49,12 +49,12 @@ public partial class InterventionsViewModel
         }
 
         EditData = CreateDraft(row.Threshold.Clone());
-        IsScrollViewerVisible = true;
+        IsModalVisible = true;
     }
 
     private void CancelEditing()
     {
-        IsScrollViewerVisible = false;
+        IsModalVisible = false;
         ResetEditData();
     }
 }

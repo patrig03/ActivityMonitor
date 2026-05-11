@@ -105,7 +105,7 @@ public partial class InterventionsViewModel
 
         var thresholdLookup = ThresholdRows.ToDictionary(row => row.Threshold.Id);
 
-        var interventions = _manager.GetInterventionsForUser(1)
+        var interventions = _manager.GetInterventionsForDevice(1)
             .Select(Intervention.FromDto)
             .OrderByDescending(item => item.TriggeredAt)
             .ToList();

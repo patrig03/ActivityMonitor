@@ -22,7 +22,7 @@ public static class Program
         var dbManager = new DatabaseManager(Settings.DatabaseConnectionString);
         dbManager.EnsureDatabase();
 
-        using var collector = new DataCollectorController();
+        using var collector = new DataCollectorController(1);
         InterventionController intervener = new();
 
         while (true)

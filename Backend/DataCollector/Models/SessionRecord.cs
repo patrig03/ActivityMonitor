@@ -6,7 +6,7 @@ public class SessionRecord
 {
     public int? Id { get; set; }
     public int? ApplicationId { get; set; }
-    public int? UserId { get; set; }
+    public int? DeviceId { get; set; }
     public DateTime StartTime { get; set; }
     public DateTime EndTime { get; set; }
     public TimeSpan Duration => EndTime - StartTime;
@@ -17,7 +17,7 @@ public class SessionRecord
         {
             SessionId = Id,
             AppId = ApplicationId,
-            UserId = UserId,
+            DeviceId = DeviceId,
             StartTime = StartTime,
             EndTime = EndTime,
         };
@@ -29,7 +29,7 @@ public class SessionRecord
         {
             Id = dto.SessionId,
             ApplicationId = dto.AppId,
-            UserId = dto.UserId,
+            DeviceId = dto.DeviceId,
             StartTime = dto.StartTime?? DateTime.MaxValue,
             EndTime = dto.EndTime?? DateTime.MaxValue,
         };

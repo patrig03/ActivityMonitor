@@ -4,7 +4,6 @@ namespace Database.Persistence;
 
 public sealed class ActivityMonitorDbContext(DbContextOptions<ActivityMonitorDbContext> options) : DbContext(options)
 {
-    public DbSet<UserEntity> Users => Set<UserEntity>();
     public DbSet<SettingsEntity> Settings => Set<SettingsEntity>();
     public DbSet<DeviceEntity> Devices => Set<DeviceEntity>();
     public DbSet<CategoryEntity> Categories => Set<CategoryEntity>();

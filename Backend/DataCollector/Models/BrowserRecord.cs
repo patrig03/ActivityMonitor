@@ -5,6 +5,7 @@ namespace Backend.Models;
 public class BrowserRecord
 {
     public int Id { get; set; }
+    public int DeviceId { get; set; } = 1;
     public int BrowserId { get; set; }
     public int? CategoryId { get; set; }
     public string Url { get; set; } = string.Empty;
@@ -23,7 +24,7 @@ public class BrowserRecord
     {
         return new BrowserActivityDto
         {
-            UserId = 1,
+            DeviceId = DeviceId,
             ActivityId = Id,
             AppId = BrowserId,
             CategoryId = CategoryId,
@@ -35,6 +36,7 @@ public class BrowserRecord
         return new BrowserRecord
         {
             Id = dto.ActivityId,
+            DeviceId = dto.DeviceId ?? 1,
             BrowserId = dto.AppId,
             CategoryId = dto.CategoryId,
             Url = dto.Url ?? string.Empty,

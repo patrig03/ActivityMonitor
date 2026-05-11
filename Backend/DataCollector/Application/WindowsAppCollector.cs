@@ -40,14 +40,11 @@ public class WindowsAppCollector : IApplicationDataCollector
         return new ApplicationRecord
         {
             Id = null,
+            DeviceId = null,
             CategoryId = null,
             ProcessName = GetProcessName((int)processId),
             WindowName = title,
             ClassName = className,
-            PositionX = rect.Left,
-            PositionY = rect.Top,
-            Width = rect.Right - rect.Left,
-            Height = rect.Bottom - rect.Top,
             WindowId = windowHandle.ToInt64()
         };
     }

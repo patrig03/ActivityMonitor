@@ -203,7 +203,6 @@ public partial class DashboardViewModel : ObservableObject
     {
         var reports = _maker.MakeReportData().ToList();
         var settings = _db.GetSettings(DefaultUserId);
-        var user = _db.GetUser(DefaultUserId);
         var categories = _db.GetAllCategories().Select(Category.FromDto).ToDictionary(c => c.Id);
         var applications = _db.GetAllApplications()
             .Select(ApplicationRecord.FromDto)
@@ -264,7 +263,7 @@ public partial class DashboardViewModel : ObservableObject
             .Select(group => group.First())
             .ToList();
 
-        DisplayName = string.IsNullOrWhiteSpace(user?.DisplayName) ? "Utilizator implicit" : user.DisplayName!;
+        DisplayName = string.IsNullOrWhiteSpace(settings?.SyncEmail) ? "Utilizator implicit" : settings.SyncEmail!;
         ProfileInitials = BuildInitials(DisplayName);
         DashboardSubtitle = reports.Count == 0
             ? "Nu există încă sesiuni monitorizate. Lasă monitorul să ruleze pentru a popula panoul."

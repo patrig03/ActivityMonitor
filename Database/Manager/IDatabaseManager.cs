@@ -9,11 +9,6 @@ public interface IDatabaseManager : IDisposable
 {
     void EnsureDatabase();
     
-    /* -------------------- USERS -------------------- */
-
-    int InsertUser(UserDto user);
-    UserDto? GetUser(int userId);
-
     /* -------------------- DEVICES -------------------- */
 
     int InsertDevice(DeviceDto device);
@@ -54,7 +49,7 @@ public interface IDatabaseManager : IDisposable
     int? UpdateSession(SessionDto s);
     int UpsertSession(SessionDto s);
     SessionDto? GetSession(int sessionId);
-    IEnumerable<SessionDto> GetSessionsForUser(int userId);
+    IEnumerable<SessionDto> GetSessionsForDevice(int deviceId);
     IEnumerable<SessionDto> GetSessionsByCategory(int categoryId);
     int GetSessionDurationForCategory(int categoryId);
 
@@ -68,7 +63,7 @@ public interface IDatabaseManager : IDisposable
     /* -------------------- THRESHOLDS -------------------- */
 
     int InsertThreshold(ThresholdDto threshold);
-    ThresholdDto? GetThreshold(int userId, int categoryId);
+    ThresholdDto? GetThreshold(int deviceId, int categoryId);
     IEnumerable<ThresholdDto?> GetAllThresholds();
     void DeleteThreshold(ThresholdDto threshold);
     int UpdateThreshold(ThresholdDto threshold);
@@ -78,6 +73,6 @@ public interface IDatabaseManager : IDisposable
     /* -------------------- INTERVENTIONS -------------------- */
 
     int InsertIntervention(InterventionDto intervention);
-    IEnumerable<InterventionDto> GetInterventionsForUser(int userId);
+    IEnumerable<InterventionDto> GetInterventionsForDevice(int deviceId);
 
 }

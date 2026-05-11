@@ -15,7 +15,7 @@ public class Threshold : INotifyPropertyChanged
     public const string SessionLimitType = "Session";
 
     private int _id;
-    private int _userId = 1;
+    private int _deviceId = 1;
     private int _categoryId;
     private int _appId;
     private bool _active = true;
@@ -31,10 +31,10 @@ public class Threshold : INotifyPropertyChanged
         set => SetField(ref _id, value);
     }
 
-    public int UserId
+    public int DeviceId
     {
-        get => _userId;
-        set => SetField(ref _userId, value);
+        get => _deviceId;
+        set => SetField(ref _deviceId, value);
     }
 
     public int CategoryId
@@ -144,7 +144,7 @@ public class Threshold : INotifyPropertyChanged
         return new ThresholdDto
         {
             Id = Id,
-            UserId = UserId,
+            DeviceId = DeviceId,
             CategoryId = CategoryId,
             AppId = AppId,
             Active = Active,
@@ -161,7 +161,7 @@ public class Threshold : INotifyPropertyChanged
         return new Threshold
         {
             Id = dto.Id,
-            UserId = dto.UserId,
+            DeviceId = dto.DeviceId ?? 1,
             CategoryId = dto.CategoryId,
             AppId = dto.AppId,
             Active = dto.Active,
@@ -178,7 +178,7 @@ public class Threshold : INotifyPropertyChanged
         return new Threshold
         {
             Id = Id,
-            UserId = UserId,
+            DeviceId = DeviceId,
             CategoryId = CategoryId,
             AppId = AppId,
             Active = Active,

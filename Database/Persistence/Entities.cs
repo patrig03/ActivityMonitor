@@ -1,20 +1,5 @@
 namespace Database.Persistence;
 
-public sealed class UserEntity
-{
-    public int UserId { get; set; }
-    public string? DisplayName { get; set; }
-    public string? PinHash { get; set; }
-    public bool SyncEnabled { get; set; }
-    public DateTime CreatedAt { get; set; }
-
-    public ICollection<SettingsEntity> Settings { get; set; } = new List<SettingsEntity>();
-    public ICollection<DeviceEntity> Devices { get; set; } = new List<DeviceEntity>();
-    public ICollection<SessionEntity> Sessions { get; set; } = new List<SessionEntity>();
-    public ICollection<BrowserActivityEntity> BrowserActivities { get; set; } = new List<BrowserActivityEntity>();
-    public ICollection<ThresholdEntity> Thresholds { get; set; } = new List<ThresholdEntity>();
-}
-
 public sealed class DeviceEntity
 {
     public int DeviceId { get; set; }
@@ -30,8 +15,6 @@ public sealed class DeviceEntity
     public DateTime CreatedAt { get; set; }
     public DateTime LastSeenAt { get; set; }
     public DateTime? RevokedAt { get; set; }
-
-    public UserEntity? User { get; set; }
 }
 
 public sealed class SettingsEntity
@@ -45,8 +28,6 @@ public sealed class SettingsEntity
     public string? SyncRemoteUserId { get; set; }
     public string? SyncDeviceId { get; set; }
     public DateTime? SyncLastServerTimeUtc { get; set; }
-
-    public UserEntity? User { get; set; }
 }
 
 public sealed class CategoryEntity
@@ -62,14 +43,11 @@ public sealed class CategoryEntity
 public sealed class ApplicationEntity
 {
     public int AppId { get; set; }
+    public int? DeviceId { get; set; }
     public int? CategoryId { get; set; }
     public string? Name { get; set; }
     public string? Class { get; set; }
     public string? ProcessName { get; set; }
-    public int? PositionX { get; set; }
-    public int? PositionY { get; set; }
-    public int? Width { get; set; }
-    public int? Height { get; set; }
     public long? WindowId { get; set; }
 
     public CategoryEntity? Category { get; set; }
@@ -82,30 +60,28 @@ public sealed class SessionEntity
 {
     public int SessionId { get; set; }
     public int? AppId { get; set; }
-    public int? UserId { get; set; }
+    public int? DeviceId { get; set; }
     public DateTime? StartTime { get; set; }
     public DateTime? EndTime { get; set; }
 
     public ApplicationEntity? Application { get; set; }
-    public UserEntity? User { get; set; }
 }
 
 public sealed class BrowserActivityEntity
 {
     public int ActivityId { get; set; }
-    public int UserId { get; set; }
+    public int? DeviceId { get; set; }
     public int AppId { get; set; }
     public int? CategoryId { get; set; }
     public string? Url { get; set; }
 
-    public UserEntity? User { get; set; }
     public ApplicationEntity? Application { get; set; }
 }
 
 public sealed class ThresholdEntity
 {
     public int ThresholdId { get; set; }
-    public int UserId { get; set; }
+    public int? DeviceId { get; set; }
     public int? CategoryId { get; set; }
     public int? AppId { get; set; }
     public bool IsActive { get; set; }
@@ -115,7 +91,6 @@ public sealed class ThresholdEntity
     public int DailyLimitSec { get; set; }
     public int SessionLimitSec { get; set; }
 
-    public UserEntity? User { get; set; }
     public CategoryEntity? Category { get; set; }
     public ApplicationEntity? Application { get; set; }
     public ICollection<InterventionEntity> Interventions { get; set; } = new List<InterventionEntity>();

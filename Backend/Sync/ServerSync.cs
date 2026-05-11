@@ -760,14 +760,11 @@ public sealed class SyncCategoryRecord
 public sealed class SyncApplicationRecord
 {
     public string Id { get; set; } = string.Empty;
+    public string? DeviceId { get; set; }
     public string? CategoryId { get; set; }
     public string? WindowTitle { get; set; }
     public string? ClassName { get; set; }
     public string? ProcessName { get; set; }
-    public int? PositionX { get; set; }
-    public int? PositionY { get; set; }
-    public int? Width { get; set; }
-    public int? Height { get; set; }
     public int? WindowId { get; set; }
 }
 

@@ -30,7 +30,7 @@ public class ReportMaker
             .Where(application => application.Id.HasValue)
             .ToDictionary(application => application.Id!.Value);
 
-        var interventions = Manager.GetInterventionsForUser(1);
+        var interventions = Manager.GetInterventionsForDevice(1);
         var browserRecords = Manager.GetAllBrowserActivity();
         var thresholds = Manager.GetAllThresholds();
 

@@ -66,14 +66,11 @@ public class LinuxAppCollector : IApplicationDataCollector
         return new ApplicationRecord
         {
             Id = null,
+            DeviceId = null,
             CategoryId = null,
             ProcessName = GetProcessName(pid),
             WindowName = string.Join(' ', parts.Skip(9)),
             ClassName = parts[7],
-            PositionX = int.Parse(parts[3]),
-            PositionY = int.Parse(parts[4]),
-            Width = int.Parse(parts[5]),
-            Height = int.Parse(parts[6]),
             WindowId = Convert.ToInt64(parts[0], 16)
             
         };

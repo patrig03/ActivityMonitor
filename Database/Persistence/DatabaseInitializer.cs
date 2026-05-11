@@ -22,6 +22,11 @@ public sealed class MySqlDatabaseInitializer(
         EnsureDevicesTableExists(context);
         EnsureSettingsColumnsExist();
         EnsureBrowserActivityCategoryColumnExists();
+        EnsureApplicationDeviceIdColumnExists();
+        EnsureSessionDeviceIdColumnExists();
+        EnsureBrowserActivityDeviceIdColumnExists();
+        EnsureThresholdDeviceIdColumnExists();
+        RemoveUsersTableConstraint();
 
         SeedDefaults(context);
     }
@@ -42,18 +47,6 @@ public sealed class MySqlDatabaseInitializer(
         if (!context.Categories.Any())
         {
             context.Categories.AddRange(DefaultSeedData.Categories);
-        }
-
-        if (!context.Users.Any())
-        {
-            context.Users.Add(new UserEntity
-            {
-                UserId = 1,
-                DisplayName = "Default user",
-                PinHash = string.Empty,
-                SyncEnabled = false,
-                CreatedAt = DateTime.UtcNow
-            });
         }
 
         if (!context.Settings.Any())
@@ -94,7 +87,6 @@ public sealed class MySqlDatabaseInitializer(
                 last_seen_at DATETIME(6) NOT NULL,
                 revoked_at DATETIME(6) NULL,
                 PRIMARY KEY (device_id),
-                CONSTRAINT fk_devices_users_user_id FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE CASCADE,
                 UNIQUE KEY ux_devices_user_fingerprint (user_id, fingerprint),
                 KEY ix_devices_user_last_seen (user_id, last_seen_at)
             ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -128,6 +120,134 @@ public sealed class MySqlDatabaseInitializer(
         command.CommandText =
             "ALTER TABLE browser_activity ADD COLUMN category_id INT NULL;";
         command.ExecuteNonQuery();
+    }
+
+    private void EnsureApplicationDeviceIdColumnExists()
+    {
+        using var connection = new MySqlConnection(DatabaseConnectionFactory.BuildConnectionString(options));
+        connection.Open();
+
+        if (ColumnExists(connection, "applications", "device_id"))
+        {
+            return;
+        }
+
+        using var command = connection.CreateCommand();
+        command.CommandText =
+            "ALTER TABLE applications ADD COLUMN device_id INT NULL, DROP COLUMN IF EXISTS position_x, DROP COLUMN IF EXISTS position_y, DROP COLUMN IF EXISTS width, DROP COLUMN IF EXISTS height;";
+        command.ExecuteNonQuery();
+    }
+
+    private void EnsureSessionDeviceIdColumnExists()
+    {
+        using var connection = new MySqlConnection(DatabaseConnectionFactory.BuildConnectionString(options));
+        connection.Open();
+
+        if (ColumnExists(connection, "sessions", "device_id"))
+        {
+            return;
+        }
+
+        DropForeignKeyIfExists(connection, "sessions", "fk_sessions_users_user_id");
+        DropForeignKeyIfExists(connection, "sessions", "FK_sessions_users_user_id");
+
+        using var command = connection.CreateCommand();
+        command.CommandText =
+            "ALTER TABLE sessions ADD COLUMN device_id INT NULL, DROP COLUMN IF EXISTS user_id;";
+        command.ExecuteNonQuery();
+    }
+
+    private void EnsureBrowserActivityDeviceIdColumnExists()
+    {
+        using var connection = new MySqlConnection(DatabaseConnectionFactory.BuildConnectionString(options));
+        connection.Open();
+
+        if (ColumnExists(connection, "browser_activity", "device_id"))
+        {
+            return;
+        }
+
+        DropForeignKeyIfExists(connection, "browser_activity", "fk_browser_activity_users_user_id");
+        DropForeignKeyIfExists(connection, "browser_activity", "FK_browser_activity_users_user_id");
+
+        using var command = connection.CreateCommand();
+        command.CommandText =
+            "ALTER TABLE browser_activity ADD COLUMN device_id INT NULL, DROP COLUMN IF EXISTS user_id;";
+        command.ExecuteNonQuery();
+    }
+
+    private void EnsureThresholdDeviceIdColumnExists()
+    {
+        using var connection = new MySqlConnection(DatabaseConnectionFactory.BuildConnectionString(options));
+        connection.Open();
+
+        if (ColumnExists(connection, "thresholds", "device_id"))
+        {
+            return;
+        }
+
+        DropForeignKeyIfExists(connection, "thresholds", "fk_thresholds_users_user_id");
+        DropForeignKeyIfExists(connection, "thresholds", "FK_thresholds_users_user_id");
+
+        using var command = connection.CreateCommand();
+        command.CommandText =
+            "ALTER TABLE thresholds ADD COLUMN device_id INT NULL, DROP COLUMN IF EXISTS user_id;";
+        command.ExecuteNonQuery();
+    }
+
+    private void DropForeignKeyIfExists(MySqlConnection connection, string tableName, string fkName)
+    {
+        try
+        {
+            using var command = connection.CreateCommand();
+            command.CommandText = $"ALTER TABLE {tableName} DROP FOREIGN KEY IF EXISTS {fkName};";
+            command.ExecuteNonQuery();
+        }
+        catch (MySqlException)
+        {
+        }
+    }
+
+    private void RemoveUsersTableConstraint()
+    {
+        using var connection = new MySqlConnection(DatabaseConnectionFactory.BuildConnectionString(options));
+        connection.Open();
+
+        if (!TableExists(connection, "users"))
+        {
+            return;
+        }
+
+        DropForeignKeyIfExists(connection, "devices", "fk_devices_users_user_id");
+        DropForeignKeyIfExists(connection, "devices", "FK_devices_users_user_id");
+        DropForeignKeyIfExists(connection, "settings", "fk_settings_users_user_id");
+        DropForeignKeyIfExists(connection, "settings", "FK_settings_users_user_id");
+
+        try
+        {
+            using var command = connection.CreateCommand();
+            command.CommandText = "DROP TABLE IF EXISTS users;";
+            command.ExecuteNonQuery();
+        }
+        catch (MySqlException)
+        {
+        }
+    }
+
+    private bool TableExists(MySqlConnection connection, string tableName)
+    {
+        using var command = connection.CreateCommand();
+        command.CommandText =
+            """
+            SELECT COUNT(*)
+            FROM INFORMATION_SCHEMA.TABLES
+            WHERE TABLE_SCHEMA = @databaseName
+              AND TABLE_NAME = @tableName;
+            """;
+        command.Parameters.AddWithValue("@databaseName", options.Database);
+        command.Parameters.AddWithValue("@tableName", tableName);
+
+        return Convert.ToInt32(command.ExecuteScalar()) > 0;
     }
 
     private bool ColumnExists(MySqlConnection connection, string tableName, string columnName)

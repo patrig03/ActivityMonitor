@@ -17,13 +17,20 @@ public sealed class DataCollectorController : IDisposable
     private readonly FirefoxCollector _firefoxCollector = new();
     private readonly ChromiumCollector _chromiumCollector = new();
     private readonly IApplicationDataCollector _appCollector = new WindowsAppCollector();
+    private readonly int _deviceId;
     private string? _lastBrowserProcessName;
+
+    public DataCollectorController(int deviceId)
+    {
+        _deviceId = deviceId;
+    }
 
     public ApplicationRecord? CheckActivity(IDatabaseManager db)
     {
         var app = _appCollector.GetActive();
         if (app is null) return null;
 
+        app.DeviceId = _deviceId;
         app.CategoryId = _classifier.ClassifyAsync(app);
         var appId = db.UpsertApplication(app.ToDto());
 
@@ -118,7 +125,7 @@ public sealed class DataCollectorController : IDisposable
             _previousRecord = new SessionRecord
             {
                 ApplicationId = appId,
-                UserId = 1,
+                DeviceId = _deviceId,
                 StartTime = DateTime.Now,
                 EndTime = DateTime.Now
             };

@@ -7,6 +7,7 @@ public class Settings
 {
     public int Id { get; set; }
     public int UserId { get; set; } = 1;
+    public int DeviceId { get; set; } = 1;
     public TimeSpan DeltaTime { get; set; } = TimeSpan.FromSeconds(10);
     public string? SyncServerAddress { get; set; }
     public string? SyncEmail { get; set; }

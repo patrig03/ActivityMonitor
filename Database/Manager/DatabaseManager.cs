@@ -25,36 +25,12 @@ public sealed class DatabaseManager : IDatabaseManager
 
     private static ApplicationEntity? FindApplication(ActivityMonitorDbContext context, ApplicationDto app)
         => context.Applications.FirstOrDefault(e =>
+            e.DeviceId == app.DeviceId &&
             e.Name == app.WindowTitle &&
             e.Class == app.ClassName &&
             e.ProcessName == app.ProcessName);
 
     private static int? NullIfZero(int value) => value == 0 ? null : value;
-
-    #region User
-
-    public int InsertUser(UserDto user)
-    {
-        using var context = CreateContext();
-        var entity = new UserEntity
-        {
-            DisplayName = user.DisplayName,
-            PinHash = user.PinHash,
-            SyncEnabled = user.SyncEnabled,
-            CreatedAt = user.CreatedAt
-        };
-        context.Users.Add(entity);
-        context.SaveChanges();
-        return entity.UserId;
-    }
-
-    public UserDto? GetUser(int userId)
-    {
-        using var context = CreateContext();
-        return context.Users.AsNoTracking().FirstOrDefault(e => e.UserId == userId)?.ToDto();
-    }
-
-    #endregion
 
     #region Device
 
@@ -216,10 +192,7 @@ public sealed class DatabaseManager : IDatabaseManager
         entity.Class = app.ClassName;
         entity.ProcessName = app.ProcessName;
         entity.CategoryId = app.CategoryId;
-        entity.PositionX = app.PositionX;
-        entity.PositionY = app.PositionY;
-        entity.Width = app.Width;
-        entity.Height = app.Height;
+        entity.DeviceId = app.DeviceId;
         entity.WindowId = app.WindowId;
         context.SaveChanges();
         return entity.AppId;
@@ -281,7 +254,7 @@ public sealed class DatabaseManager : IDatabaseManager
         using var context = CreateContext();
         return context.Sessions
             .AsNoTracking()
-            .FirstOrDefault(e => e.AppId == session.AppId && e.UserId == session.UserId && e.StartTime == session.StartTime)?
+            .FirstOrDefault(e => e.AppId == session.AppId && e.DeviceId == session.DeviceId && e.StartTime == session.StartTime)?
             .SessionId;
     }
 
@@ -291,7 +264,7 @@ public sealed class DatabaseManager : IDatabaseManager
         var entity = new SessionEntity
         {
             AppId = session.AppId,
-            UserId = session.UserId,
+            DeviceId = session.DeviceId,
             StartTime = session.StartTime,
             EndTime = session.EndTime
         };
@@ -304,10 +277,10 @@ public sealed class DatabaseManager : IDatabaseManager
     {
         using var context = CreateContext();
         var entity = context.Sessions.FirstOrDefault(e =>
-            e.AppId == session.AppId && e.UserId == session.UserId && e.StartTime == session.StartTime);
+            e.AppId == session.AppId && e.DeviceId == session.DeviceId && e.StartTime == session.StartTime);
         if (entity is null) return null;
         entity.AppId = session.AppId;
-        entity.UserId = session.UserId;
+        entity.DeviceId = session.DeviceId;
         entity.StartTime = session.StartTime;
         entity.EndTime = session.EndTime;
         context.SaveChanges();
@@ -328,12 +301,12 @@ public sealed class DatabaseManager : IDatabaseManager
         return context.Sessions.AsNoTracking().FirstOrDefault(e => e.SessionId == sessionId)?.ToDto();
     }
 
-    public IEnumerable<SessionDto> GetSessionsForUser(int userId)
+    public IEnumerable<SessionDto> GetSessionsForDevice(int deviceId)
     {
         using var context = CreateContext();
         return context.Sessions
             .AsNoTracking()
-            .Where(e => e.UserId == userId)
+            .Where(e => e.DeviceId == deviceId)
             .OrderBy(e => e.StartTime)
             .Select(e => e.ToDto())
             .ToArray();
@@ -369,7 +342,7 @@ public sealed class DatabaseManager : IDatabaseManager
         using var context = CreateContext();
         context.BrowserActivities.Add(new BrowserActivityEntity
         {
-            UserId = activity.UserId,
+            DeviceId = activity.DeviceId,
             AppId = activity.AppId,
             CategoryId = activity.CategoryId,
             Url = activity.Url
@@ -381,10 +354,10 @@ public sealed class DatabaseManager : IDatabaseManager
     {
         using var context = CreateContext();
         var session = context.Sessions.AsNoTracking().FirstOrDefault(e => e.SessionId == sessionId);
-        if (session is null || !session.AppId.HasValue || !session.UserId.HasValue) return [];
+        if (session is null || !session.AppId.HasValue || !session.DeviceId.HasValue) return [];
         return context.BrowserActivities
             .AsNoTracking()
-            .Where(e => e.AppId == session.AppId.Value && e.UserId == session.UserId.Value)
+            .Where(e => e.AppId == session.AppId.Value && e.DeviceId == session.DeviceId.Value)
             .OrderByDescending(e => e.ActivityId)
             .Select(e => e.ToDto())
             .ToArray();
@@ -401,7 +374,7 @@ public sealed class DatabaseManager : IDatabaseManager
         using var context = CreateContext();
         return context.BrowserActivities
             .AsNoTracking()
-            .FirstOrDefault(e => e.UserId == activity.UserId && e.AppId == activity.AppId && e.Url == activity.Url)?
+            .FirstOrDefault(e => e.DeviceId == activity.DeviceId && e.AppId == activity.AppId && e.Url == activity.Url)?
             .ActivityId;
     }
 
@@ -418,12 +391,12 @@ public sealed class DatabaseManager : IDatabaseManager
         return entity.ThresholdId;
     }
 
-    public ThresholdDto? GetThreshold(int userId, int categoryId)
+    public ThresholdDto? GetThreshold(int deviceId, int categoryId)
     {
         using var context = CreateContext();
         return context.Thresholds
             .AsNoTracking()
-            .FirstOrDefault(e => e.UserId == userId && e.CategoryId == categoryId)?
+            .FirstOrDefault(e => e.DeviceId == deviceId && e.CategoryId == categoryId)?
             .ToDto();
     }
 
@@ -447,7 +420,7 @@ public sealed class DatabaseManager : IDatabaseManager
         using var context = CreateContext();
         var entity = context.Thresholds.FirstOrDefault(e => e.ThresholdId == threshold.Id);
         if (entity is null) return 0;
-        entity.UserId = threshold.UserId;
+        entity.DeviceId = threshold.DeviceId;
         entity.CategoryId = NullIfZero(threshold.CategoryId);
         entity.AppId = NullIfZero(threshold.AppId);
         entity.IsActive = threshold.Active;
@@ -480,12 +453,12 @@ public sealed class DatabaseManager : IDatabaseManager
         return entity.InterventionId;
     }
 
-    public IEnumerable<InterventionDto> GetInterventionsForUser(int userId)
+    public IEnumerable<InterventionDto> GetInterventionsForDevice(int deviceId)
     {
         using var context = CreateContext();
         return context.Interventions
             .AsNoTracking()
-            .Where(e => e.Threshold != null && e.Threshold.UserId == userId)
+            .Where(e => e.Threshold != null && e.Threshold.DeviceId == deviceId)
             .OrderByDescending(e => e.TriggeredAt)
             .Select(e => e.ToDto())
             .ToArray();
@@ -498,18 +471,17 @@ public sealed class DatabaseManager : IDatabaseManager
 
 internal static class EntityDtoExtensions
 {
-    internal static UserDto ToDto(this UserEntity e) => new() { UserId = e.UserId, DisplayName = e.DisplayName, PinHash = e.PinHash, SyncEnabled = e.SyncEnabled, CreatedAt = e.CreatedAt };
     internal static DeviceDto ToDto(this DeviceEntity e) => new() { DeviceId = e.DeviceId, UserId = e.UserId, Name = e.Name, DeviceType = e.DeviceType, Platform = e.Platform, Fingerprint = e.Fingerprint, Status = e.Status, AppVersion = e.AppVersion, IsTrusted = e.IsTrusted, IsCurrentDevice = e.IsCurrentDevice, CreatedAt = e.CreatedAt, LastSeenAt = e.LastSeenAt, RevokedAt = e.RevokedAt };
     internal static void UpdateFrom(this DeviceEntity e, DeviceDto dto) { e.UserId = dto.UserId; e.Name = dto.Name; e.DeviceType = dto.DeviceType; e.Platform = dto.Platform; e.Fingerprint = dto.Fingerprint; e.Status = dto.Status; e.AppVersion = dto.AppVersion; e.IsTrusted = dto.IsTrusted; e.IsCurrentDevice = dto.IsCurrentDevice; e.CreatedAt = dto.CreatedAt; e.LastSeenAt = dto.LastSeenAt; e.RevokedAt = dto.RevokedAt; }
     internal static DeviceEntity ToEntity(this DeviceDto dto) { var e = new DeviceEntity(); e.UpdateFrom(dto); return e; }
     internal static SettingsDto ToDto(this SettingsEntity e) => new() { Id = e.SettingsId, UserId = e.UserId, DeltaTimeSeconds = e.RefreshTimeSeconds, SyncServerAddress = e.SyncServerAddress, SyncEmail = e.SyncEmail, SyncAuthToken = e.SyncAuthToken, SyncRemoteUserId = e.SyncRemoteUserId, SyncDeviceId = e.SyncDeviceId, SyncLastServerTimeUtc = e.SyncLastServerTimeUtc };
     internal static CategoryDto ToDto(this CategoryEntity e) => new() { CategoryId = e.CategoryId, Name = e.Name, Description = e.Description };
-    internal static ApplicationDto ToDto(this ApplicationEntity e) => new() { Id = e.AppId, CategoryId = e.CategoryId, WindowTitle = e.Name, ClassName = e.Class, ProcessName = e.ProcessName, PositionX = e.PositionX, PositionY = e.PositionY, Width = e.Width, Height = e.Height, WindowId = e.WindowId };
-    internal static ApplicationEntity ToEntity(this ApplicationDto dto) => new() { CategoryId = dto.CategoryId, Name = dto.WindowTitle, Class = dto.ClassName, ProcessName = dto.ProcessName, PositionX = dto.PositionX, PositionY = dto.PositionY, Width = dto.Width, Height = dto.Height, WindowId = dto.WindowId };
-    internal static SessionDto ToDto(this SessionEntity e) => new() { SessionId = e.SessionId, AppId = e.AppId, UserId = e.UserId, StartTime = e.StartTime, EndTime = e.EndTime };
-    internal static BrowserActivityDto ToDto(this BrowserActivityEntity e) => new() { ActivityId = e.ActivityId, UserId = e.UserId, AppId = e.AppId, CategoryId = e.CategoryId, Url = e.Url };
-    internal static ThresholdDto ToDto(this ThresholdEntity e) => new() { Id = e.ThresholdId, UserId = e.UserId, CategoryId = e.CategoryId ?? 0, AppId = e.AppId ?? 0, Active = e.IsActive, TargetType = e.TargetType, InterventionType = e.InterventionType, DurationType = e.DurationType, DailyLimitSec = e.DailyLimitSec, SessionLimitSec = e.SessionLimitSec };
-    internal static ThresholdEntity ToEntity(this ThresholdDto dto) => new() { UserId = dto.UserId, CategoryId = dto.CategoryId == 0 ? null : dto.CategoryId, AppId = dto.AppId == 0 ? null : dto.AppId, IsActive = dto.Active, TargetType = dto.TargetType, InterventionType = dto.InterventionType, DurationType = dto.DurationType, DailyLimitSec = dto.DailyLimitSec, SessionLimitSec = dto.SessionLimitSec };
+    internal static ApplicationDto ToDto(this ApplicationEntity e) => new() { Id = e.AppId, DeviceId = e.DeviceId, CategoryId = e.CategoryId, WindowTitle = e.Name, ClassName = e.Class, ProcessName = e.ProcessName, WindowId = e.WindowId };
+    internal static ApplicationEntity ToEntity(this ApplicationDto dto) => new() { DeviceId = dto.DeviceId, CategoryId = dto.CategoryId, Name = dto.WindowTitle, Class = dto.ClassName, ProcessName = dto.ProcessName, WindowId = dto.WindowId };
+    internal static SessionDto ToDto(this SessionEntity e) => new() { SessionId = e.SessionId, AppId = e.AppId, DeviceId = e.DeviceId, StartTime = e.StartTime, EndTime = e.EndTime };
+    internal static BrowserActivityDto ToDto(this BrowserActivityEntity e) => new() { ActivityId = e.ActivityId, DeviceId = e.DeviceId, AppId = e.AppId, CategoryId = e.CategoryId, Url = e.Url };
+    internal static ThresholdDto ToDto(this ThresholdEntity e) => new() { Id = e.ThresholdId, DeviceId = e.DeviceId, CategoryId = e.CategoryId ?? 0, AppId = e.AppId ?? 0, Active = e.IsActive, TargetType = e.TargetType, InterventionType = e.InterventionType, DurationType = e.DurationType, DailyLimitSec = e.DailyLimitSec, SessionLimitSec = e.SessionLimitSec };
+    internal static ThresholdEntity ToEntity(this ThresholdDto dto) => new() { DeviceId = dto.DeviceId, CategoryId = dto.CategoryId == 0 ? null : dto.CategoryId, AppId = dto.AppId == 0 ? null : dto.AppId, IsActive = dto.Active, TargetType = dto.TargetType, InterventionType = dto.InterventionType, DurationType = dto.DurationType, DailyLimitSec = dto.DailyLimitSec, SessionLimitSec = dto.SessionLimitSec };
     internal static InterventionDto ToDto(this InterventionEntity e) => new() { Id = e.InterventionId, ThresholdId = e.ThresholdId, Snoozed = e.Snoozed, TriggeredAt = e.TriggeredAt };
 }
 

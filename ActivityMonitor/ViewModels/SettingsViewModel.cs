@@ -11,6 +11,7 @@ namespace ActivityMonitor.ViewModels;
 public class SettingsViewModel : ViewModelBase
 {
     private const int DefaultUserId = 1;
+    private const int DefaultDeviceId = 1;
     private const int DefaultIntervalSeconds = 10;
 
     private readonly IDatabaseManager _db = new DatabaseManager(Settings.DatabaseConnectionString);
@@ -466,8 +467,8 @@ public class SettingsViewModel : ViewModelBase
         var thresholds = _db.GetAllThresholds().Where(threshold => threshold != null).Select(threshold => threshold!).ToList();
         var activeThresholds = thresholds.Count(threshold => threshold.Active);
         var browserEvents = _db.GetAllBrowserActivity().Count();
-        var interventions = _db.GetInterventionsForUser(DefaultUserId).Count();
-        var trackedSessions = _db.GetSessionsForUser(DefaultUserId).Count();
+        var interventions = _db.GetInterventionsForDevice(DefaultDeviceId).Count();
+        var trackedSessions = _db.GetSessionsForDevice(DefaultDeviceId).Count();
 
         ThresholdCoverage = $"{activeThresholds} praguri active din {thresholds.Count} limite configurate";
         ActivityCoverage = $"{applications} aplicații monitorizate, {trackedSessions} sesiuni capturate, {categories} categorii disponibile";

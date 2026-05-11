@@ -13,7 +13,7 @@ public partial class InterventionsViewModel
     private void SaveThreshold()
     {
         SyncDraftSelection();
-        EditData.Threshold.UserId = 1;
+        EditData.Threshold.DeviceId = 1;
 
         var thresholdId = _manager.UpsertThreshold(EditData.Threshold.ToDto());
         if (EditData.Threshold.Id == 0)

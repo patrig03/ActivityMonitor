@@ -16,6 +16,7 @@ namespace ActivityMonitor.ViewModels;
 public sealed class DevicesViewModel : ObservableObject
 {
     private const int DefaultUserId = 1;
+    private const int DefaultDeviceId = 1;
 
     private readonly IDatabaseManager _db = new DatabaseManager(Settings.DatabaseConnectionString);
     private readonly ServerSync _serverSync = new();
@@ -51,9 +52,9 @@ public sealed class DevicesViewModel : ObservableObject
         SyncWithServerCommand = new RelayCommand(_ => SyncWithServerAsync());
         ClearSelectionCommand = new RelayCommand(_ => ClearSelection());
 
-        var user = _db.GetUser(DefaultUserId);
-        AccountLabel = !string.IsNullOrWhiteSpace(user?.DisplayName)
-            ? user!.DisplayName!
+        var settings = _db.GetSettings(DefaultUserId);
+        AccountLabel = !string.IsNullOrWhiteSpace(settings?.SyncEmail)
+            ? settings!.SyncEmail!
             : "Cont sincronizat";
 
         CurrentDeviceLabel = DetectCurrentDeviceName();
@@ -547,9 +548,9 @@ public sealed class DevicesViewModel : ObservableObject
     {
         var categories = _db.GetAllCategories().ToList();
         var applications = _db.GetAllApplications().ToList();
-        var sessions = _db.GetSessionsForUser(DefaultUserId).ToList();
+        var sessions = _db.GetSessionsForDevice(DefaultDeviceId).ToList();
         var activities = _db.GetAllBrowserActivity()
-            .Where(activity => activity.UserId == DefaultUserId)
+            .Where(activity => activity.DeviceId == DefaultDeviceId)
             .ToList();
         var thresholds = _db.GetAllThresholds()
             .Where(threshold => threshold != null)
@@ -577,16 +578,13 @@ public sealed class DevicesViewModel : ObservableObject
                 .Select(app => new SyncApplicationRecord
                 {
                     Id = GetApplicationSyncId(app),
+                    DeviceId = deviceId,
                     CategoryId = app.CategoryId.HasValue && app.CategoryId.Value > 0 && categoryIds.TryGetValue(app.CategoryId.Value, out var categoryId)
                         ? categoryId
                         : null,
                     WindowTitle = NormalizeOptionalValue(app.WindowTitle),
                     ClassName = NormalizeOptionalValue(app.ClassName),
                     ProcessName = NormalizeOptionalValue(app.ProcessName),
-                    PositionX = app.PositionX,
-                    PositionY = app.PositionY,
-                    Width = app.Width,
-                    Height = app.Height,
                     WindowId = (int?)app.WindowId
                 })
                 .ToList(),
@@ -716,14 +714,11 @@ public sealed class DevicesViewModel : ObservableObject
 
             var dto = new ApplicationDto
             {
+                DeviceId = DefaultDeviceId,
                 WindowTitle = NormalizeOptionalValue(remoteApp.WindowTitle),
                 ClassName = NormalizeOptionalValue(remoteApp.ClassName),
                 ProcessName = NormalizeOptionalValue(remoteApp.ProcessName),
                 CategoryId = TryResolveNullableLocalId(remoteApp.CategoryId, categoryMap),
-                PositionX = remoteApp.PositionX,
-                PositionY = remoteApp.PositionY,
-                Width = remoteApp.Width,
-                Height = remoteApp.Height,
                 WindowId = remoteApp.WindowId
             };
 
@@ -757,7 +752,7 @@ public sealed class DevicesViewModel : ObservableObject
         {
             var dto = new ThresholdDto
             {
-                UserId = DefaultUserId,
+                DeviceId = DefaultDeviceId,
                 CategoryId = TryResolveLocalId(remoteThreshold.CategoryId, categoryMap),
                 AppId = TryResolveLocalId(remoteThreshold.ApplicationId, applicationMap),
                 Active = remoteThreshold.Active,
@@ -769,7 +764,7 @@ public sealed class DevicesViewModel : ObservableObject
             };
 
             var existing = localThresholds.FirstOrDefault(threshold =>
-                threshold.UserId == DefaultUserId &&
+                threshold.DeviceId == DefaultDeviceId &&
                 string.Equals(threshold.TargetType, dto.TargetType, StringComparison.OrdinalIgnoreCase) &&
                 threshold.CategoryId == dto.CategoryId &&
                 threshold.AppId == dto.AppId);
@@ -795,7 +790,7 @@ public sealed class DevicesViewModel : ObservableObject
             var dto = new SessionDto
             {
                 AppId = applicationMap[remoteSession.ApplicationId],
-                UserId = DefaultUserId,
+                DeviceId = DefaultDeviceId,
                 StartTime = DateTime.SpecifyKind(remoteSession.StartTime, DateTimeKind.Utc),
                 EndTime = remoteSession.EndTime == default ? null : DateTime.SpecifyKind(remoteSession.EndTime.Value, DateTimeKind.Utc)
             };
@@ -815,7 +810,7 @@ public sealed class DevicesViewModel : ObservableObject
         {
             var dto = new BrowserActivityDto
             {
-                UserId = DefaultUserId,
+                DeviceId = DefaultDeviceId,
                 AppId = applicationMap[remoteActivity.ApplicationId],
                 CategoryId = TryResolveNullableLocalId(remoteActivity.CategoryId, categoryMap),
                 Url = NormalizeOptionalValue(remoteActivity.Url)
@@ -917,7 +912,7 @@ public sealed class DevicesViewModel : ObservableObject
     {
         return SyncIdentity.Create(
             "session",
-            session.UserId ?? DefaultUserId,
+            session.DeviceId ?? DefaultDeviceId,
             session.AppId ?? 0,
             session.StartTime ?? DateTime.UnixEpoch);
     }
@@ -927,7 +922,7 @@ public sealed class DevicesViewModel : ObservableObject
         return SyncIdentity.Create(
             "activity",
             activity.ActivityId,
-            activity.UserId,
+            activity.DeviceId,
             activity.AppId,
             activity.Url);
     }
@@ -937,7 +932,7 @@ public sealed class DevicesViewModel : ObservableObject
         return SyncIdentity.Create(
             "threshold",
             threshold.Id,
-            threshold.UserId,
+            threshold.DeviceId,
             threshold.TargetType,
             threshold.CategoryId,
             threshold.AppId,

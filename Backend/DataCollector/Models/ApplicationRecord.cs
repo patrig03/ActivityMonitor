@@ -5,14 +5,11 @@ namespace Backend.DataCollector.Models;
 public class ApplicationRecord
 {
     public int? Id { get; set; }
+    public int? DeviceId { get; set; }
     public int? CategoryId { get; set; }
     public string? ProcessName { get; set; }
     public string? WindowName { get; set; }
     public string? ClassName { get; set; }
-    public int? PositionX { get; set; }
-    public int? PositionY { get; set; }
-    public int? Width { get; set; }
-    public int? Height { get; set; }
     public long? WindowId { get; set; }
     
     public ApplicationDto ToDto()
@@ -20,15 +17,12 @@ public class ApplicationRecord
         return new ApplicationDto
         {
             Id = Id,
+            DeviceId = DeviceId,
             WindowTitle = WindowName,
             ClassName = ClassName,
             ProcessName = ProcessName,
             CategoryId = CategoryId,
             WindowId = WindowId,
-            PositionX = PositionX,
-            PositionY = PositionY,
-            Width = Width,
-            Height = Height,
         };
     }
 
@@ -37,15 +31,12 @@ public class ApplicationRecord
         return new ApplicationRecord
         {
             Id = dto.Id,
+            DeviceId = dto.DeviceId,
             CategoryId = dto.CategoryId,
             ProcessName = dto.ProcessName,
             WindowName = dto.WindowTitle,
             ClassName = dto.ClassName,
             WindowId = dto.WindowId,
-            PositionX = dto.PositionX,
-            PositionY = dto.PositionY,
-            Width = dto.Width,
-            Height = dto.Height,
         };
     }
 }

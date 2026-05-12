@@ -25,6 +25,7 @@ public interface IDatabaseManager : IDisposable
     /* -------------------- CATEGORIES -------------------- */
 
     int InsertCategory(CategoryDto category);
+    int UpdateCategory(CategoryDto category);
     CategoryDto? GetCategory(int categoryId);
     IEnumerable<CategoryDto> GetAllCategories();
     int DeleteCategory(int categoryId);

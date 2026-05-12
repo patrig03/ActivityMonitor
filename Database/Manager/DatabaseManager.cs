@@ -141,6 +141,16 @@ public sealed class DatabaseManager : IDatabaseManager
         return entity.CategoryId;
     }
 
+    public int UpdateCategory(CategoryDto category)
+    {
+        using var context = CreateContext();
+        var entity = context.Categories.FirstOrDefault(e => e.CategoryId == category.CategoryId);
+        if (entity is null) return 0;
+        entity.Name = category.Name;
+        entity.Description = category.Description;
+        return context.SaveChanges();
+    }
+
     public CategoryDto? GetCategory(int categoryId)
     {
         using var context = CreateContext();

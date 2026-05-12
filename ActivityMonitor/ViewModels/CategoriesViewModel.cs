@@ -86,6 +86,16 @@ public sealed class ApplicationScopeOption
     public override string ToString() => Label;
 }
 
+public enum CategoriesModalKind
+{
+    None,
+    CategoryEditor,
+    DeleteCategory,
+    ApplicationAssignment,
+    RuleEditor,
+    DeleteRule
+}
+
 public sealed class RuleTargetOption
 {
     public CategoryRuleTarget Value { get; init; }
@@ -163,31 +173,41 @@ public sealed class CategoriesViewModel : ObservableObject
     private List<BrowserRecord> _allBrowserActivities = [];
     private List<CategoryRule> _allRules = [];
     private bool _isUpdatingRuleDraft;
+    private bool _isEditingCategory;
 
     private string _pageSubtitle = "Administrarea categoriilor si clasificarea aplicatiilor monitorizate.";
-    private string _statusMessage = "Se încarcă categoriile...";
+    private string _statusMessage = "Se incarca categoriile...";
     private string _assignmentStatus = "Selecteaza o aplicatie pentru a-i modifica categoria.";
     private string _ruleStatusMessage = "Regulile personalizate se aplica inaintea clasificarii implicite.";
     private string _lastRefreshLabel = "Actualizare in curs";
     private string _categoryCount = "0";
     private string _assignedApplications = "0";
     private string _uncategorizedApplications = "0";
-    private string _newCategoryName = string.Empty;
-    private string _newCategoryDescription = string.Empty;
     private string _applicationSearchText = string.Empty;
-    private CategoryListItem? _selectedCategory;
-    private ApplicationCategoryRow? _selectedApplication;
-    private CategoryAssignmentOption? _selectedApplicationCategory;
-    private ApplicationScopeOption? _selectedApplicationScope;
     private string _selectedCategoryTitle = "Nicio categorie selectata";
     private string _selectedCategoryDescription = "Alege o categorie din lista pentru a vedea impactul ei asupra aplicatiilor monitorizate.";
-    private string _selectedCategoryUsage = "Aplicatiile asociate vor aparea in panoul din dreapta.";
+    private string _selectedCategoryUsage = "Aplicatiile asociate vor aparea in lista de mai jos.";
     private string _selectedCategoryRuleSummary = "Selecteaza o categorie pentru a administra regulile ei personalizate.";
     private string _selectedCategoryAutomationSummary = "Regulile existente vor afisa aici acoperirea lor estimata.";
     private string _selectedApplicationTitle = "Nicio aplicatie selectata";
     private string _selectedApplicationDetail = "Selecteaza o aplicatie monitorizata pentru a-i atribui o categorie.";
     private string _selectedApplicationIdentity = "Detaliile tehnice vor aparea aici.";
     private string _selectedApplicationCategoryLabel = "Categoria curenta va fi afisata dupa selectie.";
+    private CategoriesModalKind _activeModal = CategoriesModalKind.None;
+    private string _categoryEditorTitle = "Adauga categorie";
+    private string _categoryEditorDescription = "Defineste o categorie clara pe care o poti reutiliza in clasificare si raportare.";
+    private string _categoryDraftName = string.Empty;
+    private string _categoryDraftDescription = string.Empty;
+    private string _deleteCategoryMessage = "Selecteaza o categorie pentru stergere.";
+    private string _applicationAssignmentTitle = "Nicio aplicatie selectata";
+    private string _applicationAssignmentDescription = "Alege categoria potrivita pentru aplicatia selectata.";
+    private string _ruleEditorTitle = "Regula noua";
+    private string _ruleEditorDescription = "Configureaza o regula noua pentru categoria selectata.";
+    private string _deleteRuleMessage = "Selecteaza o regula pentru stergere.";
+    private CategoryListItem? _selectedCategory;
+    private ApplicationCategoryRow? _selectedApplication;
+    private CategoryAssignmentOption? _selectedApplicationCategory;
+    private ApplicationScopeOption? _selectedApplicationScope;
     private CategoryRuleListItem? _selectedCategoryRule;
     private RuleTargetOption? _selectedRuleTarget;
     private RuleFieldOption? _selectedRuleField;
@@ -203,17 +223,24 @@ public sealed class CategoriesViewModel : ObservableObject
     public CategoriesViewModel()
     {
         RefreshCommand = new RelayCommand(_ => Load());
-        AddCategoryCommand = new RelayCommand(_ => AddCategory());
+        OpenAddCategoryModalCommand = new RelayCommand(_ => OpenCategoryEditor(isEditing: false));
+        OpenEditCategoryModalCommand = new RelayCommand(_ => OpenCategoryEditor(isEditing: true));
+        SaveCategoryCommand = new RelayCommand(_ => SaveCategory());
+        OpenDeleteCategoryModalCommand = new RelayCommand(_ => OpenDeleteCategoryModal());
         DeleteSelectedCategoryCommand = new RelayCommand(_ => DeleteSelectedCategory());
+        OpenApplicationAssignmentModalCommand = new RelayCommand(_ => OpenApplicationAssignmentModal());
         SaveApplicationCategoryCommand = new RelayCommand(_ => SaveApplicationCategory());
         ClearApplicationSelectionCommand = new RelayCommand(_ => ClearApplicationSelection());
         AssignSelectedCategoryToApplicationCommand = new RelayCommand(_ => AssignSelectedCategoryToApplication());
         NewRuleCommand = new RelayCommand(_ => BeginNewRule());
+        OpenEditRuleModalCommand = new RelayCommand(_ => OpenSelectedRuleForEditing());
         SaveRuleCommand = new RelayCommand(_ => SaveRule());
+        OpenDeleteRuleModalCommand = new RelayCommand(_ => OpenDeleteRuleModal());
         DeleteSelectedRuleCommand = new RelayCommand(_ => DeleteSelectedRule());
         CreateRuleFromProcessCommand = new RelayCommand(_ => PrepareRuleFromSelectedApplication(CategoryRuleField.ProcessName));
         CreateRuleFromClassCommand = new RelayCommand(_ => PrepareRuleFromSelectedApplication(CategoryRuleField.ClassName));
         CreateRuleFromWindowTitleCommand = new RelayCommand(_ => PrepareRuleFromSelectedApplication(CategoryRuleField.WindowTitle));
+        CloseModalCommand = new RelayCommand(_ => CloseModal());
 
         ApplicationScopeOptions.Add(new ApplicationScopeOption { Scope = ApplicationScope.All, Label = "Toate aplicatiile" });
         ApplicationScopeOptions.Add(new ApplicationScopeOption { Scope = ApplicationScope.SelectedCategory, Label = "Doar categoria selectata" });
@@ -251,9 +278,17 @@ public sealed class CategoriesViewModel : ObservableObject
 
     public ICommand RefreshCommand { get; }
 
-    public ICommand AddCategoryCommand { get; }
+    public ICommand OpenAddCategoryModalCommand { get; }
+
+    public ICommand OpenEditCategoryModalCommand { get; }
+
+    public ICommand SaveCategoryCommand { get; }
+
+    public ICommand OpenDeleteCategoryModalCommand { get; }
 
     public ICommand DeleteSelectedCategoryCommand { get; }
+
+    public ICommand OpenApplicationAssignmentModalCommand { get; }
 
     public ICommand SaveApplicationCategoryCommand { get; }
 
@@ -263,7 +298,11 @@ public sealed class CategoriesViewModel : ObservableObject
 
     public ICommand NewRuleCommand { get; }
 
+    public ICommand OpenEditRuleModalCommand { get; }
+
     public ICommand SaveRuleCommand { get; }
+
+    public ICommand OpenDeleteRuleModalCommand { get; }
 
     public ICommand DeleteSelectedRuleCommand { get; }
 
@@ -272,6 +311,8 @@ public sealed class CategoriesViewModel : ObservableObject
     public ICommand CreateRuleFromClassCommand { get; }
 
     public ICommand CreateRuleFromWindowTitleCommand { get; }
+
+    public ICommand CloseModalCommand { get; }
 
     public string PageSubtitle
     {
@@ -319,18 +360,6 @@ public sealed class CategoriesViewModel : ObservableObject
     {
         get => _uncategorizedApplications;
         set => SetProperty(ref _uncategorizedApplications, value);
-    }
-
-    public string NewCategoryName
-    {
-        get => _newCategoryName;
-        set => SetProperty(ref _newCategoryName, value);
-    }
-
-    public string NewCategoryDescription
-    {
-        get => _newCategoryDescription;
-        set => SetProperty(ref _newCategoryDescription, value);
     }
 
     public string ApplicationSearchText
@@ -456,6 +485,82 @@ public sealed class CategoriesViewModel : ObservableObject
     {
         get => _selectedApplicationCategoryLabel;
         set => SetProperty(ref _selectedApplicationCategoryLabel, value);
+    }
+
+    public CategoriesModalKind ActiveModal
+    {
+        get => _activeModal;
+        private set
+        {
+            if (!SetProperty(ref _activeModal, value))
+            {
+                return;
+            }
+
+            OnPropertyChanged(nameof(IsModalVisible));
+        }
+    }
+
+    public bool IsModalVisible => ActiveModal != CategoriesModalKind.None;
+
+    public string CategoryEditorTitle
+    {
+        get => _categoryEditorTitle;
+        set => SetProperty(ref _categoryEditorTitle, value);
+    }
+
+    public string CategoryEditorDescription
+    {
+        get => _categoryEditorDescription;
+        set => SetProperty(ref _categoryEditorDescription, value);
+    }
+
+    public string CategoryDraftName
+    {
+        get => _categoryDraftName;
+        set => SetProperty(ref _categoryDraftName, value);
+    }
+
+    public string CategoryDraftDescription
+    {
+        get => _categoryDraftDescription;
+        set => SetProperty(ref _categoryDraftDescription, value);
+    }
+
+    public string DeleteCategoryMessage
+    {
+        get => _deleteCategoryMessage;
+        set => SetProperty(ref _deleteCategoryMessage, value);
+    }
+
+    public string ApplicationAssignmentTitle
+    {
+        get => _applicationAssignmentTitle;
+        set => SetProperty(ref _applicationAssignmentTitle, value);
+    }
+
+    public string ApplicationAssignmentDescription
+    {
+        get => _applicationAssignmentDescription;
+        set => SetProperty(ref _applicationAssignmentDescription, value);
+    }
+
+    public string RuleEditorTitle
+    {
+        get => _ruleEditorTitle;
+        set => SetProperty(ref _ruleEditorTitle, value);
+    }
+
+    public string RuleEditorDescription
+    {
+        get => _ruleEditorDescription;
+        set => SetProperty(ref _ruleEditorDescription, value);
+    }
+
+    public string DeleteRuleMessage
+    {
+        get => _deleteRuleMessage;
+        set => SetProperty(ref _deleteRuleMessage, value);
     }
 
     public CategoryRuleListItem? SelectedCategoryRule
@@ -650,8 +755,8 @@ public sealed class CategoriesViewModel : ObservableObject
         UncategorizedApplications = _allApplications.Count(app => !app.CategoryId.HasValue).ToString();
         LastRefreshLabel = $"Actualizat la {DateTime.Now:HH:mm}";
         PageSubtitle = _allApplications.Count == 0
-            ? "Nu există aplicații monitorizate în baza de date. Categoriile și regulile pot fi pregătite anticipat."
-            : "Revizuiește categoriile existente, curată asignările manuale și transformă deciziile repetate în reguli reutilizabile.";
+            ? "Nu exista aplicatii monitorizate in baza de date. Categoriile si regulile pot fi pregatite anticipat."
+            : "Revizuieste categoriile existente, curata asignarile manuale si transforma deciziile repetate in reguli reutilizabile.";
 
         SelectedCategory = currentCategoryId.HasValue
             ? Categories.FirstOrDefault(category => category.Id == currentCategoryId.Value)
@@ -675,14 +780,32 @@ public sealed class CategoriesViewModel : ObservableObject
         }
 
         StatusMessage = Categories.Count == 0
-            ? "Nu există categorii definite. Adaugă prima categorie pentru a începe clasificarea."
-            : $"Sunt disponibile {Categories.Count} categorii, {_allApplications.Count} aplicații și {_allRules.Count} reguli personalizate.";
+            ? "Nu exista categorii definite. Adauga prima categorie pentru a incepe clasificarea."
+            : $"Sunt disponibile {Categories.Count} categorii, {_allApplications.Count} aplicatii si {_allRules.Count} reguli personalizate.";
     }
 
-    private void AddCategory()
+    private void OpenCategoryEditor(bool isEditing)
     {
-        var name = (NewCategoryName ?? string.Empty).Trim();
-        var description = (NewCategoryDescription ?? string.Empty).Trim();
+        if (isEditing && SelectedCategory == null)
+        {
+            StatusMessage = "Selecteaza o categorie inainte de modificare.";
+            return;
+        }
+
+        _isEditingCategory = isEditing;
+        CategoryEditorTitle = isEditing ? "Modifica categoria" : "Adauga categorie";
+        CategoryEditorDescription = isEditing
+            ? "Actualizeaza numele sau descrierea categoriei selectate fara sa iesi din contextul paginii."
+            : "Defineste o categorie clara pe care o poti reutiliza in clasificare si raportare.";
+        CategoryDraftName = isEditing ? SelectedCategory?.Name ?? string.Empty : string.Empty;
+        CategoryDraftDescription = isEditing ? SelectedCategory?.Description ?? string.Empty : string.Empty;
+        ActiveModal = CategoriesModalKind.CategoryEditor;
+    }
+
+    private void SaveCategory()
+    {
+        var name = (CategoryDraftName ?? string.Empty).Trim();
+        var description = (CategoryDraftDescription ?? string.Empty).Trim();
 
         if (string.IsNullOrWhiteSpace(name))
         {
@@ -690,9 +813,40 @@ public sealed class CategoriesViewModel : ObservableObject
             return;
         }
 
-        if (Categories.Any(category => string.Equals(category.Name, name, StringComparison.CurrentCultureIgnoreCase)))
+        var duplicateExists = Categories.Any(category =>
+            string.Equals(category.Name, name, StringComparison.CurrentCultureIgnoreCase) &&
+            (!_isEditingCategory || category.Id != SelectedCategory?.Id));
+
+        if (duplicateExists)
         {
-            StatusMessage = $"Categoria \"{name}\" există deja.";
+            StatusMessage = $"Categoria \"{name}\" exista deja.";
+            return;
+        }
+
+        if (_isEditingCategory)
+        {
+            if (SelectedCategory == null)
+            {
+                StatusMessage = "Selecteaza o categorie inainte de modificare.";
+                return;
+            }
+
+            var result = _db.UpdateCategory(new CategoryDto
+            {
+                CategoryId = SelectedCategory.Id,
+                Name = name,
+                Description = string.IsNullOrWhiteSpace(description) ? null : description
+            });
+
+            if (result == 0)
+            {
+                StatusMessage = $"Categoria \"{SelectedCategory.Name}\" nu a putut fi actualizata.";
+                return;
+            }
+
+            Load(SelectedCategory.Id, SelectedApplication?.AppId, SelectedCategoryRule?.Rule.Id);
+            CloseModal();
+            StatusMessage = $"Categoria \"{name}\" a fost actualizata.";
             return;
         }
 
@@ -702,11 +856,23 @@ public sealed class CategoriesViewModel : ObservableObject
             Description = string.IsNullOrWhiteSpace(description) ? null : description
         });
 
-        NewCategoryName = string.Empty;
-        NewCategoryDescription = string.Empty;
-
         Load(categoryId, SelectedApplication?.AppId, SelectedCategoryRule?.Rule.Id);
+        CloseModal();
         StatusMessage = $"Categoria \"{name}\" a fost adaugata.";
+    }
+
+    private void OpenDeleteCategoryModal()
+    {
+        if (SelectedCategory == null)
+        {
+            StatusMessage = "Selecteaza o categorie inainte de stergere.";
+            return;
+        }
+
+        var affectedApplications = _allApplications.Count(app => app.CategoryId == SelectedCategory.Id);
+        var affectedRules = _allRules.Count(rule => rule.CategoryId == SelectedCategory.Id);
+        DeleteCategoryMessage = BuildDeleteCategoryMessage(SelectedCategory.Name, affectedApplications, affectedRules);
+        ActiveModal = CategoriesModalKind.DeleteCategory;
     }
 
     private void DeleteSelectedCategory()
@@ -743,9 +909,24 @@ public sealed class CategoriesViewModel : ObservableObject
         }
 
         Load(selectedApplicationId: selectedApplicationId);
+        CloseModal();
         StatusMessage = affectedApplications == 0
             ? $"Categoria \"{deletedCategory.Name}\" a fost stearsa."
             : $"Categoria \"{deletedCategory.Name}\" a fost stearsa, iar {affectedApplications} aplicatii au ramas neasignate.";
+    }
+
+    private void OpenApplicationAssignmentModal()
+    {
+        if (SelectedApplication == null)
+        {
+            AssignmentStatus = "Selecteaza o aplicatie inainte de modificare.";
+            return;
+        }
+
+        SyncSelectedApplicationCategory();
+        ApplicationAssignmentTitle = SelectedApplication.PrimaryLabel;
+        ApplicationAssignmentDescription = $"Ajusteaza categoria pentru aplicatia selectata. Categoria curenta este \"{SelectedApplication.CategoryName}\".";
+        ActiveModal = CategoriesModalKind.ApplicationAssignment;
     }
 
     private void SaveApplicationCategory()
@@ -782,6 +963,7 @@ public sealed class CategoriesViewModel : ObservableObject
             : "Categoria aplicatiei a fost eliminata.";
 
         Load(SelectedCategory?.Id, SelectedApplication.AppId, SelectedCategoryRule?.Rule.Id);
+        CloseModal();
         AssignmentStatus = statusLabel;
     }
 
@@ -811,10 +993,36 @@ public sealed class CategoriesViewModel : ObservableObject
 
     private void BeginNewRule()
     {
+        if (SelectedCategory == null)
+        {
+            RuleStatusMessage = "Selecteaza mai intai categoria pentru care creezi regula.";
+            return;
+        }
+
         SelectedCategoryRule = null;
-        RuleStatusMessage = SelectedCategory == null
-            ? "Selectează mai întâi categoria pentru care creezi regula."
-            : $"Configurează o regulă nouă pentru categoria \"{SelectedCategory.Name}\".";
+        RuleEditorTitle = "Regula noua";
+        RuleEditorDescription = $"Configureaza o regula noua pentru categoria \"{SelectedCategory.Name}\".";
+        RuleStatusMessage = $"Configureaza o regula noua pentru categoria \"{SelectedCategory.Name}\".";
+        ActiveModal = CategoriesModalKind.RuleEditor;
+    }
+
+    private void OpenSelectedRuleForEditing()
+    {
+        if (SelectedCategory == null)
+        {
+            RuleStatusMessage = "Selecteaza mai intai categoria pentru care vrei sa modifici regula.";
+            return;
+        }
+
+        if (SelectedCategoryRule == null)
+        {
+            RuleStatusMessage = "Selecteaza o regula inainte de modificare.";
+            return;
+        }
+
+        RuleEditorTitle = "Modifica regula";
+        RuleEditorDescription = $"Revizuieste regula \"{SelectedCategoryRule.Title}\" pentru categoria \"{SelectedCategory.Name}\".";
+        ActiveModal = CategoriesModalKind.RuleEditor;
     }
 
     private void SaveRule()
@@ -846,9 +1054,22 @@ public sealed class CategoriesViewModel : ObservableObject
         _ruleStore.SaveRules(_allRules);
         _allRules = _ruleStore.LoadRules().ToList();
         RefreshRulesForSelectedCategory(rule.Id);
+        CloseModal();
         RuleStatusMessage = existingIndex >= 0
             ? "Regula a fost actualizata si va avea prioritate fata de clasificarea implicita."
             : "Regula a fost salvata si va fi folosita la urmatoarea clasificare.";
+    }
+
+    private void OpenDeleteRuleModal()
+    {
+        if (SelectedCategoryRule == null)
+        {
+            RuleStatusMessage = "Selecteaza o regula inainte de stergere.";
+            return;
+        }
+
+        DeleteRuleMessage = $"Regula \"{SelectedCategoryRule.Title}\" va fi eliminata. Acoperirea estimata curenta este: {SelectedCategoryRule.MatchPreview}";
+        ActiveModal = CategoriesModalKind.DeleteRule;
     }
 
     private void DeleteSelectedRule()
@@ -868,6 +1089,7 @@ public sealed class CategoriesViewModel : ObservableObject
         _ruleStore.SaveRules(_allRules);
         _allRules = _ruleStore.LoadRules().ToList();
         RefreshRulesForSelectedCategory();
+        CloseModal();
         RuleStatusMessage = $"Regula \"{removedTitle}\" a fost stearsa.";
     }
 
@@ -919,7 +1141,15 @@ public sealed class CategoriesViewModel : ObservableObject
         _isUpdatingRuleDraft = false;
 
         UpdateRulePreview();
+        RuleEditorTitle = "Regula noua din aplicatie";
+        RuleEditorDescription = "Campurile au fost completate din aplicatia selectata. Revizuieste potrivirea si salveaza.";
         RuleStatusMessage = "Campurile regulii au fost completate din aplicatia selectata. Revizuieste potrivirea si salveaza.";
+        ActiveModal = CategoriesModalKind.RuleEditor;
+    }
+
+    private void CloseModal()
+    {
+        ActiveModal = CategoriesModalKind.None;
     }
 
     private void FilterApplications()
@@ -1031,7 +1261,7 @@ public sealed class CategoriesViewModel : ObservableObject
         {
             SelectedCategoryTitle = "Nicio categorie selectata";
             SelectedCategoryDescription = "Alege o categorie din lista pentru a vedea impactul ei asupra aplicatiilor monitorizate.";
-            SelectedCategoryUsage = "Aplicatiile asociate vor aparea in panoul din dreapta.";
+            SelectedCategoryUsage = "Aplicatiile asociate vor aparea in lista de mai jos.";
             return;
         }
 
@@ -1158,9 +1388,9 @@ public sealed class CategoriesViewModel : ObservableObject
                 return (0, "Previzualizare: nicio aplicatie existenta nu se potriveste in acest moment.");
             }
 
-            var cat_labels = string.Join(", ", matches.Take(3).Select(app => app.PrimaryLabel));
-            var suffix = matches.Count > 3 ? ", ..." : string.Empty;
-            return (matches.Count, $"Previzualizare: {matches.Count} aplicatii s-ar potrivi ({cat_labels}{suffix}).");
+            var labelsPrimary = string.Join(", ", matches.Take(3).Select(app => app.PrimaryLabel));
+            var labelsPrimarySuffix = matches.Count > 3 ? ", ..." : string.Empty;
+            return (matches.Count, $"Previzualizare: {matches.Count} aplicatii s-ar potrivi ({labelsPrimary}{labelsPrimarySuffix}).");
         }
 
         var browserMatches = _allBrowserActivities
@@ -1180,8 +1410,8 @@ public sealed class CategoriesViewModel : ObservableObject
             .Select(browser => string.IsNullOrWhiteSpace(browser.Domain) ? browser.Url : browser.Domain)
             .Distinct(StringComparer.OrdinalIgnoreCase)
             .Count();
-        var suffix2 = domainCount > 3 ? ", ..." : string.Empty;
-        return (browserMatches.Count, $"Previzualizare: {browserMatches.Count} intrari web din {domainCount} domenii s-ar potrivi ({labels}{suffix2}).");
+        var suffix = domainCount > 3 ? ", ..." : string.Empty;
+        return (browserMatches.Count, $"Previzualizare: {browserMatches.Count} intrari web din {domainCount} domenii s-ar potrivi ({labels}{suffix}).");
     }
 
     private bool TryBuildRuleFromDraft(out CategoryRule rule, out string error)
@@ -1244,6 +1474,23 @@ public sealed class CategoriesViewModel : ObservableObject
         {
             UpdateRulePreview();
         }
+    }
+
+    private static string BuildDeleteCategoryMessage(string categoryName, int affectedApplications, int affectedRules)
+    {
+        var appMessage = affectedApplications == 0
+            ? "Nicio aplicatie nu depinde de aceasta categorie."
+            : affectedApplications == 1
+                ? "1 aplicatie va ramane neasignata."
+                : $"{affectedApplications} aplicatii vor ramane neasignate.";
+
+        var ruleMessage = affectedRules == 0
+            ? "Nu exista reguli personalizate asociate."
+            : affectedRules == 1
+                ? "1 regula personalizata va fi eliminata."
+                : $"{affectedRules} reguli personalizate vor fi eliminate.";
+
+        return $"Categoria \"{categoryName}\" va fi stearsa. {appMessage} {ruleMessage}";
     }
 
     private static IEnumerable<RuleFieldOption> GetFieldOptionsForTarget(CategoryRuleTarget target)

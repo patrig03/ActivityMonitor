@@ -62,7 +62,7 @@ public class ReportMaker
             var processes =
                 x.sessions
                 .Where(s => x.apps.ContainsKey(s.ApplicationId))
-                .GroupBy(s => x.apps[s.ApplicationId].ProcessName)
+                .GroupBy(s => new { ProcessName = x.apps[s.ApplicationId].ProcessName, DeviceId = x.apps[s.ApplicationId].DeviceId })
                 .Select(processGroup =>
                 {
                     var windows =
@@ -91,7 +91,8 @@ public class ReportMaker
 
                     return new ProcessUsage
                     {
-                        ProcessName = processGroup.Key,
+                        ProcessName = processGroup.Key.ProcessName ?? "",
+                        DeviceId = processGroup.Key.DeviceId,
                         Windows = windows,
                         TotalDuration = processDuration
                     };

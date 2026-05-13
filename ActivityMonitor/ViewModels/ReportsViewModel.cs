@@ -7,12 +7,14 @@ using System.Windows.Input;
 using Backend.Models;
 using Backend.Report;
 using Backend.Report.Models;
+using Database.DTO;
 using Database.Manager;
 
 namespace ActivityMonitor.ViewModels;
 
 public class ReportsViewModel : ViewModelBase
 {
+    private readonly IDatabaseManager _manager = new DatabaseManager(Settings.DatabaseConnectionString);
     private readonly ReportMaker _maker = new(new DatabaseManager(Settings.DatabaseConnectionString));
 
     private string _reportStatus = "Se pregătește raportul de activitate";
@@ -93,6 +95,10 @@ public class ReportsViewModel : ViewModelBase
         var reportData = _maker.MakeReportData().ToList();
         Categories.Clear();
 
+        var devices = _manager.GetDevicesForUser(1).ToList();
+        var deviceDict = devices.ToDictionary(d => d.DeviceId, d => d.Name);
+        var currentDeviceId = devices.FirstOrDefault(d => d.IsCurrentDevice)?.DeviceId;
+
         var allDurations = new List<TimeSpan>();
         var uniqueProcesses = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         var uniqueInterventions = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -108,11 +114,21 @@ public class ReportsViewModel : ViewModelBase
             var topProcesses = report.Applications
                 .OrderByDescending(app => app.TotalDuration)
                 .Take(4)
-                .Select(app => new ReportProcessSummary
+                .Select(app =>
                 {
-                    ProcessName = string.IsNullOrWhiteSpace(app.ProcessName) ? "Proces necunoscut" : app.ProcessName,
-                    Duration = FormatDuration(app.TotalDuration),
-                    WindowCount = $"{app.Windows.Count()} ferestre"
+                    string? deviceName = null;
+                    if (app.DeviceId.HasValue && app.DeviceId != currentDeviceId && deviceDict.TryGetValue(app.DeviceId.Value, out var name))
+                    {
+                        deviceName = name;
+                    }
+
+                    return new ReportProcessSummary
+                    {
+                        ProcessName = string.IsNullOrWhiteSpace(app.ProcessName) ? "Proces necunoscut" : app.ProcessName,
+                        Duration = FormatDuration(app.TotalDuration),
+                        WindowCount = $"{app.Windows.Count()} ferestre",
+                        DeviceName = deviceName
+                    };
                 })
                 .ToList();
 
@@ -250,4 +266,5 @@ public sealed class ReportProcessSummary
     public string ProcessName { get; init; } = string.Empty;
     public string Duration { get; init; } = string.Empty;
     public string WindowCount { get; init; } = string.Empty;
+    public string? DeviceName { get; init; }
 }

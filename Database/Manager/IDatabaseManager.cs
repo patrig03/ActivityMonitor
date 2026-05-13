@@ -15,6 +15,7 @@ public interface IDatabaseManager : IDisposable
     int UpdateDevice(DeviceDto device);
     int UpsertDevice(DeviceDto device);
     IEnumerable<DeviceDto> GetDevicesForUser(int userId);
+    DeviceDto? GetDevice(int deviceId);
 
     /* -------------------- SETTINGS -------------------- */
 

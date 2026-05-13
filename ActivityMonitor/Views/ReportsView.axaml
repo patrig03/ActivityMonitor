@@ -10,7 +10,13 @@
               Margin="0,0,10,10"
               Padding="12">
         <StackPanel Spacing="4">
-          <TextBlock Text="{Binding ProcessName}" Foreground="{StaticResource BrushTextSecondary}" FontWeight="SemiBold"/>
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <TextBlock Text="{Binding ProcessName}" Foreground="{StaticResource BrushTextSecondary}" FontWeight="SemiBold"/>
+            <Border Classes="chip chip--info"
+                    IsVisible="{Binding DeviceName, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+              <TextBlock Text="{Binding DeviceName}" Foreground="{StaticResource BrushTextOnAccent}"/>
+            </Border>
+          </StackPanel>
           <TextBlock Text="{Binding Duration}" Foreground="{StaticResource BrushAccentSuccess}" FontWeight="Bold"/>
           <TextBlock Text="{Binding WindowCount}" Foreground="{StaticResource BrushTextMuted}"/>
         </StackPanel>

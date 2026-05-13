@@ -9,6 +9,7 @@ namespace Backend.Report.Models;
 public class ProcessUsage
 {
     public string ProcessName { get; set; } = "";
+    public int? DeviceId { get; set; }
     public TimeSpan TotalDuration { get; set; }
     public IEnumerable<WindowUsage> Windows { get; set; } = Enumerable.Empty<WindowUsage>();
 }

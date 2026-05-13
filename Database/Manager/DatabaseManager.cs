@@ -83,6 +83,15 @@ public sealed class DatabaseManager : IDatabaseManager
             .ToArray();
     }
 
+    public DeviceDto? GetDevice(int deviceId)
+    {
+        using var context = CreateContext();
+        return context.Devices
+            .AsNoTracking()
+            .FirstOrDefault(e => e.DeviceId == deviceId)?
+            .ToDto();
+    }
+
     #endregion
 
     #region Settings

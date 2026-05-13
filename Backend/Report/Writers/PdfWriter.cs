@@ -30,53 +30,60 @@ public class PdfWriter
     {
         try
         {
-            // Ensure the directory exists
             var directory = Path.GetDirectoryName(OutputPath);
             if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
             {
                 Directory.CreateDirectory(directory);
             }
 
-            using (var fs = new FileStream(OutputPath, FileMode.Create, FileAccess.Write, FileShare.None))
+            if (File.Exists(OutputPath))
             {
-                // Create PDF document with A4 page size
-                using (var document = new Document(PageSize.A4, 25, 25, 30, 30))
-                {
-                    document.Open();
+                File.Delete(OutputPath);
+            }
 
-                    // Add title
-                    AddTitle(document, "Usage Report");
+            var document = new Document(PageSize.A4, 25, 25, 30, 30);
+            var writer = iTextSharp.text.pdf.PdfWriter.GetInstance(document, new FileStream(OutputPath, FileMode.Create, FileAccess.Write, FileShare.None));
+            
+            document.Open();
+
+            AddTitle(document, "Usage Report");
+            AddGenerationDate(document);
+            document.AddAuthor("Activity Monitor");
+            document.AddSubject("Usage Report");
+
+            var reportList = data.ToList();
+            
+            if (reportList.Count == 0)
+            {
+                var noData = new Paragraph("No report data available.", NormalFont)
+                {
+                    Alignment = Element.ALIGN_CENTER,
+                    SpacingBefore = 20f
+                };
+                document.Add(noData);
+            }
+            else
+            {
+                for (int i = 0; i < reportList.Count; i++)
+                {
+                    AddCategoryReport(document, reportList[i]);
                     
-                    // Add generation date
-                    AddGenerationDate(document);
-                    
-                    // Add metadata
-                    document.AddAuthor("Backend Report System");
-                    document.AddTitle($"Usage Report - {DateTime.Now:yyyy-MM-dd HH:mm}");
-                    
-                    // Process each category's data
-                    var reportList = data.ToList();
-                    for (int i = 0; i < reportList.Count; i++)
+                    if (i < reportList.Count - 1)
                     {
-                        AddCategoryReport(document, reportList[i]);
-                        
-                        // Add page break between categories (except for the last one)
-                        if (i < reportList.Count - 1)
-                        {
-                            document.NewPage();
-                        }
+                        document.NewPage();
                     }
-                    
-                    document.Close();
                 }
             }
+
+            document.Close();
+            writer.Close();
             
             return true;
         }
         catch (Exception ex)
         {
-            // Log exception here if you have logging
             Console.WriteLine($"Error generating PDF: {ex.Message}");
+            Console.WriteLine(ex.StackTrace);
             return false;
         }
     }
@@ -342,16 +349,17 @@ public class PdfWriter
             SpacingAfter = 20f
         };
 
-        table.SetWidths(new float[] { 0.5f, 1f, 1.5f, 2f });
+        table.SetWidths(new float[] { 0.5f, 0.8f, 1f, 1f, 2f });
 
         // Headers
-        AddTableHeader(table, "ID", "Type", "Threshold ID", "Triggered At");
+        AddTableHeader(table, "ID", "Snoozed", "Threshold ID", "Triggered At");
 
         // Data rows
         bool alternate = false;
         foreach (var intervention in interventionList)
         {
             AddTableCell(table, intervention.Id.ToString(), alternate);
+            AddTableCell(table, intervention.Snoozed ? "Yes" : "No", alternate);
             AddTableCell(table, intervention.ThresholdId.ToString(), alternate);
             AddTableCell(table, intervention.TriggeredAt.ToString("yyyy-MM-dd HH:mm"), alternate);
 
@@ -382,7 +390,7 @@ public class PdfWriter
         table.SetWidths(new float[] { 0.5f, 0.8f, 1f, 1f, 1f, 1f });
 
         // Headers
-        AddTableHeader(table, "ID", "Active", "Intervention Type", "Daily Limit", "Weekly Limit", "Status");
+        AddTableHeader(table, "ID", "Active", "Intervention Type", "Daily Limit", "Session Limit", "Status");
 
         // Data rows
         bool alternate = false;
@@ -392,7 +400,8 @@ public class PdfWriter
             AddTableCell(table, threshold.Active ? "Yes" : "No", alternate);
             AddTableCell(table, threshold.InterventionType ?? "N/A", alternate);
             AddTableCell(table, FormatTimeSpan(threshold.DailyLimit), alternate);
-            
+            AddTableCell(table, FormatTimeSpan(threshold.SessionLimit), alternate);
+
             // Status column
             var status = threshold.Active ? "Active" : "Inactive";
             if (threshold.Active)

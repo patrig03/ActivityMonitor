@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using Backend.Classifier;
 using Backend.DataCollector.Application;
 using Backend.DataCollector.Browser;
@@ -16,7 +17,9 @@ public sealed class DataCollectorController : IDisposable
     private readonly IClassifier _classifier = new RuleBasedClassifier();
     private readonly FirefoxCollector _firefoxCollector = new();
     private readonly ChromiumCollector _chromiumCollector = new();
-    private readonly IApplicationDataCollector _appCollector = new WindowsAppCollector();
+    private readonly IApplicationDataCollector _appCollector = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+        ? new WindowsAppCollector()
+        : new LinuxAppCollector();
     private readonly int _deviceId;
     private string? _lastBrowserProcessName;
 

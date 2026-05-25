@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Backend.Interventions;
 
-internal static class LinuxNotifierBridge
+internal static class NotifierBridge
 {
     [DllImport("Notifier", CallingConvention = CallingConvention.Cdecl)]
     public static extern int notifier_notification(
@@ -31,7 +31,7 @@ public static class Notifier
             return WindowsNotifier.Notification(message, buttons);
         }
 
-        var index = LinuxNotifierBridge.notifier_notification(message, buttons, buttons.Length);
+        var index = NotifierBridge.notifier_notification(message, buttons, buttons.Length);
         return index is < 0 || index >= buttons.Length ? string.Empty : buttons[index];
     }
     
@@ -43,7 +43,7 @@ public static class Notifier
             return;
         }
 
-        LinuxNotifierBridge.notifier_typing_lock(message, unchecked((ulong)windowId), word);
+        NotifierBridge.notifier_typing_lock(message, unchecked((ulong)windowId), word);
     }
     
     public static void TimedLock(string message, long windowId, int seconds)
@@ -54,7 +54,7 @@ public static class Notifier
             return;
         }
 
-        LinuxNotifierBridge.notifier_timed_lock(message, unchecked((ulong)windowId), seconds);
+        NotifierBridge.notifier_timed_lock(message, unchecked((ulong)windowId), seconds);
     }
 }
 

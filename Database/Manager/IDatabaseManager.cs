@@ -54,6 +54,7 @@ public interface IDatabaseManager : IDisposable
     IEnumerable<SessionDto> GetSessionsForDevice(int deviceId);
     IEnumerable<SessionDto> GetSessionsByCategory(int categoryId);
     int GetSessionDurationForCategory(int categoryId);
+    int GetSessionDurationForCategorySince(int categoryId, DateTime since);
 
     /* -------------------- BROWSER ACTIVITY -------------------- */
 

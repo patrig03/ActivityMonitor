@@ -24,6 +24,7 @@ public class Threshold : INotifyPropertyChanged
     private string _limitType = DailyLimitType;
     private TimeSpan _sessionLimit = TimeSpan.FromMinutes(30);
     private TimeSpan _dailyLimit = TimeSpan.FromHours(1);
+    private DateTime? _activatedAt;
 
     public int Id
     {
@@ -115,6 +116,12 @@ public class Threshold : INotifyPropertyChanged
         }
     }
 
+    public DateTime? ActivatedAt
+    {
+        get => _activatedAt;
+        set => SetField(ref _activatedAt, value);
+    }
+
     public TimeSpan Limit
     {
         get
@@ -153,6 +160,7 @@ public class Threshold : INotifyPropertyChanged
             DurationType = LimitType,
             SessionLimitSec = (int)SessionLimit.TotalSeconds,
             DailyLimitSec = (int)DailyLimit.TotalSeconds,
+            ActivatedAt = ActivatedAt,
         };
     }
 
@@ -170,6 +178,7 @@ public class Threshold : INotifyPropertyChanged
             LimitType = NormalizeLimitType(dto.DurationType),
             SessionLimit = TimeSpan.FromSeconds(dto.SessionLimitSec),
             DailyLimit = TimeSpan.FromSeconds(dto.DailyLimitSec),
+            ActivatedAt = dto.ActivatedAt,
         };
     }
 
@@ -187,6 +196,7 @@ public class Threshold : INotifyPropertyChanged
             LimitType = LimitType,
             SessionLimit = SessionLimit,
             DailyLimit = DailyLimit,
+            ActivatedAt = ActivatedAt,
         };
     }
 

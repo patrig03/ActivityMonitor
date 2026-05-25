@@ -12,4 +12,5 @@ public sealed class ThresholdDto
     public string DurationType { get; set; } = "Daily";
     public int SessionLimitSec { get; set; }
     public int DailyLimitSec { get; set; }
+    public DateTime? ActivatedAt { get; set; }
 }

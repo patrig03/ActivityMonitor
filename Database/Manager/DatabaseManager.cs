@@ -354,6 +354,25 @@ public sealed class DatabaseManager : IDatabaseManager
         return sessions.Sum(e => !e.StartTime.HasValue || !e.EndTime.HasValue ? 0 : Math.Max(0, (int)(e.EndTime.Value - e.StartTime.Value).TotalSeconds));
     }
 
+    public int GetSessionDurationForCategorySince(int categoryId, DateTime since)
+    {
+        using var context = CreateContext();
+        var sessions = context.Sessions
+            .AsNoTracking()
+            .Where(e => e.Application != null && e.Application.CategoryId == categoryId)
+            .Where(e => e.EndTime > since)
+            .ToArray();
+        var total = 0;
+        foreach (var session in sessions)
+        {
+            if (!session.StartTime.HasValue || !session.EndTime.HasValue) continue;
+            var effectiveStart = session.StartTime.Value > since ? session.StartTime.Value : since;
+            var effectiveEnd = session.EndTime.Value;
+            total += Math.Max(0, (int)(effectiveEnd - effectiveStart).TotalSeconds);
+        }
+        return total;
+    }
+
     #endregion
 
     #region BrowserActivity
@@ -450,6 +469,7 @@ public sealed class DatabaseManager : IDatabaseManager
         entity.DurationType = threshold.DurationType;
         entity.DailyLimitSec = threshold.DailyLimitSec;
         entity.SessionLimitSec = threshold.SessionLimitSec;
+        entity.ActivatedAt = threshold.ActivatedAt;
         return context.SaveChanges();
     }
 
@@ -501,8 +521,8 @@ internal static class EntityDtoExtensions
     internal static ApplicationEntity ToEntity(this ApplicationDto dto) => new() { DeviceId = dto.DeviceId, CategoryId = dto.CategoryId, Name = dto.WindowTitle, Class = dto.ClassName, ProcessName = dto.ProcessName, WindowId = dto.WindowId };
     internal static SessionDto ToDto(this SessionEntity e) => new() { SessionId = e.SessionId, AppId = e.AppId, DeviceId = e.DeviceId, StartTime = e.StartTime, EndTime = e.EndTime };
     internal static BrowserActivityDto ToDto(this BrowserActivityEntity e) => new() { ActivityId = e.ActivityId, DeviceId = e.DeviceId, AppId = e.AppId, CategoryId = e.CategoryId, Url = e.Url };
-    internal static ThresholdDto ToDto(this ThresholdEntity e) => new() { Id = e.ThresholdId, DeviceId = e.DeviceId, CategoryId = e.CategoryId ?? 0, AppId = e.AppId ?? 0, Active = e.IsActive, TargetType = e.TargetType, InterventionType = e.InterventionType, DurationType = e.DurationType, DailyLimitSec = e.DailyLimitSec, SessionLimitSec = e.SessionLimitSec };
-    internal static ThresholdEntity ToEntity(this ThresholdDto dto) => new() { DeviceId = dto.DeviceId, CategoryId = dto.CategoryId == 0 ? null : dto.CategoryId, AppId = dto.AppId == 0 ? null : dto.AppId, IsActive = dto.Active, TargetType = dto.TargetType, InterventionType = dto.InterventionType, DurationType = dto.DurationType, DailyLimitSec = dto.DailyLimitSec, SessionLimitSec = dto.SessionLimitSec };
+    internal static ThresholdDto ToDto(this ThresholdEntity e) => new() { Id = e.ThresholdId, DeviceId = e.DeviceId, CategoryId = e.CategoryId ?? 0, AppId = e.AppId ?? 0, Active = e.IsActive, TargetType = e.TargetType, InterventionType = e.InterventionType, DurationType = e.DurationType, DailyLimitSec = e.DailyLimitSec, SessionLimitSec = e.SessionLimitSec, ActivatedAt = e.ActivatedAt };
+    internal static ThresholdEntity ToEntity(this ThresholdDto dto) => new() { DeviceId = dto.DeviceId, CategoryId = dto.CategoryId == 0 ? null : dto.CategoryId, AppId = dto.AppId == 0 ? null : dto.AppId, IsActive = dto.Active, TargetType = dto.TargetType, InterventionType = dto.InterventionType, DurationType = dto.DurationType, DailyLimitSec = dto.DailyLimitSec, SessionLimitSec = dto.SessionLimitSec, ActivatedAt = dto.ActivatedAt };
     internal static InterventionDto ToDto(this InterventionEntity e) => new() { Id = e.InterventionId, ThresholdId = e.ThresholdId, Snoozed = e.Snoozed, TriggeredAt = e.TriggeredAt };
 }
 

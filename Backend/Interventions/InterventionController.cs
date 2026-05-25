@@ -19,8 +19,13 @@ public class InterventionController
     
     private void CheckThreshold(IDatabaseManager db, Threshold t, ApplicationRecord lastRecord)
     {
+        if (!t.ActivatedAt.HasValue)
+        {
+            t.ActivatedAt = DateTime.Now;
+            db.UpdateThreshold(t.ToDto());
+        }
 
-        var duration = db.GetSessionDurationForCategory(t.CategoryId);
+        var duration = db.GetSessionDurationForCategorySince(t.CategoryId, t.ActivatedAt.Value);
         if (!(TimeSpan.FromSeconds(duration) > t.Limit)){ return; }
 
         bool snooze = false;

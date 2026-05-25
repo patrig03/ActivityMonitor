@@ -155,6 +155,7 @@ public sealed class ThresholdEntityConfiguration : IEntityTypeConfiguration<Thre
         builder.Property(entity => entity.DurationType).HasColumnName("duration_type").HasMaxLength(32);
         builder.Property(entity => entity.DailyLimitSec).HasColumnName("daily_limit_sec");
         builder.Property(entity => entity.SessionLimitSec).HasColumnName("session_limit_sec");
+        builder.Property(entity => entity.ActivatedAt).HasColumnName("activated_at");
 
         builder.HasOne(entity => entity.Category)
             .WithMany(category => category.Thresholds)

@@ -24,6 +24,7 @@
       <DataGridTextColumn Header="Activ" Binding="{Binding Threshold.Active}" Width="Auto"/>
       <DataGridTextColumn Header="Interventie" Binding="{Binding Threshold.InterventionType}" Width="Auto"/>
       <DataGridTextColumn Header="Limita" Binding="{Binding LimitSummary}" Width="Auto"/>
+      <DataGridTextColumn Header="Timp ramas" Binding="{Binding RemainingTimeDisplay}" Width="Auto"/>
 
       <DataGridTemplateColumn Header="" Width="Auto">
         <DataGridTemplateColumn.CellTemplate>

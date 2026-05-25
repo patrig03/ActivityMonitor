@@ -89,12 +89,37 @@ public partial class InterventionsViewModel
 
             appLookup.TryGetValue(threshold.AppId, out var app);
 
-            ThresholdRows.Add(new ThresholdRow
+            var row = new ThresholdRow
             {
                 Category = category,
                 App = app,
                 Threshold = threshold
-            });
+            };
+
+            row.RemainingTimeDisplay = ComputeRemainingTimeDisplay(threshold);
+
+            ThresholdRows.Add(row);
+        }
+    }
+
+    private string ComputeRemainingTimeDisplay(Threshold threshold)
+    {
+        if (!threshold.Active || !threshold.ActivatedAt.HasValue)
+        {
+            return "--:--:--";
+        }
+
+        var usedSeconds = _manager.GetSessionDurationForCategorySince(threshold.CategoryId, threshold.ActivatedAt.Value);
+        var limitSeconds = (int)threshold.Limit.TotalSeconds;
+        var remainingSeconds = Math.Max(0, limitSeconds - usedSeconds);
+        return TimeSpan.FromSeconds(remainingSeconds).ToString(@"hh\:mm\:ss");
+    }
+
+    public void UpdateRemainingTimes()
+    {
+        foreach (var row in ThresholdRows)
+        {
+            row.RemainingTimeDisplay = ComputeRemainingTimeDisplay(row.Threshold);
         }
     }
 
@@ -113,6 +138,8 @@ public partial class InterventionsViewModel
         foreach (var intervention in interventions)
         {
             thresholdLookup.TryGetValue(intervention.ThresholdId, out var thresholdRow);
+            var targetName = thresholdRow?.TargetName ?? $"Prag #{intervention.ThresholdId}";
+            var interventionType = thresholdRow?.Threshold.InterventionType ?? "Necunoscut";
 
             var row = new InterventionHistoryRow
             {
@@ -120,11 +147,7 @@ public partial class InterventionsViewModel
                 ThresholdId = intervention.ThresholdId,
                 TriggeredAt = intervention.TriggeredAt,
                 Snoozed = intervention.Snoozed,
-                TargetName = thresholdRow?.TargetName ?? $"Prag #{intervention.ThresholdId}",
-                TargetType = thresholdRow?.Threshold.TargetType ?? "Necunoscut",
-                CategoryName = thresholdRow?.Category.Name ?? "Necunoscut",
-                InterventionType = thresholdRow?.Threshold.InterventionType ?? "Necunoscut",
-                LimitSummary = thresholdRow?.LimitSummary ?? "Necunoscut"
+                ThresholdReference = $"{targetName} ({interventionType})"
             };
 
             InterventionHistory.Add(row);
@@ -148,7 +171,7 @@ public partial class InterventionsViewModel
         var recentAlerts = InterventionHistory.Count(row => row.TriggeredAt >= DateTime.Now.AddDays(-7));
         var snoozedAlerts = InterventionHistory.Count(row => row.Snoozed);
         var mostTriggered = InterventionHistory
-            .GroupBy(row => row.TargetName)
+            .GroupBy(row => row.ThresholdReference)
             .OrderByDescending(group => group.Count())
             .FirstOrDefault();
 

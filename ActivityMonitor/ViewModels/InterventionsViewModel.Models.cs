@@ -25,11 +25,18 @@ public class ThresholdEditData : ObservableObject
     }
 }
 
-public class ThresholdRow
+public class ThresholdRow : ObservableObject
 {
     public Category Category { get; init; } = new() { Name = string.Empty };
     public ApplicationRecord? App { get; init; }
     public Threshold Threshold { get; init; } = new();
+
+    private string _remainingTimeDisplay = "--:--:--";
+    public string RemainingTimeDisplay
+    {
+        get => _remainingTimeDisplay;
+        set => SetProperty(ref _remainingTimeDisplay, value);
+    }
 
     public string TargetName =>
         Threshold.TargetType == Threshold.AppTargetType
@@ -43,11 +50,7 @@ public class InterventionHistoryRow
 {
     public int Id { get; init; }
     public int ThresholdId { get; init; }
-    public string TargetName { get; init; } = string.Empty;
-    public string TargetType { get; init; } = string.Empty;
-    public string CategoryName { get; init; } = string.Empty;
-    public string InterventionType { get; init; } = string.Empty;
-    public string LimitSummary { get; init; } = string.Empty;
+    public string ThresholdReference { get; init; } = string.Empty;
     public bool Snoozed { get; init; }
     public DateTime TriggeredAt { get; init; }
 }

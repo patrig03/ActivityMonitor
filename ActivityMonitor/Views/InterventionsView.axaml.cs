@@ -9,5 +9,7 @@ public partial class InterventionsView : UserControl
     {
         InitializeComponent();
         DataContext = new InterventionsViewModel();
+        Loaded += (_, _) => (DataContext as InterventionsViewModel)?.StartTimer();
+        Unloaded += (_, _) => (DataContext as InterventionsViewModel)?.StopTimer();
     }
 }

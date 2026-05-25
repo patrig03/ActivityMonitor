@@ -26,6 +26,7 @@ public sealed class MySqlDatabaseInitializer(
         EnsureSessionDeviceIdColumnExists();
         EnsureBrowserActivityDeviceIdColumnExists();
         EnsureThresholdDeviceIdColumnExists();
+        EnsureThresholdActivatedAtColumnExists();
         RemoveUsersTableConstraint();
 
         SeedDefaults(context);
@@ -207,6 +208,22 @@ public sealed class MySqlDatabaseInitializer(
         catch (MySqlException)
         {
         }
+    }
+
+    private void EnsureThresholdActivatedAtColumnExists()
+    {
+        using var connection = new MySqlConnection(DatabaseConnectionFactory.BuildConnectionString(options));
+        connection.Open();
+
+        if (ColumnExists(connection, "thresholds", "activated_at"))
+        {
+            return;
+        }
+
+        using var command = connection.CreateCommand();
+        command.CommandText =
+            "ALTER TABLE thresholds ADD COLUMN activated_at DATETIME(6) NULL;";
+        command.ExecuteNonQuery();
     }
 
     private void RemoveUsersTableConstraint()

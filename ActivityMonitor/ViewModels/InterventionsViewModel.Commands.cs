@@ -15,6 +15,11 @@ public partial class InterventionsViewModel
         SyncDraftSelection();
         EditData.Threshold.DeviceId = 1;
 
+        if (EditData.Threshold.Active)
+        {
+            EditData.Threshold.ActivatedAt = null;
+        }
+
         var thresholdId = _manager.UpsertThreshold(EditData.Threshold.ToDto());
         if (EditData.Threshold.Id == 0)
         {

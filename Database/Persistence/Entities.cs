@@ -91,6 +91,7 @@ public sealed class ThresholdEntity
     public string DurationType { get; set; } = "Daily";
     public int DailyLimitSec { get; set; }
     public int SessionLimitSec { get; set; }
+    public DateTime? ActivatedAt { get; set; }
 
     public CategoryEntity? Category { get; set; }
     public ApplicationEntity? Application { get; set; }

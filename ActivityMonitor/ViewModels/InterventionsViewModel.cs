@@ -1,7 +1,9 @@
+using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows.Input;
+using Avalonia.Threading;
 using Backend.Classifier.Models;
 using Backend.DataCollector.Models;
 using Backend.Interventions.Models;
@@ -13,6 +15,7 @@ namespace ActivityMonitor.ViewModels;
 public partial class InterventionsViewModel : ViewModelBase
 {
     private readonly DatabaseManager _manager;
+    private readonly DispatcherTimer _refreshTimer = new();
     private ThresholdEditData _editData = new();
     private Threshold? _observedEditThreshold;
     private bool _isScrollViewerVisible;
@@ -138,7 +141,14 @@ public partial class InterventionsViewModel : ViewModelBase
         AttachEditDataHandlers(EditData);
         RefreshData();
         ResetEditData();
+
+        _refreshTimer.Interval = TimeSpan.FromSeconds(2);
+        _refreshTimer.Tick += (_, _) => UpdateRemainingTimes();
     }
+
+    public void StartTimer() => _refreshTimer.Start();
+
+    public void StopTimer() => _refreshTimer.Stop();
 
     private void RefreshData()
     {

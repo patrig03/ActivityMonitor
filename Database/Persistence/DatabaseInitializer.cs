@@ -104,6 +104,7 @@ public sealed class MySqlDatabaseInitializer(
         EnsureSettingsColumn(connection, "sync_remote_user_id", "ALTER TABLE settings ADD COLUMN sync_remote_user_id VARCHAR(64) NULL;");
         EnsureSettingsColumn(connection, "sync_device_id", "ALTER TABLE settings ADD COLUMN sync_device_id VARCHAR(64) NULL;");
         EnsureSettingsColumn(connection, "sync_last_server_time_utc", "ALTER TABLE settings ADD COLUMN sync_last_server_time_utc DATETIME(6) NULL;");
+        EnsureSettingsColumn(connection, "report_path", "ALTER TABLE settings ADD COLUMN report_path VARCHAR(1024) NULL;");
     }
 
     private void EnsureBrowserActivityCategoryColumnExists()

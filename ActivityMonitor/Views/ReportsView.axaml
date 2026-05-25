@@ -105,18 +105,18 @@
               <TextBlock Text="Stare" Foreground="{StaticResource BrushTextMuted}"/>
               <TextBlock Text="{Binding ReportStatus}" FontSize="18" FontWeight="Bold" Foreground="{StaticResource BrushTextSecondary}" TextWrapping="Wrap"/>
               <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
-                <Button Grid.Column="0"
-                        Command="{Binding RefreshCommand}"
-                        Classes="action-button subtle-button"
-                        Content="Reincarca"/>
+                <Button Grid.Column="0" 
+                        Command="{Binding ExportPdfCommand}"
+                        Classes="action-button warning-button"
+                        Content="Exporta PDF"/>
                 <Button Grid.Column="1"
                         Command="{Binding ExportCsvCommand}"
                         Classes="action-button success-button"
                         Content="Exporta CSV"/>
               </Grid>
-              <Button Command="{Binding ExportPdfCommand}"
-                      Classes="action-button warning-button"
-                      Content="Exporta PDF"/>
+                <Button Command="{Binding RefreshCommand}"
+                        Classes="action-button subtle-button"
+                        Content="Reincarca"/>
             </StackPanel>
           </Border>
         </Grid>

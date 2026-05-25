@@ -33,6 +33,7 @@ public class SettingsViewModel : ViewModelBase
     private string _browserCoverage = "--";
     private string _monitoringSummary = "--";
     private string _lastSavedLabel = "Nu a fost salvat încă";
+    private string _reportPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
     private string _syncServerAddress = string.Empty;
     private string _syncEmail = string.Empty;
     private string _syncPassword = string.Empty;
@@ -151,6 +152,23 @@ public class SettingsViewModel : ViewModelBase
         set => SetProperty(ref _serviceMutexName, value);
     }
 
+    public string ReportPath
+    {
+        get => _reportPath;
+        set
+        {
+            if (!SetProperty(ref _reportPath, value))
+            {
+                return;
+            }
+
+            if (!_isLoading)
+            {
+                SaveStatus = "Modificari nesalvate";
+            }
+        }
+    }
+
     public string ThresholdCoverage
     {
         get => _thresholdCoverage;
@@ -261,6 +279,7 @@ public class SettingsViewModel : ViewModelBase
         _settings = dto == null ? new Settings() : Settings.FromDto(dto);
 
         RefreshIntervalSeconds = Math.Max(1, (int)_settings.DeltaTime.TotalSeconds).ToString();
+        ReportPath = _settings.ReportPath;
         SyncServerAddress = _settings.SyncServerAddress ?? string.Empty;
         SyncEmail = _settings.SyncEmail ?? string.Empty;
         SyncPassword = string.Empty;
@@ -391,6 +410,7 @@ public class SettingsViewModel : ViewModelBase
     private void ResetToDefaults()
     {
         RefreshIntervalSeconds = DefaultIntervalSeconds.ToString();
+        ReportPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
         SyncServerAddress = string.Empty;
         SyncEmail = string.Empty;
         SyncPassword = string.Empty;
@@ -515,6 +535,9 @@ public class SettingsViewModel : ViewModelBase
 
         _settings.UserId = DefaultUserId;
         _settings.DeltaTime = TimeSpan.FromSeconds(seconds);
+        _settings.ReportPath = string.IsNullOrWhiteSpace(ReportPath)
+            ? Environment.GetFolderPath(Environment.SpecialFolder.Desktop)
+            : ReportPath.Trim();
         _settings.SyncServerAddress = nextAddress;
         _settings.SyncEmail = nextEmail;
 

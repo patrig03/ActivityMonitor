@@ -108,7 +108,8 @@ public sealed class DatabaseManager : IDatabaseManager
             SyncAuthToken = settings.SyncAuthToken,
             SyncRemoteUserId = settings.SyncRemoteUserId,
             SyncDeviceId = settings.SyncDeviceId,
-            SyncLastServerTimeUtc = settings.SyncLastServerTimeUtc
+            SyncLastServerTimeUtc = settings.SyncLastServerTimeUtc,
+            ReportPath = settings.ReportPath
         };
         context.Settings.Add(entity);
         context.SaveChanges();
@@ -128,6 +129,7 @@ public sealed class DatabaseManager : IDatabaseManager
         entity.SyncRemoteUserId = settings.SyncRemoteUserId;
         entity.SyncDeviceId = settings.SyncDeviceId;
         entity.SyncLastServerTimeUtc = settings.SyncLastServerTimeUtc;
+        entity.ReportPath = settings.ReportPath;
         return context.SaveChanges();
     }
 
@@ -493,7 +495,7 @@ internal static class EntityDtoExtensions
     internal static DeviceDto ToDto(this DeviceEntity e) => new() { DeviceId = e.DeviceId, UserId = e.UserId, Name = e.Name, DeviceType = e.DeviceType, Platform = e.Platform, Fingerprint = e.Fingerprint, Status = e.Status, AppVersion = e.AppVersion, IsTrusted = e.IsTrusted, IsCurrentDevice = e.IsCurrentDevice, CreatedAt = e.CreatedAt, LastSeenAt = e.LastSeenAt, RevokedAt = e.RevokedAt };
     internal static void UpdateFrom(this DeviceEntity e, DeviceDto dto) { e.UserId = dto.UserId; e.Name = dto.Name; e.DeviceType = dto.DeviceType; e.Platform = dto.Platform; e.Fingerprint = dto.Fingerprint; e.Status = dto.Status; e.AppVersion = dto.AppVersion; e.IsTrusted = dto.IsTrusted; e.IsCurrentDevice = dto.IsCurrentDevice; e.CreatedAt = dto.CreatedAt; e.LastSeenAt = dto.LastSeenAt; e.RevokedAt = dto.RevokedAt; }
     internal static DeviceEntity ToEntity(this DeviceDto dto) { var e = new DeviceEntity(); e.UpdateFrom(dto); return e; }
-    internal static SettingsDto ToDto(this SettingsEntity e) => new() { Id = e.SettingsId, UserId = e.UserId, DeltaTimeSeconds = e.RefreshTimeSeconds, SyncServerAddress = e.SyncServerAddress, SyncEmail = e.SyncEmail, SyncAuthToken = e.SyncAuthToken, SyncRemoteUserId = e.SyncRemoteUserId, SyncDeviceId = e.SyncDeviceId, SyncLastServerTimeUtc = e.SyncLastServerTimeUtc };
+    internal static SettingsDto ToDto(this SettingsEntity e) => new() { Id = e.SettingsId, UserId = e.UserId, DeltaTimeSeconds = e.RefreshTimeSeconds, SyncServerAddress = e.SyncServerAddress, SyncEmail = e.SyncEmail, SyncAuthToken = e.SyncAuthToken, SyncRemoteUserId = e.SyncRemoteUserId, SyncDeviceId = e.SyncDeviceId, SyncLastServerTimeUtc = e.SyncLastServerTimeUtc, ReportPath = e.ReportPath };
     internal static CategoryDto ToDto(this CategoryEntity e) => new() { CategoryId = e.CategoryId, Name = e.Name, Description = e.Description };
     internal static ApplicationDto ToDto(this ApplicationEntity e) => new() { Id = e.AppId, DeviceId = e.DeviceId, CategoryId = e.CategoryId, WindowTitle = e.Name, ClassName = e.Class, ProcessName = e.ProcessName, WindowId = e.WindowId };
     internal static ApplicationEntity ToEntity(this ApplicationDto dto) => new() { DeviceId = dto.DeviceId, CategoryId = dto.CategoryId, Name = dto.WindowTitle, Class = dto.ClassName, ProcessName = dto.ProcessName, WindowId = dto.WindowId };

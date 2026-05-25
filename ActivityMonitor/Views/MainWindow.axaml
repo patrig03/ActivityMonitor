@@ -5,8 +5,6 @@
         xmlns:views="using:ActivityMonitor.Views"
         x:DataType="views:MainWindow"
         mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="1000"
-        MinWidth="1600"
-        MinHeight="1200"
         Width="1440"
         Height="960"
         x:Class="ActivityMonitor.Views.MainWindow"
@@ -23,7 +21,7 @@
 
     <ContentControl Grid.Column="1"
                     Content="{Binding CurrentView,
-                          RelativeSource={RelativeSource AncestorType=Window}}"
+                    RelativeSource={RelativeSource AncestorType=Window}}"
                     ContentTemplate="{StaticResource ActiveViewSelector}"/>
 
     <Border Grid.Column="0" Grid.ColumnSpan="2"

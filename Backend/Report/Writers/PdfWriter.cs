@@ -349,7 +349,7 @@ public class PdfWriter
             SpacingAfter = 20f
         };
 
-        table.SetWidths(new float[] { 0.5f, 0.8f, 1f, 1f, 2f });
+        table.SetWidths(new float[] { 0.5f, 0.8f, 1f, 2f });
 
         // Headers
         AddTableHeader(table, "ID", "Snoozed", "Threshold ID", "Triggered At");

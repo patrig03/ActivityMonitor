@@ -18,6 +18,7 @@ public sealed class SettingsEntityConfiguration : IEntityTypeConfiguration<Setti
         builder.Property(entity => entity.SyncRemoteUserId).HasColumnName("sync_remote_user_id").HasMaxLength(64);
         builder.Property(entity => entity.SyncDeviceId).HasColumnName("sync_device_id").HasMaxLength(64);
         builder.Property(entity => entity.SyncLastServerTimeUtc).HasColumnName("sync_last_server_time_utc");
+        builder.Property(entity => entity.ReportPath).HasColumnName("report_path").HasMaxLength(1024);
 
         builder.HasIndex(entity => entity.UserId).IsUnique();
     }

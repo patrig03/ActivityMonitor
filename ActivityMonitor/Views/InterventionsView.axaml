@@ -127,7 +127,7 @@
                 <DataGridTextColumn Header="Declansat la" Binding="{Binding TriggeredAt}" Width="2*"/>
                 <DataGridTextColumn Header="Tinta" Binding="{Binding TargetName}" Width="2*"/>
                 <DataGridTextColumn Header="Tip tinta" Binding="{Binding TargetType}" Width="Auto"/>
-                <DataGridTextColumn Header="Categorie" Binding="{Binding CategoryName}" Width="2*"/>
+                <!-- <DataGridTextColumn Header="Categorie" Binding="{Binding CategoryName}" Width="2*"/> -->
                 <DataGridTextColumn Header="Interventie" Binding="{Binding InterventionType}" Width="Auto"/>
                 <DataGridTextColumn Header="Limita" Binding="{Binding LimitSummary}" Width="Auto"/>
                 <DataGridTextColumn Header="Amanat" Binding="{Binding Snoozed}" Width="Auto"/>

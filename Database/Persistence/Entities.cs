@@ -28,6 +28,7 @@ public sealed class SettingsEntity
     public string? SyncRemoteUserId { get; set; }
     public string? SyncDeviceId { get; set; }
     public DateTime? SyncLastServerTimeUtc { get; set; }
+    public string? ReportPath { get; set; }
 }
 
 public sealed class CategoryEntity

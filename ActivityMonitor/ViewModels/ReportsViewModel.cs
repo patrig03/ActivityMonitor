@@ -19,7 +19,7 @@ public class ReportsViewModel : ViewModelBase
 
     private string _reportStatus = "Se pregătește raportul de activitate";
     private string _lastGenerated = "Nu a fost generat încă";
-    private string _exportDirectory = BuildExportDirectory();
+    private string _exportDirectory = string.Empty;
     private string _categoryCount = "0";
     private string _totalTrackedTime = "--";
     private string _applicationCount = "0";
@@ -31,6 +31,7 @@ public class ReportsViewModel : ViewModelBase
         RefreshCommand = new RelayCommand(_ => LoadReports());
         ExportCsvCommand = new RelayCommand(_ => ExportCsv());
         ExportPdfCommand = new RelayCommand(_ => ExportPdf());
+        ExportDirectory = BuildExportDirectory();
         LoadReports();
     }
 
@@ -234,9 +235,14 @@ public class ReportsViewModel : ViewModelBase
         return $"{Math.Max(1, (int)Math.Round(duration.TotalMinutes))}m";
     }
 
-    private static string BuildExportDirectory()
+    private string BuildExportDirectory()
     {
-        return Path.Combine(Settings.DataDirectory, "reports");
+        var settings = _manager.GetSettings(1);
+        if (settings != null && !string.IsNullOrWhiteSpace(settings.ReportPath))
+        {
+            return settings.ReportPath;
+        }
+        return Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
     }
 
     private static string EnsureTrailingSeparator(string path)

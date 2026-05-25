@@ -107,6 +107,13 @@
                            TextWrapping="Wrap"/>
                 </StackPanel>
 
+                <StackPanel Spacing="8">
+                  <TextBlock Text="Director implicit pentru rapoarte" Classes="field-label"/>
+                  <TextBox Text="{Binding ReportPath}"
+                           Watermark="Desktop"
+                           TextWrapping="Wrap"/>
+                </StackPanel>
+
                 <Grid ColumnDefinitions="*,*" ColumnSpacing="16">
                   <StackPanel Spacing="8">
                     <TextBlock Text="Stare baza de date" Classes="field-label"/>

@@ -15,6 +15,7 @@ public class Settings
     public string? SyncRemoteUserId { get; set; }
     public string? SyncDeviceId { get; set; }
     public DateTime? SyncLastServerTimeUtc { get; set; }
+    public string ReportPath { get; set; } = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
 
     public static string MutexName { get => "Global\\ActivityMonitorBackgroundService"; }
 
@@ -46,6 +47,7 @@ public class Settings
             SyncRemoteUserId = SyncRemoteUserId,
             SyncDeviceId = SyncDeviceId,
             SyncLastServerTimeUtc = SyncLastServerTimeUtc,
+            ReportPath = ReportPath,
         };
     }
     public static Settings FromDto(SettingsDto dto)
@@ -61,6 +63,7 @@ public class Settings
             SyncRemoteUserId = dto.SyncRemoteUserId,
             SyncDeviceId = dto.SyncDeviceId,
             SyncLastServerTimeUtc = dto.SyncLastServerTimeUtc,
+            ReportPath = dto.ReportPath ?? Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
         };
     }
 }

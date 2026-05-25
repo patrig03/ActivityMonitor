@@ -25,6 +25,7 @@ public class ReportsViewModel : ViewModelBase
     private string _applicationCount = "0";
     private string _interventionCount = "0";
     private string _browserEventCount = "0";
+    private string _uncategorizedCount = "0";
 
     public ReportsViewModel()
     {
@@ -42,6 +43,7 @@ public class ReportsViewModel : ViewModelBase
     public ICommand ExportPdfCommand { get; }
 
     public ObservableCollection<ReportCategoryCard> Categories { get; } = new();
+    public ObservableCollection<UncategorizedAppItem> UncategorizedApplications { get; } = new();
 
     public string ReportStatus
     {
@@ -90,6 +92,14 @@ public class ReportsViewModel : ViewModelBase
         get => _browserEventCount;
         set => SetProperty(ref _browserEventCount, value);
     }
+
+    public string UncategorizedCount
+    {
+        get => _uncategorizedCount;
+        set => SetProperty(ref _uncategorizedCount, value);
+    }
+
+    public bool HasUncategorizedApplications => UncategorizedApplications.Count > 0;
 
     private void LoadReports()
     {
@@ -181,6 +191,24 @@ public class ReportsViewModel : ViewModelBase
         ApplicationCount = uniqueProcesses.Count.ToString();
         InterventionCount = uniqueInterventions.Count.ToString();
         BrowserEventCount = browserEventCount.ToString();
+        var uncategorized = _manager.GetAllApplications()
+            .Where(app => app.Id.HasValue && !app.CategoryId.HasValue)
+            .ToList();
+
+        UncategorizedApplications.Clear();
+        foreach (var app in uncategorized)
+        {
+            UncategorizedApplications.Add(new UncategorizedAppItem
+            {
+                AppId = app.Id ?? 0,
+                ProcessName = app.ProcessName ?? string.Empty,
+                WindowTitle = app.WindowTitle ?? string.Empty,
+                ClassName = app.ClassName ?? string.Empty
+            });
+        }
+
+        UncategorizedCount = uncategorized.Count.ToString();
+        OnPropertyChanged(nameof(HasUncategorizedApplications));
         LastGenerated = $"Generat la {DateTime.Now:HH:mm}";
         ReportStatus = reportData.Count == 0
             ? "Nu există încă activitate raportabilă. Lasă monitorul să ruleze pentru a captura mai întâi sesiuni."
@@ -273,4 +301,29 @@ public sealed class ReportProcessSummary
     public string Duration { get; init; } = string.Empty;
     public string WindowCount { get; init; } = string.Empty;
     public string? DeviceName { get; init; }
+}
+
+public sealed class UncategorizedAppItem
+{
+    public int AppId { get; init; }
+    public string ProcessName { get; init; } = string.Empty;
+    public string WindowTitle { get; init; } = string.Empty;
+    public string ClassName { get; init; } = string.Empty;
+
+    public string PrimaryLabel =>
+        !string.IsNullOrWhiteSpace(ProcessName)
+            ? ProcessName
+            : !string.IsNullOrWhiteSpace(WindowTitle)
+                ? WindowTitle
+                : $"Aplicația #{AppId}";
+
+    public string DetailLine =>
+        string.IsNullOrWhiteSpace(WindowTitle)
+            ? ClassName
+            : WindowTitle;
+
+    public string IdentityLine =>
+        string.IsNullOrWhiteSpace(ClassName)
+            ? $"ID: {AppId}"
+            : $"Clasa: {ClassName}";
 }

@@ -5,6 +5,27 @@
              x:DataType="viewModels:ReportsViewModel">
 
   <UserControl.Resources>
+    <DataTemplate x:Key="UncategorizedAppTemplate" DataType="viewModels:UncategorizedAppItem">
+      <Border Classes="panel-card panel-card--muted"
+              Margin="0,0,0,8"
+              Padding="16">
+        <StackPanel Spacing="6">
+          <TextBlock Text="{Binding PrimaryLabel}"
+                     FontSize="16"
+                     FontWeight="SemiBold"
+                     Foreground="{StaticResource BrushTextSecondary}"
+                     TextWrapping="Wrap"/>
+          <TextBlock Text="{Binding DetailLine}"
+                     Foreground="{StaticResource BrushTextMuted}"
+                     TextWrapping="Wrap"/>
+          <TextBlock Text="{Binding IdentityLine}"
+                     Foreground="{StaticResource BrushTextSubtle}"
+                     FontSize="12"
+                     TextWrapping="Wrap"/>
+        </StackPanel>
+      </Border>
+    </DataTemplate>
+
     <DataTemplate x:Key="TopProcessTemplate" DataType="viewModels:ReportProcessSummary">
       <Border Classes="panel-card panel-card--muted"
               Margin="0,0,10,10"
@@ -161,6 +182,37 @@
       </WrapPanel>
 
       <ItemsControl ItemsSource="{Binding Categories}" ItemTemplate="{StaticResource CategoryCardTemplate}"/>
+
+      <Border Classes="panel-card"
+              IsVisible="{Binding HasUncategorizedApplications}">
+        <StackPanel Spacing="14">
+          <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+            <StackPanel Spacing="4">
+              <TextBlock Text="Aplicații neasignate" Classes="section-title"/>
+              <TextBlock Text="Procese monitorizate care nu au încă o categorie atribuită."
+                         Classes="section-subtitle"/>
+            </StackPanel>
+            <Border Grid.Column="1"
+                    Classes="chip chip--warning"
+                    VerticalAlignment="Center"
+                    Padding="12,6">
+              <StackPanel Orientation="Horizontal" Spacing="4">
+                <TextBlock Text="{Binding UncategorizedCount}"
+                           Foreground="{StaticResource BrushTextOnAccent}"
+                           FontWeight="Bold"/>
+                <TextBlock Text="aplicații"
+                           Foreground="{StaticResource BrushTextOnAccent}"/>
+              </StackPanel>
+            </Border>
+          </Grid>
+
+          <ListBox ItemsSource="{Binding UncategorizedApplications}"
+                   ItemTemplate="{StaticResource UncategorizedAppTemplate}"
+                   Background="Transparent"
+                   BorderThickness="0"
+                   MaxHeight="400"/>
+        </StackPanel>
+      </Border>
     </StackPanel>
   </ScrollViewer>
 </UserControl>

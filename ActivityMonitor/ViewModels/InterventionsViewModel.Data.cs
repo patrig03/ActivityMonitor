@@ -185,7 +185,7 @@ public partial class InterventionsViewModel
             : $"{mostTriggered.Key} ({mostTriggered.Count()} declanșări)";
         ThresholdStatus = ThresholdRows.Count == 0
             ? "Nu există încă praguri configurate."
-            : $"Sunt monitorizate {ThresholdRows.Count} praguri din {coveredCategories} categorii si {ThresholdRows.Count(row => row.Threshold.TargetType == Threshold.AppTargetType)} reguli pe aplicatii.";
+            : $"Sunt monitorizate {ThresholdRows.Count} praguri din {coveredCategories} categorii și {ThresholdRows.Count(row => row.Threshold.TargetType == Threshold.AppTargetType)} reguli pe aplicații.";
     }
 
     private void SyncDraftSelection()

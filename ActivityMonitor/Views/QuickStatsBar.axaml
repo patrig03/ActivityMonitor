@@ -16,7 +16,7 @@
         <StackPanel Spacing="6">
           <TextBlock Text="Timp monitorizat" Classes="metric-label"/>
           <TextBlock Text="{Binding TotalUsage}" Classes="metric-value"/>
-          <TextBlock Text="Timp activ in toate categoriile capturate." Classes="metric-detail"/>
+          <TextBlock Text="Timp activ în toate categoriile capturate." Classes="metric-detail"/>
         </StackPanel>
       </Border>
 
@@ -24,7 +24,7 @@
         <StackPanel Spacing="6">
           <TextBlock Text="Sesiuni" Classes="metric-label"/>
           <TextBlock Text="{Binding TotalSessions}" Classes="metric-value"/>
-          <TextBlock Text="Sesiuni distincte de aplicatii capturate pentru fereastra curenta de raportare." Classes="metric-detail"/>
+          <TextBlock Text="Sesiuni distincte de aplicații capturate pentru fereastra curentă de raportare." Classes="metric-detail"/>
         </StackPanel>
       </Border>
 
@@ -42,30 +42,30 @@
           <TextBlock Text="{Binding FocusScore}"
                      Classes="metric-value"
                      Foreground="{StaticResource BrushAccentSuccess}"/>
-          <TextBlock Text="Ponderea timpului petrecut in categorii orientate spre munca." Classes="metric-detail"/>
+          <TextBlock Text="Ponderea timpului petrecut în categorii orientate spre muncă." Classes="metric-detail"/>
         </StackPanel>
       </Border>
 
       <Border Classes="stat-card">
         <StackPanel Spacing="6">
-          <TextBlock Text="Aplicatie principala" Classes="metric-label"/>
+          <TextBlock Text="Aplicație principală" Classes="metric-label"/>
           <TextBlock Text="{Binding TopApplication}"
                      Classes="metric-value"
                      Foreground="{StaticResource BrushAccentPrimary}"
                      TextWrapping="Wrap"/>
-          <TextBlock Text="Procesul care consuma cel mai mult timp de activitate monitorizat." Classes="metric-detail"/>
+          <TextBlock Text="Procesul care consumă cel mai mult timp de activitate monitorizat." Classes="metric-detail"/>
         </StackPanel>
       </Border>
 
       <Border Classes="stat-card"
               Margin="0,0,0,14">
         <StackPanel Spacing="6">
-          <TextBlock Text="Puls interventii" Classes="metric-label"/>
+          <TextBlock Text="Puls intervenții" Classes="metric-label"/>
           <TextBlock Text="{Binding InterventionPulse}"
                      Classes="metric-value"
                      Foreground="{StaticResource BrushAccentWarning}"
                      TextWrapping="Wrap"/>
-          <TextBlock Text="Activitate recenta a pragurilor, utila pentru ajustarea limitelor." Classes="metric-detail"/>
+          <TextBlock Text="Activitate recentă a pragurilor, utilă pentru ajustarea limitelor." Classes="metric-detail"/>
         </StackPanel>
       </Border>
 

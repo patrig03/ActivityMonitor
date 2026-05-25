@@ -53,7 +53,7 @@
           <StackPanel Spacing="6">
             <TextBlock Text="Praguri active" Classes="metric-label"/>
             <TextBlock Text="{Binding ActiveThresholdCount}" Classes="metric-value"/>
-            <TextBlock Text="Reguli care aplica in prezent interventii" Classes="metric-detail"/>
+            <TextBlock Text="Reguli care aplică în prezent intervenții" Classes="metric-detail"/>
           </StackPanel>
         </Border>
         <Border Classes="stat-card">
@@ -74,7 +74,7 @@
           <StackPanel Spacing="6">
             <TextBlock Text="Alerte in 7 zile" Classes="metric-label"/>
             <TextBlock Text="{Binding RecentAlertCount}" Classes="metric-value"/>
-            <TextBlock Text="Presiune recenta a interventiilor" Classes="metric-detail"/>
+            <TextBlock Text="Presiune recentă a intervențiilor" Classes="metric-detail"/>
           </StackPanel>
         </Border>
         <Border Classes="stat-card" Margin="0,0,0,14">
@@ -91,12 +91,12 @@
           <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
             <StackPanel Spacing="4">
               <TextBlock Text="Reguli de prag" Classes="section-title"/>
-              <TextBlock Text="Creeaza o limita pentru o categorie sau aplicatie, decide cat timp este permis si alege ce se intampla cand limita este depasita."
+              <TextBlock Text="Creează o limită pentru o categorie sau aplicație, decide cât timp este permis și alege ce se întâmplă când limita este depășită."
                          Classes="section-subtitle"/>
             </StackPanel>
 
             <Button Grid.Column="1"
-                    Content="Adauga prag"
+                    Content="Adaugă prag"
                     VerticalAlignment="Center"
                     Command="{Binding AddCommand}"
                     Classes="action-button success-button"/>
@@ -106,15 +106,15 @@
         <Border Classes="panel-card">
           <StackPanel Spacing="14">
             <TextBlock Text="Inventar praguri" Classes="section-title"/>
-            <TextBlock Text="Editeaza sau elimina limitele direct din tabelul curent al pragurilor." Classes="section-subtitle"/>
+            <TextBlock Text="Editează sau elimină limitele direct din tabelul curent al pragurilor." Classes="section-subtitle"/>
             <views:CurrentThresholdsView/>
           </StackPanel>
         </Border>
 
         <Border Classes="panel-card">
           <StackPanel Spacing="14">
-            <TextBlock Text="Istoric interventii" Classes="section-title"/>
-            <TextBlock Text="Toate interventiile inregistrate, cele mai noi primele." Classes="section-subtitle"/>
+            <TextBlock Text="Istoric intervenții" Classes="section-title"/>
+            <TextBlock Text="Toate intervențiile înregistrate, cele mai noi primele." Classes="section-subtitle"/>
             <DataGrid ItemsSource="{Binding InterventionHistory}"
                       AutoGenerateColumns="False"
                       IsReadOnly="True"
@@ -156,7 +156,7 @@
                       Padding="8,4"/>
             </Grid>
 
-            <TextBlock Text="Ajusteaza tinta, tipul limitei si interventia inainte sa salvezi regula."
+            <TextBlock Text="Ajustează ținta, tipul limitei și intervenția înainte să salvezi regula."
                        Classes="section-subtitle"
                        TextWrapping="Wrap"/>
 
@@ -183,7 +183,7 @@
 
                   <StackPanel Spacing="6"
                               IsVisible="{Binding EditData.Threshold.TargetType, Converter={StaticResource EqualsConverter}, ConverterParameter=App}">
-                    <TextBlock Text="Aplicatie" Classes="field-label"/>
+                    <TextBlock Text="Aplicație" Classes="field-label"/>
                     <ComboBox ItemsSource="{Binding Apps}"
                               SelectedValue="{Binding EditData.Threshold.AppId}"
                               SelectedValueBinding="{Binding Id}"
@@ -248,10 +248,10 @@
             <StackPanel Orientation="Horizontal"
                         HorizontalAlignment="Right"
                         Spacing="8">
-              <Button Content="Anuleaza"
+              <Button Content="Anulează"
                       Command="{Binding CancelCommand}"
                       Classes="action-button subtle-button"/>
-              <Button Content="Salveaza pragul"
+              <Button Content="Salvează pragul"
                       Command="{Binding SaveCommand}"
                       Classes="action-button success-button"/>
             </StackPanel>

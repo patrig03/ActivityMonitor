@@ -49,7 +49,7 @@ public sealed class ServerSync
         if (!string.Equals(uri.Scheme, Uri.UriSchemeHttp, StringComparison.OrdinalIgnoreCase) &&
             !string.Equals(uri.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase))
         {
-            validationMessage = "Serverul de sincronizare trebuie sa foloseasca http sau https.";
+            validationMessage = "Serverul de sincronizare trebuie să folosească http sau https.";
             return false;
         }
 
@@ -125,12 +125,12 @@ public sealed class ServerSync
             {
                 if (endpoint == endpoints[^1])
                 {
-                    return HealthCheckResult.Failed($"Verificarea serverului a esuat: {ex.Message}");
+                    return HealthCheckResult.Failed($"Verificarea serverului a eșuat: {ex.Message}");
                 }
             }
         }
 
-        return HealthCheckResult.Failed("Serverul nu a raspuns la endpoint-ul de health check asteptat.");
+        return HealthCheckResult.Failed("Serverul nu a răspuns la endpoint-ul de health check așteptat.");
     }
 
     public Task<AuthResult> RegisterAsync(
@@ -148,7 +148,7 @@ public sealed class ServerSync
         string password,
         CancellationToken cancellationToken = default)
     {
-        return AuthenticateAsync(serverAddress, "/api/auth/login", email, password, "Autentificare reusita", cancellationToken);
+        return AuthenticateAsync(serverAddress, "/api/auth/login", email, password, "Autentificare reușită", cancellationToken);
     }
 
     public async Task<DeviceRegistrationResult> EnsureDeviceAsync(
@@ -200,14 +200,14 @@ public sealed class ServerSync
 
             if (!createResponse.IsSuccessStatusCode)
             {
-                return DeviceRegistrationResult.Failed(BuildErrorMessage(createResponse.StatusCode, createBody, "Crearea dispozitivului pe server a esuat"));
+                return DeviceRegistrationResult.Failed(BuildErrorMessage(createResponse.StatusCode, createBody, "Crearea dispozitivului pe server a eșuat"));
             }
 
             var createdDeviceId = TryExtractGuid(createBody, "deviceId")
                                   ?? TryExtractGuid(createBody, "id");
             if (!string.IsNullOrWhiteSpace(createdDeviceId))
             {
-                return DeviceRegistrationResult.Succeeded(createdDeviceId, true, "Dispozitivul curent a fost inregistrat pe server.");
+                return DeviceRegistrationResult.Succeeded(createdDeviceId, true, "Dispozitivul curent a fost înregistrat pe server.");
             }
 
             var lookupResult = await GetDeviceIdByNameAsync(normalizedAddress, bearerToken, deviceName.Trim(), cancellationToken);
@@ -217,7 +217,7 @@ public sealed class ServerSync
         }
         catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or JsonException)
         {
-            return DeviceRegistrationResult.Failed($"Inregistrarea dispozitivului pe server a esuat: {ex.Message}");
+            return DeviceRegistrationResult.Failed($"Înregistrarea dispozitivului pe server a eșuat: {ex.Message}");
         }
     }
 
@@ -245,7 +245,7 @@ public sealed class ServerSync
 
             if (!response.IsSuccessStatusCode)
             {
-                return SyncOperationResult.Failed(BuildErrorMessage(response.StatusCode, responseBody, "Sincronizarea cu serverul a esuat"));
+                return SyncOperationResult.Failed(BuildErrorMessage(response.StatusCode, responseBody, "Sincronizarea cu serverul a eșuat"));
             }
 
             if (string.IsNullOrWhiteSpace(responseBody))
@@ -254,11 +254,11 @@ public sealed class ServerSync
             }
 
             var syncResponse = JsonSerializer.Deserialize<SyncResponse>(responseBody, JsonOptions) ?? new SyncResponse();
-            return SyncOperationResult.Succeeded(syncResponse, "Sincronizarea cu serverul a fost finalizata.");
+            return SyncOperationResult.Succeeded(syncResponse, "Sincronizarea cu serverul a fost finalizată.");
         }
         catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or JsonException)
         {
-            return SyncOperationResult.Failed($"Sincronizarea cu serverul a esuat: {ex.Message}");
+            return SyncOperationResult.Failed($"Sincronizarea cu serverul a eșuat: {ex.Message}");
         }
     }
 
@@ -295,7 +295,7 @@ public sealed class ServerSync
             var responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
             if (!response.IsSuccessStatusCode)
             {
-                return AuthResult.Failed(BuildErrorMessage(response.StatusCode, responseBody, "Autentificarea la server a esuat"));
+                return AuthResult.Failed(BuildErrorMessage(response.StatusCode, responseBody, "Autentificarea la server a eșuat"));
             }
 
             var payload = JsonSerializer.Deserialize<AuthResponse>(responseBody, JsonOptions);
@@ -312,7 +312,7 @@ public sealed class ServerSync
         }
         catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or JsonException)
         {
-            return AuthResult.Failed($"Autentificarea la server a esuat: {ex.Message}");
+            return AuthResult.Failed($"Autentificarea la server a eșuat: {ex.Message}");
         }
     }
 
@@ -335,7 +335,7 @@ public sealed class ServerSync
 
         return match == null
             ? DeviceRegistrationResult.Failed("Serverul nu a returnat un deviceId pentru dispozitivul nou creat.")
-            : DeviceRegistrationResult.Succeeded(match.DeviceId, true, "Dispozitivul curent a fost inregistrat pe server.");
+            : DeviceRegistrationResult.Succeeded(match.DeviceId, true, "Dispozitivul curent a fost înregistrat pe server.");
     }
 
     public async Task<DeviceLookupResult> GetDevicesAsync(
@@ -354,7 +354,7 @@ public sealed class ServerSync
         }
         catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or JsonException)
         {
-            return DeviceLookupResult.Failed($"Citirea dispozitivelor de pe server a esuat: {ex.Message}");
+            return DeviceLookupResult.Failed($"Citirea dispozitivelor de pe server a eșuat: {ex.Message}");
         }
     }
 
@@ -371,7 +371,7 @@ public sealed class ServerSync
 
         if (!response.IsSuccessStatusCode)
         {
-            return DeviceLookupResult.Failed(BuildErrorMessage(response.StatusCode, responseBody, "Citirea dispozitivelor de pe server a esuat"));
+            return DeviceLookupResult.Failed(BuildErrorMessage(response.StatusCode, responseBody, "Citirea dispozitivelor de pe server a eșuat"));
         }
 
         return DeviceLookupResult.Succeeded(ParseDevices(responseBody));

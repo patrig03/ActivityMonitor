@@ -12,7 +12,7 @@
           <Grid ColumnDefinitions="*,340" ColumnSpacing="16">
             <StackPanel Spacing="10">
               <TextBlock Text="Setări" Classes="page-title"/>
-              <TextBlock Text="Ajusteaza ritmul monitorizarii, verifica ce stocheaza colectorul local si salveaza valori implicite sigure pentru clientul desktop."
+              <TextBlock Text="Ajustează ritmul monitorizării, verifică ce stochează colectorul local și salvează valori implicite sigure pentru clientul desktop."
                          Classes="page-subtitle"/>
               <WrapPanel Orientation="Horizontal">
                 <Border Classes="chip chip--overlay" Margin="0,10,10,0">
@@ -39,11 +39,11 @@
                   <Button Grid.Column="0"
                           Command="{Binding SaveCommand}"
                           Classes="action-button success-button"
-                          Content="Salveaza"/>
+                          Content="Salvează"/>
                   <Button Grid.Column="1"
                           Command="{Binding ReloadCommand}"
                           Classes="action-button subtle-button"
-                          Content="Reincarca"/>
+                          Content="Reîncarcă"/>
                 </Grid>
               </StackPanel>
             </Border>
@@ -55,8 +55,8 @@
 
             <Border Classes="panel-card">
               <StackPanel Spacing="16">
-                <TextBlock Text="Ritm de esantionare" Classes="section-title"/>
-                <TextBlock Text="Acest interval controleaza cat de des colectorul reevalueaza ferestrele active si regulile de interventie."
+                <TextBlock Text="Rată de eșantionare" Classes="section-title"/>
+                <TextBlock Text="Acest interval controlează cât de des colectorul reevaluează ferestrele active și regulile de intervenție."
                            Classes="section-subtitle"/>
 
                 <WrapPanel Orientation="Horizontal">
@@ -170,7 +170,7 @@
                     <StackPanel Spacing="6">
                       <TextBlock Text="Health, auth, devices si sync" Classes="field-label"/>
                       <TextBlock Text="{Binding SyncEndpointPreview}" Foreground="{StaticResource BrushTextPrimary}" TextWrapping="Wrap"/>
-                      <TextBlock Text="Clientul verifica health, obtine un token prin /api/auth/login sau /api/auth/register, inregistreaza dispozitivul prin /api/devices si sincronizeaza datele prin POST /api/sync."
+                      <TextBlock Text="Clientul verifică health, obține un token prin /api/auth/login sau /api/auth/register, înregistrează dispozitivul prin /api/devices și sincronizează datele prin POST /api/sync."
                                  Classes="section-subtitle"/>
                     </StackPanel>
                   </Border>
@@ -200,7 +200,7 @@
 
                 <Border Classes="panel-card panel-card--muted" Padding="16">
                   <StackPanel Spacing="6">
-                    <TextBlock Text="Istoric interventii" Classes="metric-label"/>
+                    <TextBlock Text="Istoric intervenții" Classes="metric-label"/>
                     <TextBlock Text="{Binding InterventionCoverage}" Foreground="{StaticResource BrushTextSecondary}" FontWeight="SemiBold" TextWrapping="Wrap"/>
                   </StackPanel>
                 </Border>
@@ -216,7 +216,7 @@
 
             <Border Classes="panel-card">
               <StackPanel Spacing="14">
-                <TextBlock Text="Gestionarea modificarilor" Classes="section-title"/>
+                <TextBlock Text="Gestionarea modificărilor" Classes="section-title"/>
                 <TextBlock Text="Folosește profilul implicit dacă vrei date de trend fiabile fără să încarci stocarea. Treci la 5 secunde doar dacă limitele de intervenție au nevoie de sincronizare mai strictă."
                            Classes="section-subtitle"/>
 
@@ -273,21 +273,21 @@
               <Button Grid.Column="0"
                       Command="{Binding CheckSyncServerCommand}"
                       Classes="action-button subtle-button"
-                      Content="Testeaza serverul"/>
+                      Content="Testează serverul"/>
               <Button Grid.Column="1"
                       Command="{Binding LoginSyncCommand}"
                       Classes="action-button success-button"
-                      Content="Conecteaza-te"/>
+                      Content="Conectează-te"/>
               <Button Grid.Column="2"
                       Command="{Binding RegisterSyncCommand}"
                       Classes="action-button warning-button"
-                      Content="Creeaza cont"/>
+                      Content="Creează cont"/>
             </Grid>
 
             <Button Command="{Binding ClearSyncSessionCommand}"
                     Classes="action-button subtle-button"
                     HorizontalAlignment="Left"
-                    Content="Sterge sesiunea"/>
+                    Content="Șterge sesiunea"/>
           </StackPanel>
         </Border>
       </Border>

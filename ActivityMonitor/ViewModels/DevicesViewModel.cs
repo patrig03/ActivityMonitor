@@ -23,11 +23,11 @@ public sealed class DevicesViewModel : ObservableObject
 
     private string? _selectedDeviceId;
     private string _pageSubtitle = "Se încarcă inventarul de dispozitive din server...";
-    private string _deviceStatus = "Citire in curs";
-    private string _lastRefreshLabel = "Actualizare in curs";
+    private string _deviceStatus = "Citire în curs";
+    private string _lastRefreshLabel = "Actualizare în curs";
     private string _accountLabel = "Cont sincronizat";
     private string _currentDeviceLabel = "--";
-    private string _currentDeviceDetail = "Detectam dispozitivul curent.";
+    private string _currentDeviceDetail = "Detectăm dispozitivul curent.";
     private string _totalDevices = "0";
     private string _activeDevices = "0";
     private string _revokedDevices = "0";
@@ -37,9 +37,9 @@ public sealed class DevicesViewModel : ObservableObject
     private string _selectedDevicePlatform = "Necunoscut";
     private string _selectedDeviceVersion = "Necunoscut";
     private string _selectedDeviceIdentifier = string.Empty;
-    private string _selectedDeviceState = "Selecteaza un dispozitiv";
-    private string _selectedDeviceTimeline = "Detaliile de activitate vor aparea aici.";
-    private string _selectedDeviceTrust = "Alege un dispozitiv pentru a vedea increderea si statusul serverului.";
+    private string _selectedDeviceState = "Selectează un dispozitiv";
+    private string _selectedDeviceTimeline = "Detaliile de activitate vor apărea aici.";
+    private string _selectedDeviceTrust = "Alege un dispozitiv pentru a vedea încrederea și statusul serverului.";
     private string _selectedDeviceServerStatus = "Statusul complet va aparea aici.";
     private bool _hasSelectedDevice;
     private AccountDeviceRow? _selectedDevice;
@@ -258,7 +258,7 @@ public sealed class DevicesViewModel : ObservableObject
             RevokedDevices = "0";
             UnknownDevices = "0";
             PageSubtitle = "Pagina afișează dispozitivele de pe server pentru contul sincronizat. Configurează și autentifică mai întâi sesiunea de sync.";
-            LastRefreshLabel = "Fara date server";
+            LastRefreshLabel = "Fără date server";
             DeviceStatus = error;
             ClearSelection();
             return;
@@ -346,7 +346,7 @@ public sealed class DevicesViewModel : ObservableObject
             return;
         }
 
-        DeviceStatus = $"Se inregistreaza dispozitivul curent pe {normalizedAddress}...";
+        DeviceStatus = $"Se înregistrează dispozitivul curent pe {normalizedAddress}...";
         var deviceRegistration = await _serverSync.EnsureDeviceAsync(
             normalizedAddress,
             bearerToken,
@@ -356,20 +356,20 @@ public sealed class DevicesViewModel : ObservableObject
         if (!deviceRegistration.Success || string.IsNullOrWhiteSpace(deviceRegistration.DeviceId))
         {
             DeviceStatus = deviceRegistration.Message;
-            LastServerSyncLabel = "Ultima sincronizare a esuat";
+            LastServerSyncLabel = "Ultima sincronizare a eșuat";
             return;
         }
 
         settings.SyncDeviceId = deviceRegistration.DeviceId;
         SaveSettings(settings);
 
-        DeviceStatus = $"Se sincronizeaza datele locale cu {normalizedAddress}...";
+        DeviceStatus = $"Se sincronizează datele locale cu {normalizedAddress}...";
         var payload = BuildSyncRequest(settings, deviceRegistration.DeviceId);
         var result = await _serverSync.SyncDataAsync(normalizedAddress, bearerToken, payload);
         if (!result.Success)
         {
             DeviceStatus = result.Message;
-            LastServerSyncLabel = "Ultima sincronizare a esuat";
+            LastServerSyncLabel = "Ultima sincronizare a eșuat";
             RefreshSyncServerStatus();
             return;
         }
@@ -412,8 +412,8 @@ public sealed class DevicesViewModel : ObservableObject
         SelectedDevicePlatform = "Necunoscut";
         SelectedDeviceVersion = "Necunoscut";
         SelectedDeviceIdentifier = string.Empty;
-        SelectedDeviceState = "Selecteaza un dispozitiv";
-        SelectedDeviceTimeline = "Alege un dispozitiv din lista pentru a vedea istoricul serverului.";
+        SelectedDeviceState = "Selectează un dispozitiv";
+        SelectedDeviceTimeline = "Alege un dispozitiv din listă pentru a vedea istoricul serverului.";
         SelectedDeviceTrust = "Nu este selectat niciun dispozitiv.";
         SelectedDeviceServerStatus = "Statusul complet va aparea aici.";
         HasSelectedDevice = false;
@@ -863,7 +863,7 @@ public sealed class DevicesViewModel : ObservableObject
 
         if (registeredDevice)
         {
-            return $"{message} Dispozitivul curent a fost inregistrat pe server. Au fost procesate {importedCount} entitati din raspuns.";
+            return $"{message} Dispozitivul curent a fost înregistrat pe server. Au fost procesate {importedCount} entitati din raspuns.";
         }
 
         return $"{message} Au fost procesate {importedCount} entitati din raspuns.";
@@ -966,7 +966,7 @@ public sealed class DevicesViewModel : ObservableObject
 
         if (elapsed.TotalMinutes < 1)
         {
-            return "acum cateva secunde";
+            return "acum câteva secunde";
         }
 
         if (elapsed.TotalHours < 1)

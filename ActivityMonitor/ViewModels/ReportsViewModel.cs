@@ -193,7 +193,7 @@ public class ReportsViewModel : ViewModelBase
         var success = _maker.WriteCsvReport(EnsureTrailingSeparator(ExportDirectory));
         var message = success
             ? $"CSV exportat: {Path.Combine(ExportDirectory, "report.csv")}"
-            : "Exportul CSV a esuat.";
+            : "Exportul CSV a eșuat.";
         ReportStatus = message;
         if (success)
             ShowSuccessToast(message);
@@ -207,7 +207,7 @@ public class ReportsViewModel : ViewModelBase
         var success = _maker.WritePdfReport(EnsureTrailingSeparator(ExportDirectory));
         var message = success
             ? $"PDF exportat: {Path.Combine(ExportDirectory, "report.pdf")}"
-            : "Exportul PDF a esuat.";
+            : "Exportul PDF a eșuat.";
         ReportStatus = message;
         if (success)
             ShowSuccessToast(message);

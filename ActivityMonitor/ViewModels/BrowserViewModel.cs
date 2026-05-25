@@ -96,7 +96,7 @@ public class BrowserViewModel : ViewModelBase
             TopDomains.Add(new BrowserDomainSummary
             {
                 Domain = group.Key,
-                RecordCount = $"{group.Count()} inregistrari",
+                RecordCount = $"{group.Count()} înregistrări",
                 Share = records.Count == 0 ? "0%" : $"{Math.Round(group.Count() / (double)records.Count * 100d):0}% din activitatea browserului",
                 SampleUrl = firstRecord.Url
             });

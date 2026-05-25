@@ -23,7 +23,7 @@ public static class CategoryRuleMatcher
 
         if (!SupportsField(rule.Target, rule.Field))
         {
-            error = "Campul ales nu este compatibil cu tinta regulii.";
+            error = "Câmpul ales nu este compatibil cu ținta regulii.";
             return false;
         }
 

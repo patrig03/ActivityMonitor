@@ -86,7 +86,7 @@
         <Grid ColumnDefinitions="*,340" ColumnSpacing="18">
           <StackPanel Spacing="10">
             <TextBlock Text="Rapoarte" Classes="page-title"/>
-            <TextBlock Text="Revizuieste sumarurile de activitate pe categorii si genereaza instantanee exportabile din baza de date MySQL."
+            <TextBlock Text="Revizuiește sumarele de activitate pe categorii și generează instantanee exportabile din baza de date MySQL."
                        Classes="page-subtitle"/>
             <WrapPanel Orientation="Horizontal">
               <Border Classes="chip chip--overlay" Margin="0,10,10,0">
@@ -108,15 +108,15 @@
                 <Button Grid.Column="0" 
                         Command="{Binding ExportPdfCommand}"
                         Classes="action-button warning-button"
-                        Content="Exporta PDF"/>
+                        Content="Exportă PDF"/>
                 <Button Grid.Column="1"
                         Command="{Binding ExportCsvCommand}"
                         Classes="action-button success-button"
-                        Content="Exporta CSV"/>
+                        Content="Exportă CSV"/>
               </Grid>
                 <Button Command="{Binding RefreshCommand}"
                         Classes="action-button subtle-button"
-                        Content="Reincarca"/>
+                        Content="Reîncarcă"/>
             </StackPanel>
           </Border>
         </Grid>
@@ -148,14 +148,14 @@
           <StackPanel Spacing="6">
             <TextBlock Text="Intervenții" Classes="metric-label"/>
             <TextBlock Text="{Binding InterventionCount}" Classes="metric-value"/>
-            <TextBlock Text="Declansari de prag din aria raportului" Classes="metric-detail"/>
+            <TextBlock Text="Declanșări de prag din aria raportului" Classes="metric-detail"/>
           </StackPanel>
         </Border>
         <Border Classes="stat-card" Margin="0,0,0,14">
           <StackPanel Spacing="6">
-            <TextBlock Text="Inregistrari browser" Classes="metric-label"/>
+            <TextBlock Text="Înregistrări browser" Classes="metric-label"/>
             <TextBlock Text="{Binding BrowserEventCount}" Classes="metric-value"/>
-            <TextBlock Text="Intrari URL capturate" Classes="metric-detail"/>
+            <TextBlock Text="Intrări URL capturate" Classes="metric-detail"/>
           </StackPanel>
         </Border>
       </WrapPanel>

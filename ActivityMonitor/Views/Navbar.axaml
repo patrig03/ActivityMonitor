@@ -30,7 +30,7 @@
                      Height="8"
                      Fill="{StaticResource BrushAccentSuccess}"/>
             <TextBlock Name="StatusText"
-                       Text="Monitorizare activa"
+                       Text="Monitorizare activă"
                        Foreground="{StaticResource BrushTextSecondary}"
                        FontWeight="SemiBold"
                        FontSize="14"/>

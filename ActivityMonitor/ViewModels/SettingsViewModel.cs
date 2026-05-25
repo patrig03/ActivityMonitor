@@ -23,7 +23,7 @@ public class SettingsViewModel : ViewModelBase
     private string _saveStatus = "Se încarcă setările...";
     private string _validationMessage = "Cadență echilibrată pentru majoritatea desktopurilor.";
     private string _intervalProfile = "Monitorizare echilibrată";
-    private string _intervalImpact = "360 esantioane/ora | ~8,640 esantioane/zi";
+    private string _intervalImpact = "360 eșantioane/oră | ~8,640 eșantioane/zi";
     private string _databasePath = Settings.DatabaseEndpoint;
     private string _databaseStatus = "Endpoint MySQL configurat";
     private string _serviceMutexName = Settings.MutexName;
@@ -40,7 +40,7 @@ public class SettingsViewModel : ViewModelBase
     private string _syncEndpointPreview = "Serverul de sincronizare nu este configurat.";
     private string _syncAuthStatus = "Neautentificat";
     private string _syncDeviceStatus = "Niciun dispozitiv server configurat";
-    private string _syncServerTimeStatus = "Nicio sincronizare confirmata de server";
+    private string _syncServerTimeStatus = "Nicio sincronizare confirmată de server";
     private bool _isServerPopupOpen;
 
     public SettingsViewModel()
@@ -105,7 +105,7 @@ public class SettingsViewModel : ViewModelBase
 
             if (!_isLoading)
             {
-                SaveStatus = "Modificari nesalvate";
+                SaveStatus = "Modificări nesalvate";
             }
         }
     }
@@ -164,7 +164,7 @@ public class SettingsViewModel : ViewModelBase
 
             if (!_isLoading)
             {
-                SaveStatus = "Modificari nesalvate";
+                SaveStatus = "Modificări nesalvate";
             }
         }
     }
@@ -219,7 +219,7 @@ public class SettingsViewModel : ViewModelBase
 
             if (!_isLoading)
             {
-                SaveStatus = "Modificari nesalvate";
+                SaveStatus = "Modificări nesalvate";
             }
         }
     }
@@ -236,7 +236,7 @@ public class SettingsViewModel : ViewModelBase
 
             if (!_isLoading)
             {
-                SaveStatus = "Modificari nesalvate";
+                SaveStatus = "Modificări nesalvate";
             }
         }
     }
@@ -284,7 +284,7 @@ public class SettingsViewModel : ViewModelBase
         SyncEmail = _settings.SyncEmail ?? string.Empty;
         SyncPassword = string.Empty;
         DatabasePath = Settings.DatabaseEndpoint;
-        DatabaseStatus = "Schema MySQL va fi creata automat cand conexiunea reuseste";
+        DatabaseStatus = "Schema MySQL va fi creată automat când conexiunea reușește";
         ServiceMutexName = Settings.MutexName;
         LastSavedLabel = dto == null ? "Se folosesc valorile implicite" : "Încărcate din MySQL";
         SaveStatus = "Setări încărcate";
@@ -318,7 +318,7 @@ public class SettingsViewModel : ViewModelBase
             return;
         }
 
-        SaveStatus = $"Se verifica serverul {normalizedAddress}...";
+        SaveStatus = $"Se verifică serverul {normalizedAddress}...";
         var result = await _serverSync.CheckHealthAsync(normalizedAddress);
         SaveStatus = result.Message;
         if (result.Success)
@@ -354,14 +354,14 @@ public class SettingsViewModel : ViewModelBase
 
         if (string.IsNullOrWhiteSpace(_settings.SyncEmail) || string.IsNullOrWhiteSpace(SyncPassword))
         {
-            SaveStatus = "Emailul si parola sunt obligatorii pentru autentificarea la server.";
+            SaveStatus = "Emailul și parola sunt obligatorii pentru autentificarea la server.";
             SyncAuthStatus = SaveStatus;
             ShowWarningToast(SaveStatus);
             return;
         }
 
         SaveStatus = register
-            ? $"Se creeaza contul {_settings.SyncEmail}..."
+            ? $"Se creează contul {_settings.SyncEmail}..."
             : $"Se autentifică {_settings.SyncEmail}...";
 
         var authResult = register
@@ -402,8 +402,8 @@ public class SettingsViewModel : ViewModelBase
         ResetStoredSyncSession();
         SyncPassword = string.Empty;
         PersistSettings("Sesiunea SyncServer a fost eliminata");
-        SaveStatus = "Tokenul local a fost sters. Va trebui sa te autentifici din nou.";
-        ShowWarningToast("Sesiunea SyncServer a fost stearsa");
+        SaveStatus = "Tokenul local a fost șters. Va trebui să te autentifici din nou.";
+        ShowWarningToast("Sesiunea SyncServer a fost ștearsă");
         RefreshSyncState();
     }
 
@@ -415,7 +415,7 @@ public class SettingsViewModel : ViewModelBase
         SyncEmail = string.Empty;
         SyncPassword = string.Empty;
         ResetStoredSyncSession();
-        ValidationMessage = "Cadenta implicita a fost restaurata. Salveaza pentru a o pastra.";
+        ValidationMessage = "Cadența implicită a fost restaurată. Salvează pentru a o păstra.";
         RefreshSyncState();
     }
 
@@ -429,7 +429,7 @@ public class SettingsViewModel : ViewModelBase
         if (!TryParseInterval(out var seconds, out var error))
         {
             ValidationMessage = error;
-            IntervalProfile = "Valoare invalida";
+            IntervalProfile = "Valoare invalidă";
             IntervalImpact = "Introdu un număr întreg de secunde între 1 și 600.";
             MonitoringSummary = "Rezumatul eșantionării nu este disponibil";
             return;
@@ -441,26 +441,26 @@ public class SettingsViewModel : ViewModelBase
         if (seconds <= 5)
         {
             IntervalProfile = "Monitorizare cu precizie ridicată";
-            ValidationMessage = "Captura rapida pentru schimbari scurte de activitate si limite stricte de sesiune.";
+            ValidationMessage = "Captură rapidă pentru schimbări scurte de activitate și limite stricte de sesiune.";
         }
         else if (seconds <= 15)
         {
             IntervalProfile = "Monitorizare echilibrată";
-            ValidationMessage = "Compromis bun intre reactie rapida si volum de stocare.";
+            ValidationMessage = "Compromis bun între reacție rapidă și volum de stocare.";
         }
         else if (seconds <= 60)
         {
             IntervalProfile = "Monitorizare cu consum redus";
-            ValidationMessage = "Volum mai mic de scrieri, dar sesiunile scurte pot parea mai putin precise.";
+            ValidationMessage = "Volum mai mic de scrieri, dar sesiunile scurte pot părea mai puțin precise.";
         }
         else
         {
             IntervalProfile = "Monitorizare grosieră";
-            ValidationMessage = "Potrivita doar daca vrei tendinte generale, nu interventii stricte.";
+            ValidationMessage = "Potrivită doar dacă vrei tendințe generale, nu intervenții stricte.";
         }
 
-        IntervalImpact = $"{samplesPerHour:0} esantioane/ora | ~{samplesPerDay:0} esantioane/zi";
-        MonitoringSummary = $"Interval curent: {seconds}s | verificarile de interventie ruleaza in acelasi ritm.";
+        IntervalImpact = $"{samplesPerHour:0} eșantioane/oră | ~{samplesPerDay:0} eșantioane/zi";
+        MonitoringSummary = $"Interval curent: {seconds}s | verificările de intervenție rulează în același ritm.";
     }
 
     private void UpdateSyncPreview()
@@ -508,7 +508,7 @@ public class SettingsViewModel : ViewModelBase
 
         SyncServerTimeStatus = _settings.SyncLastServerTimeUtc.HasValue
             ? $"Ultimul serverTime primit: {_settings.SyncLastServerTimeUtc.Value.ToLocalTime():dd MMM yyyy, HH:mm:ss}"
-            : "Nicio sincronizare confirmata de server";
+            : "Nicio sincronizare confirmată de server";
     }
 
     private bool TryApplyEditorValuesToSettings(out string error)

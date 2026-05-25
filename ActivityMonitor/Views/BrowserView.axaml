@@ -41,7 +41,7 @@
         <Grid ColumnDefinitions="*,300" ColumnSpacing="18">
           <StackPanel Spacing="10">
             <TextBlock Text="Activitate browser" Classes="page-title"/>
-            <TextBlock Text="Inspecteaza URL-urile capturate, concentrarea pe domenii si procesele de browser monitorizate care genereaza cele mai multe inregistrari."
+            <TextBlock Text="Inspectează URL-urile capturate, concentrarea pe domenii și procesele de browser monitorizate care generează cele mai multe înregistrări."
                        Classes="page-subtitle"/>
             <Border Classes="chip chip--overlay"
                     HorizontalAlignment="Left"
@@ -53,7 +53,7 @@
           <Button Grid.Column="1"
                   Command="{Binding RefreshCommand}"
                   Classes="action-button primary-button"
-                  Content="Reincarca datele browserului"
+                  Content="Reîncarcă datele browserului"
                   VerticalAlignment="Center"/>
         </Grid>
       </Border>
@@ -61,30 +61,30 @@
       <WrapPanel Orientation="Horizontal">
         <Border Classes="stat-card">
           <StackPanel Spacing="6">
-            <TextBlock Text="Inregistrari browser" Classes="metric-label"/>
+            <TextBlock Text="Înregistrări browser" Classes="metric-label"/>
             <TextBlock Text="{Binding TotalEvents}" Classes="metric-value"/>
-            <TextBlock Text="Total intrari URL capturate" Classes="metric-detail"/>
+            <TextBlock Text="Total intrări URL capturate" Classes="metric-detail"/>
           </StackPanel>
         </Border>
         <Border Classes="stat-card">
           <StackPanel Spacing="6">
             <TextBlock Text="Domenii unice" Classes="metric-label"/>
             <TextBlock Text="{Binding UniqueDomains}" Classes="metric-value"/>
-            <TextBlock Text="Gazde distincte in setul capturat" Classes="metric-detail"/>
+            <TextBlock Text="Gazde distincte în setul capturat" Classes="metric-detail"/>
           </StackPanel>
         </Border>
         <Border Classes="stat-card">
           <StackPanel Spacing="6">
-            <TextBlock Text="Aplicatii browser monitorizate" Classes="metric-label"/>
+            <TextBlock Text="Aplicații browser monitorizate" Classes="metric-label"/>
             <TextBlock Text="{Binding TrackedBrowsers}" Classes="metric-value"/>
-            <TextBlock Text="Id-uri distincte de aplicatii care produc inregistrari browser" Classes="metric-detail"/>
+            <TextBlock Text="ID-uri distincte de aplicații care produc înregistrări browser" Classes="metric-detail"/>
           </StackPanel>
         </Border>
         <Border Classes="stat-card" Width="260" Margin="0,0,0,14">
           <StackPanel Spacing="6">
             <TextBlock Text="Domeniu principal" Classes="metric-label"/>
             <TextBlock Text="{Binding TopDomain}" Classes="metric-value" TextWrapping="Wrap"/>
-            <TextBlock Text="Cea mai frecventa gazda din setul curent de date browser" Classes="metric-detail"/>
+            <TextBlock Text="Cea mai frecventă gazdă din setul curent de date browser" Classes="metric-detail"/>
           </StackPanel>
         </Border>
       </WrapPanel>
@@ -101,7 +101,7 @@
         <Border Grid.Column="1" Classes="panel-card">
           <StackPanel Spacing="12">
             <TextBlock Text="Procese browser" Classes="section-title"/>
-            <TextBlock Text="Aplicatii monitorizate care genereaza inregistrari URL." Classes="section-subtitle"/>
+            <TextBlock Text="Aplicații monitorizate care generează înregistrări URL." Classes="section-subtitle"/>
             <ItemsControl ItemsSource="{Binding BrowserApps}" ItemTemplate="{StaticResource BrowserAppTemplate}"/>
           </StackPanel>
         </Border>
@@ -110,7 +110,7 @@
       <Border Classes="panel-card">
         <StackPanel Spacing="14">
           <TextBlock Text="URL-uri capturate recent" Classes="section-title"/>
-          <TextBlock Text="Ordonate dupa cel mai nou id de activitate."
+          <TextBlock Text="Ordonate după cel mai nou ID de activitate."
                      Classes="section-subtitle"/>
           <DataGrid ItemsSource="{Binding RecentActivity}"
                     AutoGenerateColumns="False"

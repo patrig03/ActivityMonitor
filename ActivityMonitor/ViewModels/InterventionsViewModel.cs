@@ -108,7 +108,7 @@ public partial class InterventionsViewModel : ViewModelBase
         set => SetProperty(ref _mostTriggeredTarget, value);
     }
 
-    public string ThresholdFormTitle => EditData.Threshold.Id > 0 ? "Editeaza pragul" : "Adauga prag";
+    public string ThresholdFormTitle => EditData.Threshold.Id > 0 ? "Editează pragul" : "Adaugă prag";
 
     public ICommand AddCommand { get; }
     public ICommand SaveCommand { get; }

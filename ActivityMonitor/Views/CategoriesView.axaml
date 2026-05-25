@@ -136,11 +136,11 @@
                   <Button Grid.Column="0"
                           Command="{Binding OpenAddCategoryModalCommand}"
                           Classes="action-button success-button"
-                          Content="Adauga categorie"/>
+                          Content="Adaugă categorie"/>
                   <Button Grid.Column="1"
                           Command="{Binding RefreshCommand}"
                           Classes="action-button subtle-button"
-                          Content="Reincarca"/>
+                          Content="Reîncarcă"/>
                 </Grid>
               </StackPanel>
             </Border>
@@ -158,15 +158,15 @@
 
           <Border Classes="stat-card">
             <StackPanel Spacing="6">
-              <TextBlock Text="Aplicatii clasificate" Classes="metric-label"/>
+              <TextBlock Text="Aplicații clasificate" Classes="metric-label"/>
               <TextBlock Text="{Binding AssignedApplications}" Classes="metric-value"/>
-              <TextBlock Text="Au categorie atribuita" Classes="metric-detail"/>
+              <TextBlock Text="Au categorie atribuită" Classes="metric-detail"/>
             </StackPanel>
           </Border>
 
           <Border Classes="stat-card">
             <StackPanel Spacing="6">
-              <TextBlock Text="Aplicatii neasignate" Classes="metric-label"/>
+              <TextBlock Text="Aplicații neasignate" Classes="metric-label"/>
               <TextBlock Text="{Binding UncategorizedApplications}" Classes="metric-value"/>
               <TextBlock Text="Necesita clasificare" Classes="metric-detail"/>
             </StackPanel>
@@ -180,7 +180,7 @@
                 <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
                   <StackPanel Spacing="4">
                     <TextBlock Text="Categorii existente" Classes="section-title"/>
-                    <TextBlock Text="Punctul de plecare ramane simplu: selectezi categoria, citesti rezumatul si deschizi doar actiunea de care ai nevoie."
+                    <TextBlock Text="Punctul de plecare rămâne simplu: selectezi categoria, citești rezumatul și deschizi doar acțiunea de care ai nevoie."
                                Classes="section-subtitle"/>
                   </StackPanel>
 
@@ -189,12 +189,12 @@
                             IsEnabled="{Binding HasSelectedCategory}"
                             Classes="action-button subtle-button"
                             HorizontalAlignment="Left"
-                            Content="Modifica"/>
+                            Content="Modifică"/>
                     <Button Command="{Binding OpenDeleteCategoryModalCommand}"
                             IsEnabled="{Binding HasSelectedCategory}"
                             Classes="action-button warning-button"
                             HorizontalAlignment="Left"
-                            Content="Sterge"/>
+                            Content="Șterge"/>
                   </StackPanel>
                 </Grid>
 
@@ -209,15 +209,15 @@
 
             <Border Classes="panel-card panel-card--warning">
               <StackPanel Spacing="16">
-                <TextBlock Text="Aplicatii monitorizate" Classes="section-title"/>
-                <TextBlock Text="Filtreaza lista, alege o aplicatie si deschide modificarea categoriei doar cand e necesar."
+                <TextBlock Text="Aplicații monitorizate" Classes="section-title"/>
+                <TextBlock Text="Filtrează lista, alege o aplicație și deschide modificarea categoriei doar când e necesar."
                            Classes="section-subtitle"/>
 
                 <Grid ColumnDefinitions="1.15*,0.85*" ColumnSpacing="14">
                   <StackPanel Spacing="8">
-                    <TextBlock Text="Cauta aplicatii" Classes="field-label"/>
+                    <TextBlock Text="Caută aplicații" Classes="field-label"/>
                     <TextBox Text="{Binding ApplicationSearchText}"
-                             Watermark="Filtreaza dupa proces, titlu, clasa sau categorie"/>
+                             Watermark="Filtrează după proces, titlu, clasă sau categorie"/>
                   </StackPanel>
 
                   <StackPanel Grid.Column="1" Spacing="8">
@@ -290,7 +290,7 @@
                 <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
                   <StackPanel Spacing="4">
                     <TextBlock Text="Reguli personalizate" Classes="section-title"/>
-                    <TextBlock Text="Lista ramane vizibila, iar crearea, editarea si stergerea se fac separat in modal pentru mai putin zgomot pe pagina."
+                    <TextBlock Text="Lista rămâne vizibilă, iar crearea, editarea și ștergerea se fac separat în modal pentru mai puțin zgomot pe pagină."
                                Classes="section-subtitle"/>
                   </StackPanel>
 
@@ -304,12 +304,12 @@
                             IsEnabled="{Binding HasSelectedCategoryRule}"
                             Classes="action-button subtle-button"
                             HorizontalAlignment="Left"
-                            Content="Modifica"/>
+                            Content="Modifică"/>
                     <Button Command="{Binding OpenDeleteRuleModalCommand}"
                             IsEnabled="{Binding HasSelectedCategoryRule}"
                             Classes="action-button warning-button"
                             HorizontalAlignment="Left"
-                            Content="Sterge"/>
+                            Content="Șterge"/>
                   </StackPanel>
                 </Grid>
 
@@ -331,7 +331,7 @@
 
             <Border Classes="panel-card">
               <StackPanel Spacing="14">
-                <TextBlock Text="Aplicatia selectata" Classes="section-title"/>
+                <TextBlock Text="Aplicația selectată" Classes="section-title"/>
 
                 <TextBlock Text="{Binding SelectedApplicationTitle}"
                            FontSize="22"
@@ -357,20 +357,20 @@
                           Command="{Binding OpenApplicationAssignmentModalCommand}"
                           IsEnabled="{Binding HasSelectedApplication}"
                           Classes="action-button success-button"
-                          Content="Modifica categoria"/>
+                          Content="Modifică categoria"/>
                   <Button Grid.Column="1"
                           Command="{Binding ClearApplicationSelectionCommand}"
                           Classes="action-button subtle-button"
-                          Content="Reseteaza selectia"/>
+                          Content="Resetează selecția"/>
                 </Grid>
 
                 <Border Classes="panel-card panel-card--muted"
                         Padding="16">
                   <StackPanel Spacing="10">
-                    <TextBlock Text="Genereaza regula din aplicatia selectata"
+                    <TextBlock Text="Generează regulă din aplicația selectată"
                                FontWeight="Bold"
                                Foreground="{StaticResource BrushTextSecondary}"/>
-                    <TextBlock Text="Procesul si clasa sunt de obicei cele mai stabile semnale. Titlul ferestrei ramane util pentru cazuri punctuale."
+                    <TextBlock Text="Procesul și clasa sunt de obicei cele mai stabile semnale. Titlul ferestrei rămâne util pentru cazuri punctuale."
                                Foreground="{StaticResource BrushTextMuted}"
                                TextWrapping="Wrap"/>
                     <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
@@ -378,17 +378,17 @@
                               Command="{Binding CreateRuleFromProcessCommand}"
                               IsEnabled="{Binding CanBuildRuleFromSelectedApplication}"
                               Classes="action-button subtle-button"
-                              Content="Foloseste procesul"/>
+                              Content="Folosește procesul"/>
                       <Button Grid.Column="1"
                               Command="{Binding CreateRuleFromClassCommand}"
                               IsEnabled="{Binding CanBuildRuleFromSelectedApplication}"
                               Classes="action-button subtle-button"
-                              Content="Foloseste clasa"/>
+                              Content="Folosește clasa"/>
                     </Grid>
                     <Button Command="{Binding CreateRuleFromWindowTitleCommand}"
                             IsEnabled="{Binding CanBuildRuleFromSelectedApplication}"
                             Classes="action-button subtle-button"
-                            Content="Foloseste titlul ferestrei"/>
+                            Content="Folosește titlul ferestrei"/>
                   </StackPanel>
                 </Border>
               </StackPanel>
@@ -423,7 +423,7 @@
                 <Button Grid.Column="1"
                         Command="{Binding CloseModalCommand}"
                         Classes="action-button subtle-button"
-                        Content="Inchide"
+                        Content="Închide"
                         Padding="12,8"/>
               </Grid>
 
@@ -455,7 +455,7 @@
                         HorizontalAlignment="Left"/>
                 <Button Command="{Binding SaveCategoryCommand}"
                         Classes="action-button success-button"
-                        Content="Salveaza categoria"
+                        Content="Salvează categoria"
                         HorizontalAlignment="Left"/>
               </StackPanel>
             </StackPanel>
@@ -463,14 +463,14 @@
             <StackPanel IsVisible="{Binding ActiveModal, Converter={StaticResource EqualsConverter}, ConverterParameter=DeleteCategory}"
                         Spacing="18">
               <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
-                <TextBlock Text="Sterge categoria"
+                <TextBlock Text="Șterge categoria"
                            FontSize="20"
                            FontWeight="Bold"
                            Foreground="{StaticResource BrushTextSecondary}"/>
                 <Button Grid.Column="1"
                         Command="{Binding CloseModalCommand}"
                         Classes="action-button subtle-button"
-                        Content="Inchide"
+                        Content="Închide"
                         Padding="12,8"/>
               </Grid>
 
@@ -500,7 +500,7 @@
                         HorizontalAlignment="Left"/>
                 <Button Command="{Binding DeleteSelectedCategoryCommand}"
                         Classes="action-button danger-button"
-                        Content="Sterge categoria"
+                        Content="Șterge categoria"
                         HorizontalAlignment="Left"/>
               </StackPanel>
             </StackPanel>
@@ -516,7 +516,7 @@
                 <Button Grid.Column="1"
                         Command="{Binding CloseModalCommand}"
                         Classes="action-button subtle-button"
-                        Content="Inchide"
+                        Content="Închide"
                         Padding="12,8"/>
               </Grid>
 
@@ -551,12 +551,12 @@
                         Command="{Binding AssignSelectedCategoryToApplicationCommand}"
                         IsEnabled="{Binding CanBuildRuleFromSelectedApplication}"
                         Classes="action-button subtle-button"
-                        Content="Aplica categoria selectata"/>
+                        Content="Aplică categoria selectată"/>
                 <Button Grid.Column="1"
                         Command="{Binding SaveApplicationCategoryCommand}"
                         IsEnabled="{Binding HasSelectedApplication}"
                         Classes="action-button success-button"
-                        Content="Salveaza asignarea"/>
+                        Content="Salvează asignarea"/>
               </Grid>
             </StackPanel>
 
@@ -571,7 +571,7 @@
                 <Button Grid.Column="1"
                         Command="{Binding CloseModalCommand}"
                         Classes="action-button subtle-button"
-                        Content="Inchide"
+                        Content="Închide"
                         Padding="12,8"/>
               </Grid>
 
@@ -586,7 +586,7 @@
                     <TextBlock Text="Definitie" FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource BrushTextSecondary}"/>
 
                     <StackPanel Spacing="8">
-                      <TextBlock Text="Nume regula" Classes="field-label"/>
+                      <TextBlock Text="Nume regulă" Classes="field-label"/>
                       <TextBox Text="{Binding RuleName}"
                                Watermark="Ex: Browser de lucru, Teams corporate"/>
                     </StackPanel>
@@ -621,7 +621,7 @@
                         Classes="panel-card panel-card--muted"
                         Padding="16">
                   <StackPanel Spacing="12">
-                    <TextBlock Text="Continut regula" FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource BrushTextSecondary}"/>
+                    <TextBlock Text="Conținut regulă" FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource BrushTextSecondary}"/>
 
                     <StackPanel Spacing="8">
                       <TextBlock Text="Model de potrivire" Classes="field-label"/>
@@ -643,7 +643,7 @@
                                AcceptsReturn="True"
                                TextWrapping="Wrap"
                                MinHeight="140"
-                               Watermark="Optional: de ce exista regula sau ce varianta acopera."/>
+                               Watermark="Opțional: de ce există regula sau ce variantă acoperă."/>
                     </StackPanel>
                   </StackPanel>
                 </Border>
@@ -665,7 +665,7 @@
                         HorizontalAlignment="Left"/>
                 <Button Command="{Binding SaveRuleCommand}"
                         Classes="action-button success-button"
-                        Content="Salveaza regula"
+                        Content="Salvează regula"
                         HorizontalAlignment="Left"/>
               </StackPanel>
             </StackPanel>
@@ -673,14 +673,14 @@
             <StackPanel IsVisible="{Binding ActiveModal, Converter={StaticResource EqualsConverter}, ConverterParameter=DeleteRule}"
                         Spacing="18">
               <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
-                <TextBlock Text="Sterge regula"
+                <TextBlock Text="Șterge regula"
                            FontSize="20"
                            FontWeight="Bold"
                            Foreground="{StaticResource BrushTextSecondary}"/>
                 <Button Grid.Column="1"
                         Command="{Binding CloseModalCommand}"
                         Classes="action-button subtle-button"
-                        Content="Inchide"
+                        Content="Închide"
                         Padding="12,8"/>
               </Grid>
 
@@ -713,7 +713,7 @@
                         HorizontalAlignment="Left"/>
                 <Button Command="{Binding DeleteSelectedRuleCommand}"
                         Classes="action-button danger-button"
-                        Content="Sterge regula"
+                        Content="Șterge regula"
                         HorizontalAlignment="Left"/>
               </StackPanel>
             </StackPanel>

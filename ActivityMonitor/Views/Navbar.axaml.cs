@@ -85,7 +85,7 @@ public partial class Navbar : UserControl
 
         if (_statusText != null)
         {
-            _statusText.Text = isRunning ? "Monitorizare activa" : "Serviciu oprit";
+            _statusText.Text = isRunning ? "Monitorizare activă" : "Serviciu oprit";
         }
 
         if (_statusUpdateTime != null)

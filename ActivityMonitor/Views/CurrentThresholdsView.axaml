@@ -29,7 +29,7 @@
       <DataGridTemplateColumn Header="" Width="Auto">
         <DataGridTemplateColumn.CellTemplate>
           <DataTemplate>
-            <Button Content="Editeaza"
+            <Button Content="Editează"
                     Classes="action-button subtle-button"
                     Command="{Binding #Root.DataContext.EditRowCommand}"
                     CommandParameter="{Binding}"
@@ -42,7 +42,7 @@
       <DataGridTemplateColumn Header="" Width="Auto">
         <DataGridTemplateColumn.CellTemplate>
           <DataTemplate>
-            <Button Content="Sterge"
+            <Button Content="Șterge"
                     Classes="action-button warning-button"
                     Command="{Binding #Root.DataContext.DeleteCommand}"
                     CommandParameter="{Binding}"

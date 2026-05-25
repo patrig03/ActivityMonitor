@@ -145,7 +145,7 @@
           <StackPanel Spacing="6">
             <TextBlock Text="Status necunoscut" Classes="metric-label"/>
             <TextBlock Text="{Binding UnknownDevices}" Classes="metric-value"/>
-            <TextBlock Text="Fara stare explicita" Classes="metric-detail"/>
+            <TextBlock Text="Fără stare explicită" Classes="metric-detail"/>
           </StackPanel>
         </Border>
       </WrapPanel>
@@ -234,14 +234,14 @@
 
                 <Button Command="{Binding ClearSelectionCommand}"
                         Classes="action-button subtle-button"
-                        Content="Curata selectia"/>
+                        Content="Curăță selecția"/>
               </StackPanel>
 
               <StackPanel IsVisible="{Binding NoSelectedDevice}" Spacing="10">
                 <TextBlock Text="Niciun dispozitiv selectat"
                            FontWeight="SemiBold"
                            Foreground="{StaticResource BrushTextSecondary}"/>
-                <TextBlock Text="Selecteaza un dispozitiv din lista pentru a vedea statusul, identificatorul si activitatea raportata de server."
+                <TextBlock Text="Selectează un dispozitiv din listă pentru a vedea statusul, identificatorul și activitatea raportată de server."
                            Foreground="{StaticResource BrushTextMuted}"
                            TextWrapping="Wrap"/>
               </StackPanel>
@@ -251,7 +251,7 @@
           <Border Classes="panel-card panel-card--warning">
             <StackPanel Spacing="12">
               <TextBlock Text="Cum apare un dispozitiv aici" Classes="section-title"/>
-              <TextBlock Text="Un dispozitiv apare in aceasta pagina dupa ce sesiunea locala este autentificata si rulezi o sincronizare. Pagina afiseaza exact ceea ce raporteaza endpoint-ul /api/devices pentru contul curent."
+              <TextBlock Text="Un dispozitiv apare în această pagină după ce sesiunea locală este autentificată și rulezi o sincronizare. Pagina afișează exact ceea ce raportează endpoint-ul /api/devices pentru contul curent."
                          Classes="section-subtitle"/>
             </StackPanel>
           </Border>

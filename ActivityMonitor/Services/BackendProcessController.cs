@@ -18,18 +18,18 @@ public sealed class BackendProcessController
 
     public bool IsRunning()
     {
-        if (HasRunningMutex())
-        {
-            return true;
-        }
-
-        var runningProcesses = FindCandidateProcesses();
-        foreach (var process in runningProcesses)
+        var processes = FindCandidateProcesses();
+        foreach (var process in processes)
         {
             process.Dispose();
         }
 
-        return runningProcesses.Count > 0;
+        if (processes.Count > 0)
+        {
+            return true;
+        }
+
+        return HasRunningMutex();
     }
 
     public string? Start()
@@ -63,6 +63,13 @@ public sealed class BackendProcessController
                 }
 
                 _launchedProcessId = process.Id;
+
+                if (!WaitForStartup())
+                {
+                    _launchedProcessId = null;
+                    return "Backend-ul s-a oprit imediat după pornire. Verificați logurile.";
+                }
+
                 return null;
             }
             catch (Exception ex)
@@ -70,6 +77,25 @@ public sealed class BackendProcessController
                 return $"Pornirea backend-ului a eșuat: {ex.Message}";
             }
         }
+    }
+
+    private bool WaitForStartup()
+    {
+        for (var i = 0; i < 15; i++)
+        {
+            if (HasRunningMutex())
+            {
+                return true;
+            }
+            Thread.Sleep(200);
+        }
+
+        if (FindCandidateProcesses().Count > 0)
+        {
+            return true;
+        }
+
+        return HasRunningMutex();
     }
 
     public string? Stop()
@@ -194,8 +220,22 @@ public sealed class BackendProcessController
                 return false;
             }
 
-            mutex.Dispose();
-            return true;
+            using (mutex)
+            {
+                try
+                {
+                    if (mutex.WaitOne(0))
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                    return true;
+                }
+                catch (AbandonedMutexException)
+                {
+                    mutex.ReleaseMutex();
+                    return false;
+                }
+            }
         }
         catch
         {
